@@ -47,23 +47,23 @@ var document = window.document,
     pi = Math.PI,
     renderer_index = -1;
 
+var has_context = function ( canvas, type ) {
+  try {
+    if ( canvas.getContext( type ) ) {
+      return true;
+    }
+  } catch ( ex ) {
+    warn( ex );
+  }
+
+  return false;
+};
+
 var support = {
   webgl: function ( canvas ) {
     if ( typeof canvas.getContext != 'function' ) {
       return 0;
     }
-
-    var has_context = function ( canvas, type ) {
-      try {
-        if ( canvas.getContext( type ) ) {
-          return true;
-        }
-      } catch ( ex ) {
-        warn( ex );
-      }
-
-      return false;
-    };
 
     return has_context( canvas, 'webgl' ) ?
       1 : has_context( canvas, 'webgl-experemental' ) ?

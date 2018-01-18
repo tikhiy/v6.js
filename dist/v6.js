@@ -255,7 +255,7 @@ Ticker.prototype.tick = function ( fps, requested ) {
   this.skipped += dt;
   this.total += dt;
 
-  while ( this.skipped > this.step ) {
+  while ( this.skipped > this.step && !this.stopped ) {
     this.skipped -= this.step;
     this.update.call( this, this.step );
   }

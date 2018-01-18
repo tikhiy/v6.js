@@ -1,5 +1,6 @@
 /**
  * v6.js is a JavaScript Graphic Library.
+ * https://github.com/silent-tempest/v6
  *
  * p5.js:
  * https://github.com/processing/p5.js/

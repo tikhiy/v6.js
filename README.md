@@ -1,3 +1,3 @@
 # v6
 
-Is a JavaScript Graphics Library.
+JavaScript graphics library.

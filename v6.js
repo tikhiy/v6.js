@@ -386,7 +386,6 @@ Vector2D.prototype.normalize = function () {
 };
 
 Vector2D.prototype.rotate = function ( angle ) {
-
   if ( settings.degrees ) {
     angle = angle * pi / 180 + this.angle();
   } else {
@@ -394,12 +393,9 @@ Vector2D.prototype.rotate = function ( angle ) {
   }
 
   var length = this.mag();
-
   this[ 0 ] = length * cos( angle );
   this[ 1 ] = length * sin( angle );
-
   return this;
-
 };
 
 Vector2D.prototype.dot = function ( x, y ) {

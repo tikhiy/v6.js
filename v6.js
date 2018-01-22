@@ -1973,7 +1973,7 @@ var create_shader = function ( context, source, type ) {
   return shader;
 };
 
-var get_source = function ( script ){
+var get_source = function ( script ) {
   var child = script.firstChild,
       source = '';
 
@@ -2366,6 +2366,9 @@ var rectangle_vertices = new Float32Array( [
 ] );
 
 RendererWebGL.prototype.rect = function ( x, y, w, h ) {
+  x = align( x, w, this.style.rectAlignX );
+  y = align( y, h, this.style.rectAlignY );
+
   this.matrix
     .save()
     .translate( x, y )

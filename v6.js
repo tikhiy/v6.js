@@ -2231,8 +2231,7 @@ var default_shaders = {
 'uniform vec4 u_color;' +
 
 'void main () {' +
-  // 'gl_FragColor = vec4( u_color.rgb / 255.0, u_color.a );' +
-  'gl_FragColor = vec4( u_color.r / 255.0, u_color.g / 255.0, u_color.b / 255.0, u_color.a );' +
+  'gl_FragColor = vec4( u_color.rgb / 255.0, u_color.a );' +
 '}',
 
   background_vertex:

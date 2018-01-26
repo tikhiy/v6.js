@@ -27,6 +27,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+// jshint esversion: 5
+// jshint unused: true
+// jshint undef: true
 ;( function ( window, undefined ) {
 
 'use strict';
@@ -47,6 +51,10 @@ var document = window.document,
     pi = Math.PI,
     renderer_index = -1;
 
+/**
+ * Checks if `canvas` has `type`
+ * context, using `getContext`.
+ */
 var has_context = function ( canvas, type ) {
   try {
     if ( canvas.getContext( type ) ) {
@@ -72,7 +80,7 @@ var support = {
 };
 
 var v6 = function ( options ) {
-  if ( options && options.mode === 'webgl' ) {
+  if ( ( options && options.mode || default_options.mode ) === 'webgl' ) {
     if ( support.webgl ) {
       return new RendererWebGL( options );
     }
@@ -89,27 +97,66 @@ var settings = {
 
 var default_options = {
   settings: {
+    /** Pixel density of context. */
     scale: 1,
+
+    /**
+     * Only for "2d" renderer.
+     * MDN: Can be set to change if images are smoothed
+     * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
+     */
     smooth: false,
+
     colorMode: 'rgba'
   },
 
+  /** One of: "2d", "webgl". */
   mode: '2d',
-  alpha: true
+
+  /**
+   * MDN: Boolean that indicates if
+   * the canvas contains an alpha channel.
+   * If set to false, the browser now knows
+   * that the backdrop is always opaque,
+   * which can speed up drawing of transparent
+   * content and images.
+   * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+   */
+  alpha: true,
+
+  /**
+   * If true, the renderer will
+   * be added to the DOM.
+   */
+  append: true
 };
 
+/**
+ * v6.map( 20, 0, 100, 0, 1 ); // -> 0.2
+ * v6.map( -0.1, -1, 1, 0, 10 ) // -> 4.5
+ */
 var map = function ( value, start1, stop1, start2, stop2 ) {
   return ( ( value - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
 };
 
+/**
+ * Returns distance between two points.
+ * v6.dist( 0, 0, 1, 1 ); // -> 1.4142135623730951
+ */
 var dist = function ( x1, y1, x2, y2 ) {
   return sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 };
 
+/**
+ * var purple = v6.lerpColor( 'red', 'blue', 0.5 );
+ */
 var lerp_color = function ( a, b, value ) {
   return ( typeof a != 'object' ? parse_color( a ) : a ).lerp( b, value );
 };
 
+/**
+ * Clone renderer `style` to `object`.
+ */
 var clone_style = function ( style, object ) {
   object.rectAlignX = style.rectAlignX;
   object.rectAlignY = style.rectAlignY;
@@ -784,7 +831,7 @@ RGBA.prototype.set = function ( r, g, b, a ) {
       case r: a = 1; b = g = r = 0; break;
       case g: a = 1; b = g = r = floor( r ); break;
       case b: a = g; b = g = r = floor( r ); break;
-      case a: a = 1;
+      case a: a = 1; /* falls through */
       default: r = floor( r ); g = floor( g ); b = floor( b );
     }
 
@@ -891,7 +938,7 @@ HSLA.prototype.set = function ( h, s, l, a ) {
       case h: a = 1; l = s = h = 0; break;
       case s: a = 1; l = floor( h ); s = h = 0; break;
       case l: a = s; l = floor( h ); s = h = 0; break;
-      case a: a = 1;
+      case a: a = 1; /* falls through */
       default: h = floor( h ); s = floor( s ); l = floor( l );
     }
 
@@ -1205,7 +1252,7 @@ var get_promise = function ( path, name ) {
         resolve( [ name, image ] );
       };
 
-      var error = function ( event ) {
+      var error = function () {
         $source.off( 'load', load );
         reject( [ 'Failed to load ' + path, path ] );
       };
@@ -2016,7 +2063,7 @@ Buffer.prototype.data = function ( data, mode ) {
 
 var Transform = function () {
   this.stack = [];
-  this.matrix = matrix.identity();
+  this.matrix = mat3.identity();
 };
 
 Transform.prototype = scotch.create( null );
@@ -2036,9 +2083,9 @@ Transform.prototype.set = function ( a, b, c, d, e, f ) {
 
 Transform.prototype.save = function () {
   if ( this.stack[ ++this.index ] ) {
-    matrix.copy( this.stack[ this.index ], this.matrix );
+    mat3.copy( this.stack[ this.index ], this.matrix );
   } else {
-    this.stack.push( matrix.clone( this.matrix ) );
+    this.stack.push( mat3.clone( this.matrix ) );
   }
 
   return this;
@@ -2046,29 +2093,29 @@ Transform.prototype.save = function () {
 
 Transform.prototype.restore = function () {
   if ( this.stack.length ) {
-    matrix.copy( this.matrix, this.stack[ this.index-- ] );
+    mat3.copy( this.matrix, this.stack[ this.index-- ] );
   } else {
-    matrix.setIdentity( this.matrix );
+    mat3.setIdentity( this.matrix );
   }
 
   return this;
 };
 
 Transform.prototype.translate = function ( x, y ) {
-  return matrix.translate( this.matrix, x, y ), this;
+  return mat3.translate( this.matrix, x, y ), this;
 };
 
 Transform.prototype.rotate = function ( angle ) {
-  return matrix.rotate( this.matrix, angle ), this;
+  return mat3.rotate( this.matrix, angle ), this;
 };
 
 Transform.prototype.scale = function ( x, y ) {
-  return matrix.scale( this.matrix, x, y ), this;
+  return mat3.scale( this.matrix, x, y ), this;
 };
 
-/* MATRIX4 */
+/* MATRIX3 */
 
-var matrix = {
+var mat3 = {
   identity: function () {
     return [
       1, 0, 0,
@@ -2157,7 +2204,7 @@ var matrix = {
     m1[ 3 ] *= y;
     m1[ 4 ] *= y;
     m1[ 5 ] *= y;
-    return matrix;
+    return m1;
   }
 };
 
@@ -2322,7 +2369,7 @@ RendererWebGL.prototype.backgroundColor = function ( a, b, c, d ) {
 
 RendererWebGL.prototype.background = Renderer2D.prototype.background;
 
-RendererWebGL.prototype.clear = function ( x, y, w, h ) {
+RendererWebGL.prototype.clear = function ( /* x, y, w, h */ ) {
   return this._clear_color( 0, 0, 0, 0 );
 };
 
@@ -2430,42 +2477,39 @@ var create_polygon = function ( n ) {
   return vertices;
 };
 
-RendererWebGL.prototype._polygon = function ( x, y, x_radius, y_radius, resolution, angle, degrees ) {
-  if ( angle === undefined ) {
-    angle = 0;
-  } else if ( degrees ) {
+RendererWebGL.prototype._polygon = function ( x, y, rx, ry, resolution, angle, degrees ) {
+  if ( angle && degrees ) {
     angle *= pi / 180;
   }
 
-  var matrix = this.matrix,
-      polygon = polygons[ resolution ];
+  var polygon = polygons[ resolution ];
 
   if ( !polygon ) {
     polygon = polygons[ resolution ] = create_polygon( resolution );
   }
 
-  matrix
+  this.matrix
     .save()
     .translate( x, y )
-    .rotate( angle || 0 )
-    .scale( x_radius, y_radius );
+    .rotate( angle )
+    .scale( rx, ry );
 
   this.draw( polygon, polygon.length >> 1 );
-  matrix.restore();
+  this.matrix.restore();
   return this;
 };
 
 RendererWebGL.prototype.ellipse = function ( x, y, r1, r2 ) {
-  return this._polygon( x, y, r1, r2, 24 );
+  return this._polygon( x, y, r1, r2, 24, 0 );
 };
 
 RendererWebGL.prototype.arc = function ( x, y, r ) {
-  return this._polygon( x, y, r, r, 24 );
+  return this._polygon( x, y, r, r, 24, 0 );
 };
 
 RendererWebGL.prototype.polygon = function ( x, y, r, n, a ) {
   if ( n % 1 ) {
-    n = floor( n * 100 ) / 100;
+    n = floor( n * 100 ) * 0.01;
   }
 
   if ( a === undefined ) {
@@ -2564,17 +2608,21 @@ var create_renderer = function ( renderer, mode, options ) {
     textBaseline: 'top'
   };
 
+  var context_options = {
+    alpha: options.alpha
+  };
+
   if ( mode === '2d' ) {
-    renderer.context = renderer.canvas.getContext( '2d', { alpha: options.alpha } );
+    renderer.context = renderer.canvas.getContext( '2d', context_options );
     renderer.smooth( renderer.settings.smooth );
   } else if ( mode === 'webgl' ) {
     switch ( support.webgl ) {
-      case 1: renderer.context = renderer.canvas.getContext( 'webgl', { alpha: options.alpha } ); break;
-      case 2: renderer.context = renderer.canvas.getContext( 'webgl-experemental', { alpha: options.alpha } );
+      case 1: renderer.context = renderer.canvas.getContext( 'webgl', context_options ); break;
+      case 2: renderer.context = renderer.canvas.getContext( 'webgl-experemental', context_options );
     }
   }
 
-  if ( options.append === undefined || options.append ) {
+  if ( options.append ) {
     renderer.add();
   }
 
@@ -2610,7 +2658,7 @@ v6.image = image;
 v6.loader = loader;
 v6.colors = colors;
 v6.buffer = buffer;
-v6.matrix = matrix;
+v6.mat3 = mat3;
 v6.shader = shader;
 v6.program = program;
 v6.map = map;

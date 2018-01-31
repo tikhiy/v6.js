@@ -154,6 +154,10 @@ var lerp_color = function ( a, b, value ) {
   return ( typeof a != 'object' ? parse_color( a ) : a ).lerp( b, value );
 };
 
+var shade = function ( hsl, percent ) {
+  return hsl[ 2 ] = _.clamp( floor( hsl[ 2 ] + percent ), 0, 100 ), hsl;
+};
+
 /**
  * Clone renderer `style` to `object`.
  */
@@ -2372,7 +2376,7 @@ RendererWebGL.prototype.clear = function ( /* x, y, w, h */ ) {
   return this._clear_color( 0, 0, 0, 0 );
 };
 
-RendererWebGL.prototype.draw = function ( data, length ) {
+RendererWebGL.prototype.drawVertices = function ( data, length ) {
   if ( length > 0 ) {
     var gl = this.context,
         program = this.program;
@@ -2421,7 +2425,7 @@ RendererWebGL.prototype.rect = function ( x, y, w, h ) {
     .scale( w, h );
 
   this.rectangleBuffer.bind();
-  this.draw( null, 4 );
+  this.drawVertices( null, 4 );
   this.matrix.restore();
   return this;
 };
@@ -2493,7 +2497,7 @@ RendererWebGL.prototype._polygon = function ( x, y, rx, ry, resolution, angle, d
     .rotate( angle )
     .scale( rx, ry );
 
-  this.draw( polygon, polygon.length >> 1 );
+  this.drawVertices( polygon, polygon.length >> 1 );
   this.matrix.restore();
   return this;
 };
@@ -2552,7 +2556,7 @@ RendererWebGL.prototype.beginShape = Renderer2D.prototype.beginShape;
 RendererWebGL.prototype.vertex = Renderer2D.prototype.vertex;
 
 RendererWebGL.prototype.endShape = function () {
-  return this.draw( new Float32Array( this.vertices ), this.vertices.length * 0.5 );
+  return this.drawVertices( new Float32Array( this.vertices ), this.vertices.length * 0.5 );
 };
 
 RendererWebGL.prototype.rectAlign = Renderer2D.prototype.rectAlign;

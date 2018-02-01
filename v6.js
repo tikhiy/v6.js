@@ -238,7 +238,8 @@ var filters = {
         g, b;
 
     for ( ; r >= 0; r -= 4 ) {
-      data[ r ] = data[ g = r + 1 ] = data[ b = r + 2 ] = ( data[ r ] * 299 + data[ g ] * 587 + data[ b ] * 114 ) / 1000;
+      data[ r ] = data[ g = r + 1 ] = data[ b = r + 2 ] =
+        data[ r ] * 0.299 + data[ g ] * 0.587 + data[ b ] * 0.114;
     }
 
     return data;
@@ -1387,7 +1388,13 @@ Renderer2D.prototype.pixelDensity = function ( value ) {
 };
 
 Renderer2D.prototype.push = function () {
-  return this.saves.push( clone_style( this.style, { fillStyle: {}, font: {}, strokeStyle: {} } ) ), this;
+  this.saves.push( clone_style( this.style, {
+    fillStyle: {},
+    font: {},
+    strokeStyle: {}
+  } ) );
+
+  return this;
 };
 
 Renderer2D.prototype.pop = function () {
@@ -1802,6 +1809,22 @@ Renderer2D.prototype._stroke = function () {
   return this;
 };
 
+Renderer2D.prototype.camera = function () {
+  return new Camera( {
+    offset: new Vector2D( this.width * 0.5, this.height * 0.5 )
+  } );
+};
+
+Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
+  return this.setTransform(
+    camera.scale[ 0 ],
+    0,
+    0,
+    camera.scale[ 1 ],
+    camera.location[ 0 ] * camera.scale[ 0 ],
+    camera.location[ 1 ] * camera.scale[ 1 ] );
+};
+
 scotch.forInRight( {
   fontVariant: 'variant', fontStyle: 'style',
   fontWeight:  'weight',  fontSize:  'size',
@@ -2141,27 +2164,6 @@ var mat3 = {
   setIdentity: function ( m1 ) {
     m1[ 0 ] = m1[ 4 ] = m1[ 8 ] = 1;
     m1[ 1 ] = m1[ 2 ] = m1[ 3 ] = m1[ 5 ] = m1[ 6 ] = m1[ 7 ] = 0;
-    return m1;
-  },
-
-  // from webgl-2d
-  mult: function ( m1, m2 ) {
-    var m10 = m1[ 0 ], m11 = m1[ 1 ], m12 = m1[ 2 ],
-        m13 = m1[ 3 ], m14 = m1[ 4 ], m15 = m1[ 5 ],
-        m16 = m1[ 6 ], m17 = m1[ 7 ], m18 = m1[ 8 ],
-        m20 = m2[ 0 ], m21 = m2[ 1 ], m22 = m2[ 2 ],
-        m23 = m2[ 3 ], m24 = m2[ 4 ], m25 = m2[ 5 ],
-        m26 = m2[ 6 ], m27 = m2[ 7 ], m28 = m2[ 8 ];
-
-    m1[ 0 ] = m20 * m10 + m23 * m11 + m26 * m12;
-    m1[ 1 ] = m21 * m10 + m24 * m11 + m27 * m12;
-    m1[ 2 ] = m22 * m10 + m25 * m11 + m28 * m12;
-    m1[ 3 ] = m20 * m13 + m23 * m14 + m26 * m15;
-    m1[ 4 ] = m21 * m13 + m24 * m14 + m27 * m15;
-    m1[ 5 ] = m22 * m13 + m25 * m14 + m28 * m15;
-    m1[ 6 ] = m20 * m16 + m23 * m17 + m26 * m18;
-    m1[ 7 ] = m21 * m16 + m24 * m17 + m27 * m18;
-    m1[ 8 ] = m22 * m16 + m25 * m17 + m28 * m18;
     return m1;
   },
 
@@ -2599,13 +2601,21 @@ RendererWebGL.prototype.putImageData = function ( /* imageData, x, y, sx, sy, sw
   return this;
 };
 
-var create_renderer = function ( renderer, mode, options ) {
+var defaults = function ( options, defaults ) {
   if ( options === undefined ) {
-    options = scotch.clone( true, default_options.renderer );
+    options = scotch.clone( true, defaults );
   } else {
-    options = scotch.defaults( default_options.renderer, options );
+    options = scotch.defaults( defaults, options );
   }
 
+  return options;
+};
+
+RendererWebGL.prototype.camera = Renderer2D.prototype.camera;
+RendererWebGL.prototype.setTransformFromCamera = Renderer2D.prototype.setTransformFromCamera;
+
+var create_renderer = function ( renderer, mode, options ) {
+  options = defaults( options, default_options.renderer );
   renderer.settings = options.settings;
   renderer.mode = mode;
   renderer.index = ++renderer_index;
@@ -2665,6 +2675,11 @@ var create_renderer = function ( renderer, mode, options ) {
 /* CAMERA */
 
 var Camera = function ( options ) {
+  options = defaults( options, default_options.camera );
+
+  // float between 0 and 1
+  // 1 when camera should be "fixed"
+  // 0.1 camera will be smooth
   this.speed = options.speed;
 
   this.scale = [
@@ -2674,32 +2689,33 @@ var Camera = function ( options ) {
   ];
 
   this.offset = new v6.Vector2D();
-  this.location = new v6.Vector2D();
-  this.location_of_the_object_to_be_viewed = new v6.Vector2D();
+
+  this.location = [
+    0, 0, // current location
+    0, 0  // location of the object to be viewed
+  ];
 };
 
 Camera.prototype = {
-  update: function ( dt ) {
+  // how to use delta time here?
+  update: function ( /* dt */ ) {
     var loc = this.location,
-        obj = this.location_of_the_object_to_be_viewed,
         spd = this.speed;
 
-    if ( loc[ 0 ] !== obj[ 0 ] ) {
-      loc[ 0 ] += ( obj[ 0 ] - loc[ 0 ] ) * spd;
+    if ( loc[ 0 ] !== loc[ 2 ] ) {
+      loc[ 0 ] += ( loc[ 2 ] - loc[ 0 ] ) * spd;
     }
 
-    if ( loc[ 1 ] !== obj[ 1 ] ) {
-      loc[ 1 ] += ( obj[ 1 ] - loc[ 1 ] ) * spd;
+    if ( loc[ 1 ] !== loc[ 3 ] ) {
+      loc[ 1 ] += ( loc[ 3 ] - loc[ 1 ] ) * spd;
     }
 
     return this;
   },
 
-  look_at: function ( at ) {
-    this.location_of_the_object_to_be_viewed.set(
-      -at[ 0 ] + this.offset[ 0 ] / this.scale[ 0 ],
-      -at[ 1 ] + this.offset[ 1 ] / this.scale[ 1 ] );
-    
+  lookAt: function ( at ) {
+    this.location[ 2 ] = -at[ 0 ] + this.offset[ 0 ] / this.scale[ 0 ];
+    this.location[ 3 ] = -at[ 1 ] + this.offset[ 1 ] / this.scale[ 1 ];
     return this;
   },
 
@@ -2707,6 +2723,7 @@ Camera.prototype = {
 };
 
 v6.Ticker = Ticker;
+v6.Camera = Camera;
 v6.Vector2D = Vector2D;
 v6.Vector3D = Vector3D;
 v6.RGBA = RGBA;

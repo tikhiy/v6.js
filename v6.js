@@ -155,7 +155,7 @@ var lerp_color = function ( a, b, value ) {
 };
 
 var shade = function ( hsl, percent ) {
-  return hsl[ 2 ] = _.clamp( floor( hsl[ 2 ] + percent ), 0, 100 ), hsl;
+  return hsl[ 2 ] = scotch.clamp( floor( hsl[ 2 ] + percent ), 0, 100 ), hsl;
 };
 
 /**
@@ -804,6 +804,11 @@ var compact_match = function ( match ) {
     [ match[ 4 ], match[ 5 ], match[ 6 ], match[ 7 ] ] :
     [ match[ 1 ], match[ 2 ], match[ 3 ] ];
 };
+
+// I want to make that the methods
+// of RGBA and HSLA prototypes change
+// the objects on which they are called.
+// For example, shade, lerp, darken, lighten...
 
 var rgba = function ( r, g, b, a ) {
   return new RGBA( r, g, b, a );
@@ -2574,6 +2579,19 @@ RendererWebGL.prototype.point = function ( x, y ) {
     .fill( this.style.strokeStyle )
     .arc( x, y, this.style.lineWidth >> 1 )
     .pop();
+};
+
+RendererWebGL.prototype.getImageData = function ( x, y, w, h ) {
+  var gl = this.context,
+      pixels = new Uint8ClampedArray( w * h * 4 );
+
+  gl.readPixels( x, y, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
+  return new ImageData( pixels, w, h );
+};
+
+// As I understand it, I need textures.
+RendererWebGL.prototype.putImageData = function ( imageData, x, y, sx, sy, sw, sh ) {
+  return this;
 };
 
 var create_renderer = function ( renderer, mode, options ) {

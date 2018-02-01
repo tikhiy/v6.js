@@ -80,7 +80,7 @@ var support = {
 };
 
 var v6 = function ( options ) {
-  if ( ( options && options.mode || default_options.mode ) === 'webgl' ) {
+  if ( ( options && options.mode || default_options.renderer.mode ) === 'webgl' ) {
     if ( support.webgl ) {
       return new RendererWebGL( options );
     }
@@ -96,39 +96,44 @@ var settings = {
 };
 
 var default_options = {
-  settings: {
-    /** Pixel density of context. */
-    scale: 1,
+  renderer: {
+    settings: {
+      /** Pixel density of context. */
+      scale: 1,
+
+      /**
+       * MDN: Can be set to change if images are smoothed
+       * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
+       */
+      smooth: false,
+
+      colorMode: 'rgba'
+    },
+
+    /** One of: "2d", "webgl". */
+    mode: '2d',
 
     /**
-     * Only for "2d" renderer.
-     * MDN: Can be set to change if images are smoothed
-     * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
+     * MDN: Boolean that indicates if
+     * the canvas contains an alpha channel.
+     * If set to false, the browser now knows
+     * that the backdrop is always opaque,
+     * which can speed up drawing of transparent
+     * content and images.
+     * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      */
-    smooth: false,
+    alpha: true,
 
-    colorMode: 'rgba'
+    /**
+     * If true, the renderer will
+     * be added to the DOM.
+     */
+    append: true
   },
 
-  /** One of: "2d", "webgl". */
-  mode: '2d',
-
-  /**
-   * MDN: Boolean that indicates if
-   * the canvas contains an alpha channel.
-   * If set to false, the browser now knows
-   * that the backdrop is always opaque,
-   * which can speed up drawing of transparent
-   * content and images.
-   * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
-   */
-  alpha: true,
-
-  /**
-   * If true, the renderer will
-   * be added to the DOM.
-   */
-  append: true
+  camera: {
+    speed: 1
+  }
 };
 
 /**
@@ -1825,7 +1830,7 @@ scotch.forInRight( { fill: 'fillStyle', stroke: 'strokeStyle' }, function ( name
   this[ method_name ] = function ( a, b, c, d ) {
     if ( a === undefined ) {
       this[ _method_name ]();
-    } else if ( a !== true && a !== false ) {
+    } else if ( typeof a != 'boolean' ) {
       this.style[ do_style ] = true;
 
       if ( typeof a != 'string' && this.style[ name ].type === this.settings.colorMode ) {
@@ -2486,7 +2491,7 @@ var create_polygon = function ( n ) {
 };
 
 RendererWebGL.prototype._polygon = function ( x, y, rx, ry, resolution, angle, degrees ) {
-  if ( angle && degrees ) {
+  if ( degrees && angle ) {
     angle *= pi / 180;
   }
 
@@ -2590,15 +2595,15 @@ RendererWebGL.prototype.getImageData = function ( x, y, w, h ) {
 };
 
 // As I understand it, I need textures.
-RendererWebGL.prototype.putImageData = function ( imageData, x, y, sx, sy, sw, sh ) {
+RendererWebGL.prototype.putImageData = function ( /* imageData, x, y, sx, sy, sw, sh */ ) {
   return this;
 };
 
 var create_renderer = function ( renderer, mode, options ) {
   if ( options === undefined ) {
-    options = scotch.clone( true, default_options );
+    options = scotch.clone( true, default_options.renderer );
   } else {
-    options = scotch.defaults( default_options, options );
+    options = scotch.defaults( default_options.renderer, options );
   }
 
   renderer.settings = options.settings;
@@ -2606,7 +2611,10 @@ var create_renderer = function ( renderer, mode, options ) {
   renderer.index = ++renderer_index;
   renderer.saves = [];
   renderer.vertices = [];
-  renderer.state = { beginPath: false };
+
+  renderer.state = {
+    beginPath: false
+  };
 
   if ( !options.canvas ) {
     renderer.canvas = document.createElement( 'canvas' );
@@ -2652,6 +2660,50 @@ var create_renderer = function ( renderer, mode, options ) {
   } else {
     renderer.fullwindow();
   }
+};
+
+/* CAMERA */
+
+var Camera = function ( options ) {
+  this.speed = options.speed;
+
+  this.scale = [
+    1, 1, // scale
+    1, 1, // min scale
+    1, 1  // max scale
+  ];
+
+  this.offset = new v6.Vector2D();
+  this.location = new v6.Vector2D();
+  this.location_of_the_object_to_be_viewed = new v6.Vector2D();
+};
+
+Camera.prototype = {
+  update: function ( dt ) {
+    var loc = this.location,
+        obj = this.location_of_the_object_to_be_viewed,
+        spd = this.speed;
+
+    if ( loc[ 0 ] !== obj[ 0 ] ) {
+      loc[ 0 ] += ( obj[ 0 ] - loc[ 0 ] ) * spd;
+    }
+
+    if ( loc[ 1 ] !== obj[ 1 ] ) {
+      loc[ 1 ] += ( obj[ 1 ] - loc[ 1 ] ) * spd;
+    }
+
+    return this;
+  },
+
+  look_at: function ( at ) {
+    this.location_of_the_object_to_be_viewed.set(
+      -at[ 0 ] + this.offset[ 0 ] / this.scale[ 0 ],
+      -at[ 1 ] + this.offset[ 1 ] / this.scale[ 1 ] );
+    
+    return this;
+  },
+
+  constructor: Camera
 };
 
 v6.Ticker = Ticker;

@@ -140,8 +140,16 @@ var default_options = {
  * v6.map( 20, 0, 100, 0, 1 ); // -> 0.2
  * v6.map( -0.1, -1, 1, 0, 10 ) // -> 4.5
  */
-var map = function ( value, start1, stop1, start2, stop2 ) {
-  return ( ( value - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
+var map = function ( value, start1, stop1, start2, stop2, clamp ) {
+  value = ( ( value - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
+
+  if ( clamp ) {
+    return start2 < stop2 ?
+      scotch.clamp( value, start2, stop2 ) :
+      scotch.clamp( value, stop2, start2 );
+  }
+
+  return value;
 };
 
 /**
@@ -1809,10 +1817,12 @@ Renderer2D.prototype._stroke = function () {
   return this;
 };
 
-Renderer2D.prototype.camera = function () {
-  return new Camera( {
+Renderer2D.prototype.camera = function ( options ) {
+  options = scotch.assign( {
     offset: new Vector2D( this.width * 0.5, this.height * 0.5 )
-  } );
+  }, options );
+
+  return new Camera( options );
 };
 
 Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
@@ -1820,9 +1830,9 @@ Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
     camera.scale[ 0 ],
     0,
     0,
-    camera.scale[ 1 ],
+    camera.scale[ 0 ],
     camera.location[ 0 ] * camera.scale[ 0 ],
-    camera.location[ 1 ] * camera.scale[ 1 ] );
+    camera.location[ 1 ] * camera.scale[ 0 ] );
 };
 
 scotch.forInRight( {
@@ -1834,7 +1844,7 @@ scotch.forInRight( {
 }, Renderer2D.prototype );
 
 scotch.forEachRight( [
-  'scale',  'translate', 'moveTo', 'lineTo', 'setTransform'
+  'scale',  'translate', 'moveTo', 'lineTo', 'setTransform', 'transform'
 ], function ( name ) {
   this[ name ] = Function( 'a, b, c, d, e, f', 'return this.context.' + name + '( a, b, c, d, e, f ), this;' );
 }, Renderer2D.prototype );
@@ -2148,6 +2158,19 @@ Transform.prototype.rotate = function ( angle ) {
 
 Transform.prototype.scale = function ( x, y ) {
   return mat3.scale( this.matrix, x, y ), this;
+};
+
+Transform.prototype.transform = function ( m11, m12, m21, m22, dx, dy ) {
+  var matrix = this.matrix;
+  matrix[ 0 ] *= m11;
+  matrix[ 1 ] *= m21;
+  matrix[ 2 ] *= dx;
+  matrix[ 3 ] *= m12;
+  matrix[ 4 ] *= m22;
+  matrix[ 5 ] *= dy;
+  matrix[ 6 ] = 0;
+  matrix[ 7 ] = 0;
+  return this;
 };
 
 /* MATRIX3 */
@@ -2562,6 +2585,10 @@ RendererWebGL.prototype.setTransform = function ( a, b, c, d, e, f ) {
   return this.matrix.set( a, b, c, d, e, f ), this;
 };
 
+RendererWebGL.prototype.transform = function ( a, b, c, d, e, f ) {
+  return this.matrix.transform( a, b, c, d, e, f ), this;
+};
+
 RendererWebGL.prototype.noFill = Renderer2D.prototype.noFill;
 RendererWebGL.prototype.noStroke = Renderer2D.prototype.noStroke;
 RendererWebGL.prototype.beginShape = Renderer2D.prototype.beginShape;
@@ -2601,6 +2628,9 @@ RendererWebGL.prototype.putImageData = function ( /* imageData, x, y, sx, sy, sw
   return this;
 };
 
+RendererWebGL.prototype.camera = Renderer2D.prototype.camera;
+RendererWebGL.prototype.setTransformFromCamera = Renderer2D.prototype.setTransformFromCamera;
+
 var defaults = function ( options, defaults ) {
   if ( options === undefined ) {
     options = scotch.clone( true, defaults );
@@ -2610,9 +2640,6 @@ var defaults = function ( options, defaults ) {
 
   return options;
 };
-
-RendererWebGL.prototype.camera = Renderer2D.prototype.camera;
-RendererWebGL.prototype.setTransformFromCamera = Renderer2D.prototype.setTransformFromCamera;
 
 var create_renderer = function ( renderer, mode, options ) {
   options = defaults( options, default_options.renderer );
@@ -2682,13 +2709,13 @@ var Camera = function ( options ) {
   // 0.1 camera will be smooth
   this.speed = options.speed;
 
-  this.scale = [
-    1, 1, // scale
-    1, 1, // min scale
-    1, 1  // max scale
+  this.scale = options.scale || [
+    1, // scale
+    1, // min scale
+    1  // max scale
   ];
 
-  this.offset = new v6.Vector2D();
+  this.offset = options.offset || new v6.Vector2D();
 
   this.location = [
     0, 0, // current location
@@ -2715,7 +2742,7 @@ Camera.prototype = {
 
   lookAt: function ( at ) {
     this.location[ 2 ] = -at[ 0 ] + this.offset[ 0 ] / this.scale[ 0 ];
-    this.location[ 3 ] = -at[ 1 ] + this.offset[ 1 ] / this.scale[ 1 ];
+    this.location[ 3 ] = -at[ 1 ] + this.offset[ 1 ] / this.scale[ 0 ];
     return this;
   },
 

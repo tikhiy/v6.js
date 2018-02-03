@@ -1751,9 +1751,34 @@ Renderer2D.prototype.polygon = function ( x, y, r, n, begin ) {
     }
 
     if ( style.doStroke ) {
-      context.closePath();
-      this._stroke();
+      this._stroke( true );
     }
+  }
+
+  return this;
+};
+
+Renderer2D.prototype.drawVertices = function ( data, length ) {
+  var context, i;
+
+  if ( length <= 2 ) {
+    return this;
+  }
+
+  context = this.context;
+  context.beginPath();
+  context.moveTo( data[ 0 ], data[ 1 ] );
+
+  for ( i = 2; i < length * 2; i += 2 ) {
+    context.lineTo( data[ i ], data[ i + 1 ] );
+  }
+
+  if ( this.style.doFill ) {
+    this._fill();
+  }
+
+  if ( this.style.doStroke && this.style.lineWidth > 0 ) {
+    this._stroke( true );
   }
 
   return this;
@@ -1806,10 +1831,14 @@ Renderer2D.prototype._fill = function () {
   return this;
 };
 
-Renderer2D.prototype._stroke = function () {
+Renderer2D.prototype._stroke = function ( closePath ) {
+  if ( closePath ) {
+    this.context.closePath();
+  }
+
   this.context.strokeStyle = this.style.strokeStyle;
 
-  if ( ( this.context.lineWidth = this.style.lineWidth ) < 1.5 ) {
+  if ( ( this.context.lineWidth = this.style.lineWidth ) <= 1 ) {
     this.context.stroke();
   }
 
@@ -2412,7 +2441,7 @@ RendererWebGL.prototype.clear = function ( /* x, y, w, h */ ) {
 };
 
 RendererWebGL.prototype.drawVertices = function ( data, length ) {
-  if ( length > 0 ) {
+  if ( length > 2 ) {
     var gl = this.context,
         program = this.program;
 

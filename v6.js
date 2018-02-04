@@ -28,9 +28,10 @@
  * SOFTWARE.
  */
 
-// jshint esversion: 5
-// jshint unused: true
-// jshint undef: true
+/* jshint esversion: 5 */
+/* jshint unused: true */
+/* jshint undef: true */
+/* global Float32Array, Uint8ClampedArray, ImageData */
 ;( function ( window, undefined ) {
 
 'use strict';
@@ -50,6 +51,29 @@ var document = window.document,
     max = Math.max,
     pi = Math.PI,
     renderer_index = -1;
+
+/**
+ * Copies elements from the `b` array to `a`.
+ * This is useful when `a` is TypedArray,
+ * because it's faster:
+ * https://jsperf.com/set-values-to-float32array-instance
+ * (no matter what jsperf says
+ * "something went wrong", believe me
+ * (although I don't believe myself already))
+ *
+ * var a = [],
+ *     b = [ 1, 2, 3 ];
+ *
+ * copy_array( a, b, b.length );
+ * // now `a` have the same elements with `b`.
+ */
+var copy_array = function ( a, b, length ) {
+  while ( --length >= 0 ) {
+    a[ length ] = b[ length ];
+  }
+
+  return a;
+};
 
 /**
  * Checks if `canvas` has `type`
@@ -118,20 +142,22 @@ var default_options = {
      * the canvas contains an alpha channel.
      * If set to false, the browser now knows
      * that the backdrop is always opaque,
-     * which can speed up drawing of transparent
-     * content and images.
+     * which can speed up drawing of
+     * transparent content and images.
      * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      */
     alpha: true,
 
-    /**
-     * If true, the renderer will
-     * be added to the DOM.
-     */
+    /** Will be renderer added to the DOM? */
     append: true
   },
 
   camera: {
+    /**
+     * Number between 0 and 1:
+     * When 1 camera will be "fixed" on lookAt location.
+     * When 0.01 camera will be smoothly.
+     */
     speed: 1
   }
 };
@@ -318,17 +344,22 @@ Ticker.prototype.tick = function ( fps, requested ) {
   }
 
   var now = scotch.timestamp(),
-      dt = min( 1, ( now - this.lasttime ) * 0.001 );
+      dt = min( 1, ( now - this.lasttime ) * 0.001 ),
+      step = this.step;
 
   this.skipped += dt;
   this.total += dt;
+  // render = this.skipped > step;
 
-  while ( this.skipped > this.step && !this.stopped ) {
-    this.skipped -= this.step;
-    this.update.call( this, this.step );
+  while ( this.skipped > step && !this.stopped ) {
+    this.skipped -= step;
+    this.update.call( this, step );
   }
 
-  this.render.call( this, dt );
+  // if ( render ) {
+    this.render.call( this, dt );
+  // }
+
   this.lasttime = now;
   this.lastid = scotch.requestframe( this.boundtick );
   return this;
@@ -757,11 +788,27 @@ var rhsl = /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*
     transparent = [ 0, 0, 0, 0 ];
 
 var color = function ( a, b, c, d ) {
-  return typeof a != 'string' ?
-    new RGBA( a, b, c, d ) :
-    parse_color( a );
+  if ( typeof a != 'string' ) {
+    return new RGBA( a, b, c, d );
+  }
+
+  return parse_color( a );
 };
 
+/**
+ * parse_color( '#f0f0' );
+ * // -> rgba(255, 0, 255, 0)
+ * parse_color( '#000000ff' );
+ * // -> rgba(0, 0, 0, 1)
+ * parse_color( 'magenta' );
+ * // -> rgba(255, 0, 255, 1)
+ * parse_color( 'transparent' );
+ * // -> rgba(0, 0, 0, 0)
+ * parse_color( 'hsl( 0, 100%, 50% )' );
+ * // -> hsla(0, 100%, 50%, 1)
+ * parse_color( 'hsla( 0, 100%, 50%, 0.5 )' );
+ * // -> hsla(0, 100%, 50%, 0.5)
+ */
 var parse_color = function ( string ) {
   var cache = parsed[ string ] ||
     parsed[ string = scotch.trim( string ).toLowerCase() ];
@@ -785,6 +832,15 @@ var parse_color = function ( string ) {
   return new cache.constructor( cache[ 0 ], cache[ 1 ], cache[ 2 ], cache[ 3 ] );
 };
 
+/**
+ * format_hex( [ '#000000ff', '000000', 'ff' ] );
+ * // -> '000000ff'
+ * format_hex( [ '#0007', '0', '0', '0', '7' ], true );
+ * // -> '00000077'
+ * format_hex( [ '#000', '0', '0', '0', null ], true );
+ * // -> '000000ff'
+ * Theoretically, because I didn't test these examples.
+ */
 var format_hex = function ( match, short_syntax ) {
   if ( !short_syntax ) {
     return match[ 1 ] + ( match[ 2 ] || 'ff' );
@@ -798,6 +854,12 @@ var format_hex = function ( match, short_syntax ) {
   return r + r + g + g + b + b + a + a;
 };
 
+/**
+ * parse_hex( '00000000' );
+ * // -> [ 0, 0, 0, 0 ]
+ * parse_hex( 'ff00ffff' );
+ * // -> [ 255, 0, 255, 1 ]
+ */
 var parse_hex = function ( hex ) {
   if ( hex == 0 ) {
     return transparent;
@@ -813,6 +875,12 @@ var parse_hex = function ( hex ) {
   ];
 };
 
+/**
+ * compact_match( [ 'hsl( 0, 0%, 0% )', '0', '0', '0', null, null, null, null ] );
+ * // -> [ '0', '0', '0' ]
+ * compact_match( [ 'rgba( 0, 0, 0, 0 )', null, null, null, '0', '0', '0', '0' ] );
+ * // -> [ '0', '0', '0', '0' ]
+ */
 var compact_match = function ( match ) {
   return match[ 7 ] ?
     [ match[ 4 ], match[ 5 ], match[ 6 ], match[ 7 ] ] :
@@ -848,6 +916,22 @@ RGBA.prototype.toString = function () {
     this[ 3 ] + ')';
 };
 
+/**
+ * .set( 'magenta' );
+ * // r = 255, g = 0, b = 255, a = 1
+ * .set( '#ff00ff' );
+ * // r = 255, g = 0, b = 255, a = 1
+ * .set( 'rgb( 0, 0, 0 )' );
+ * // r = 0, g = 0, b = 0, a = 1
+ * .set( 0 );
+ * // ( r, g, b ) = 0, a = 1
+ * .set( 0, 0 );
+ * // ( r, g, b ) = 0, a = 0
+ * .set( 0, 0, 0 );
+ * // r = 0, g = 0, b = 0, a = 1
+ * .set( 0, 0, 0, 0 );
+ * // r = 0, g = 0, b = 0, a = 0
+ */
 RGBA.prototype.set = function ( r, g, b, a ) {
   if ( r == null || typeof r != 'object' && typeof r != 'string' ) {
     switch ( undefined ) {
@@ -880,6 +964,10 @@ RGBA.prototype.set = function ( r, g, b, a ) {
   return this;
 };
 
+/**
+ * v6.rgba( 255, 0, 0 ).hsla();
+ * // -> hsla(0, 100%, 50%, 1)
+ */
 RGBA.prototype.hsla = function () {
   var hsla = new HSLA(),
       r = this[ 0 ] / 255,
@@ -916,10 +1004,15 @@ RGBA.prototype.hsla = function () {
   return hsla;
 };
 
+// Uses in <RendererWebGL>.
 RGBA.prototype.rgba = function () {
   return this;
 };
 
+/**
+ * v6.rgba( 100 ).lerp( 'black', 0.5 );
+ * // rgba(50, 50, 50, 1)
+ */
 RGBA.prototype.lerp = function ( color, value ) {
   if ( typeof color != 'object' ) {
     color = parse_color( color );
@@ -1167,6 +1260,23 @@ var image = function ( path, x, y, w, h ) {
   return new Image( path, x, y, w, h );
 };
 
+/**
+ * new v6.Image( <Image> );
+ * new v6.Image( <v6.Image> );
+ * new v6.Image( path to image );
+ * // With the cropping:
+ * new v6.Image( ..., crop x, crop y, crop w, crop h );
+ * +------+
+ * | 1--2 |
+ * | |  | |
+ * | 3--4 |
+ * +------+
+ * Where:
+ * 1 = crop x
+ * 2 = crop y
+ * 3 = crop x + crop w
+ * 4 = crop y + crop h
+ */
 var Image = function ( path, x, y, w, h ) {
   if ( path !== undefined ) {
     if ( path instanceof window.Image ) {
@@ -1239,6 +1349,12 @@ var Loader = function () {
 Loader.prototype = scotch.create( null );
 Loader.prototype.constructor = Loader;
 
+/**
+ * .add( 'id', 'path.json' );
+ * .add( 'path.json' );
+ * .add( { id: 'path.json' } );
+ * .add( [ 'path.json' ] );
+ */
 Loader.prototype.add = function ( name, path ) {
   if ( typeof name == 'object' ) {
     if ( scotch.isArray( name ) ) {
@@ -1302,6 +1418,18 @@ var get_promise = function ( path, name ) {
 var load_err = function ( data ) {
   err( data[ 0 ] );
 };
+
+// var files = {
+//    data: 'data.json'
+// };
+//
+// var onload = function ( files ) {
+//   console.log( 'Loaded: ', JSON.parse( files.data ) );
+// };
+//
+// v6.loader()
+//   .add( files )
+//   .load( onload );
 
 Loader.prototype.load = function ( setup, error ) {
   var list = this.list,
@@ -1376,6 +1504,20 @@ var shapes = {
 
 /* RENDERER2D */
 
+// var SCALE = window.devicePixelRatio || 1;
+//
+// var options = {
+//   settings: {
+//     scale: SCALE // default 1
+//   }, // default default_options.renderer
+//
+//   alpha : false, // default true
+//   width : 100,   // default window width
+//   height: 100    // default window height
+// };
+//
+// var renderer = new v6.Renderer2D( options );
+
 var Renderer2D = function ( options ) {
   create_renderer( this, '2d', options );
 };
@@ -1383,18 +1525,25 @@ var Renderer2D = function ( options ) {
 Renderer2D.prototype = scotch.create( null );
 Renderer2D.prototype.constructor = Renderer2D;
 
+/**
+ * Adds <v6.Renderer2D>.canvas to the body element.
+ */
 Renderer2D.prototype.add = function () {
   return document.body.appendChild( this.canvas ), this;
 };
 
+/**
+ * Removes all event listeners bound to
+ * <v6.Renderer2D>.canvas (via peako.js)
+ * and remove it from the html.
+ */
 Renderer2D.prototype.destroy = function () {
   return scotch( this.canvas ).off().remove(), this;
 };
 
-Renderer2D.prototype.pixelDensity = function ( value ) {
-  return this.settings.scale = value, this;
-};
-
+/**
+ * Pushes the current style into the stack of saved styles.
+ */
 Renderer2D.prototype.push = function () {
   this.saves.push( clone_style( this.style, {
     fillStyle: {},
@@ -1523,6 +1672,13 @@ Renderer2D.prototype.line = function ( x1, y1, x2, y2 ) {
   return this;
 };
 
+/**
+ * width and height can be:
+ * 'initial' (same as image.width or height)
+ * 'auto' (will be calculated proportionally width or height)
+ * .image( v6.image( '50x100.jpg' ), 0, 0, 'auto', 200 );
+ * // Draw an image stretched to 100x200.
+ */
 Renderer2D.prototype.image = function ( image, x, y, width, height ) {
   if ( image == null ) {
     throw TypeError( image + ' is not an object' );
@@ -1726,33 +1882,36 @@ Renderer2D.prototype.colorMode = function ( mode ) {
   return this.settings.colorMode = mode, this;
 };
 
-Renderer2D.prototype.polygon = function ( x, y, r, n, begin ) {
-  if ( begin === undefined ) {
-    begin = -pi * 0.5;
-  } else if ( settings.degrees ) {
-    begin *= pi / 180;
-  }
+var get_polygon = function ( n ) {
+  return polygons[ n ] ||
+    ( polygons[ n ] = create_polygon( n ) );
+};
 
-  var step = pi * 2 / n,
-      end = begin + pi * 2,
-      style = this.style,
+Renderer2D.prototype._polygon = function ( x, y, rx, ry, n, a, degrees ) {
+  var polygon = get_polygon( n ),
       context = this.context;
 
-  context.beginPath();
-  context.moveTo( r * cos( begin ) + x, r * sin( begin ) + y );
+  context.save();
+  context.translate( x, y );
+  context.rotate( degrees ? a * pi / 180 : a );
+  context.scale( rx, ry );
+  this.drawVertices( polygon, polygon.length >> 1 );
+  context.restore();
+  return this;
+};
 
-  for ( begin += step; begin <= end; begin += step ) {
-    context.lineTo( r * cos( begin ) + x, r * sin( begin ) + y );
+Renderer2D.prototype.polygon = function ( x, y, r, n, a ) {
+  // Reduce the precision (of what?)
+  // for better caching functionality.
+  // When `n` is `3.141592`, `n` will be `3.14`.
+  if ( n % 1 ) {
+    n = floor( n * 100 ) * 0.01;
   }
 
-  if ( !this.state.beginPath ) {
-    if ( style.doFill ) {
-      this._fill();
-    }
-
-    if ( style.doStroke ) {
-      this._stroke( true );
-    }
+  if ( a === undefined ) {
+    this._polygon( x, y, r, r, n, -pi * 0.5 );
+  } else {
+    this._polygon( x, y, r, r, n, a, settings.degrees );
   }
 
   return this;
@@ -1769,7 +1928,7 @@ Renderer2D.prototype.drawVertices = function ( data, length ) {
   context.beginPath();
   context.moveTo( data[ 0 ], data[ 1 ] );
 
-  for ( i = 2; i < length * 2; i += 2 ) {
+  for ( i = 2, length *= 2; i < length; i += 2 ) {
     context.lineTo( data[ i ], data[ i + 1 ] );
   }
 
@@ -1831,18 +1990,21 @@ Renderer2D.prototype._fill = function () {
   return this;
 };
 
-Renderer2D.prototype._stroke = function ( closePath ) {
-  if ( closePath ) {
-    this.context.closePath();
+Renderer2D.prototype._stroke = function ( close ) {
+  var ctx = this.context,
+      style = this.style;
+
+  if ( close ) {
+    ctx.closePath();
   }
 
-  this.context.strokeStyle = this.style.strokeStyle;
+  ctx.strokeStyle = style.strokeStyle;
 
-  if ( ( this.context.lineWidth = this.style.lineWidth ) <= 1 ) {
-    this.context.stroke();
+  if ( ( ctx.lineWidth = style.lineWidth ) <= 1 ) {
+    ctx.stroke();
   }
 
-  this.context.stroke();
+  ctx.stroke();
   return this;
 };
 
@@ -2344,7 +2506,6 @@ RendererWebGL.prototype = scotch.create( null );
 RendererWebGL.prototype.constructor = RendererWebGL;
 RendererWebGL.prototype.add = Renderer2D.prototype.add;
 RendererWebGL.prototype.destroy = Renderer2D.prototype.destroy;
-RendererWebGL.prototype.pixelDensity = Renderer2D.prototype.pixelDensity;
 RendererWebGL.prototype.push = Renderer2D.prototype.push;
 RendererWebGL.prototype.pop = Renderer2D.prototype.pop;
 
@@ -2381,11 +2542,7 @@ RendererWebGL.prototype._clear_color = function ( r, g, b, a ) {
 };
 
 RendererWebGL.prototype.clearColor = function ( a, b, c, d ) {
-  var rgba = this.color( a, b, c, d );
-
-  if ( rgba.type !== 'rgba' ) {
-    rgba = rgba.rgba();
-  }
+  var rgba = fast_rgba( this.color( a, b, c, d ) );
 
   return this._clear_color(
     rgba[ 0 ] / 255,
@@ -2416,13 +2573,19 @@ RendererWebGL.prototype._background_color = function ( r, g, b, a ) {
   return this;
 };
 
-RendererWebGL.prototype.backgroundColor = function ( a, b, c, d ) {
-  var rgba = this.color( a, b, c, d ),
-      r, g;
-
-  if ( rgba.type !== 'rgba' ) {
-    rgba = rgba.rgba();
+var fast_rgba = function ( color ) {
+  if ( color.type === 'rgba' ) {
+    return color;
   }
+
+  return color.rgba();
+};
+
+RendererWebGL.prototype.backgroundColor = function ( a, b, c, d ) {
+  return this.clearColor( a, b, c, d );
+
+  /* var rgba = fast_rgba( this.color( a, b, c, d ) ),
+      r, g;
 
   r = rgba[ 0 ] / 255;
   g = rgba[ 1 ] / 255;
@@ -2431,7 +2594,7 @@ RendererWebGL.prototype.backgroundColor = function ( a, b, c, d ) {
 
   return this[ a < 1 ?
     '_background_color' :
-    '_clear_color' ]( r, g, b, a );
+    '_clear_color' ]( r, g, b, a ); */
 };
 
 RendererWebGL.prototype.background = Renderer2D.prototype.background;
@@ -2495,37 +2658,46 @@ RendererWebGL.prototype.rect = function ( x, y, w, h ) {
 };
 
 RendererWebGL.prototype.line = function ( x1, y1, x2, y2 ) {
-  if ( this.style.doStroke && this.style.lineWidth > 0 ) {
-    var gl = this.context,
-        buffer = this.buffer,
-        program = this.program,
-        vertices = new Float32Array( 4 );
-
-    vertices[ 0 ] = x1;
-    vertices[ 1 ] = y1;
-    vertices[ 2 ] = x2;
-    vertices[ 3 ] = y2;
-
-    buffer
-      .bind()
-      .data( vertices );
-
-    program
-      .use()
-      .uniform( 'u_color', this.style.strokeStyle.rgba() )
-      .uniform( 'u_resolution', [ this.width, this.height ] )
-      .uniform( 'u_transform', this.matrix.matrix )
-      .vertexPointer( program.attributes.a_position.location, 2, gl.FLOAT, false, 0, 0 );
-
-    gl.lineWidth( this.style.lineWidth );
-    gl.drawArrays( gl.LINE_LOOP, 0, 2 );
+  if ( !this.style.doStroke || this.style.lineWidth <= 0 ) {
+    return this;
   }
+
+  var gl = this.context,
+      buffer = this.buffer,
+      program = this.program,
+      vertices = new Float32Array( 4 );
+
+  vertices[ 0 ] = x1;
+  vertices[ 1 ] = y1;
+  vertices[ 2 ] = x2;
+  vertices[ 3 ] = y2;
+
+  buffer
+    .bind()
+    .data( vertices );
+
+  program
+    .use()
+    .uniform( 'u_color', this.style.strokeStyle.rgba() )
+    .uniform( 'u_resolution', [ this.width, this.height ] )
+    .uniform( 'u_transform', this.matrix.matrix )
+    .vertexPointer( program.attributes.a_position.location, 2, gl.FLOAT, false, 0, 0 );
+
+  gl.lineWidth( this.style.lineWidth );
+  gl.drawArrays( gl.LINE_LOOP, 0, 2 );
 
   return this;
 };
 
+/**
+ * Cached polygons vertices.
+ */
 var polygons = scotch.create( null );
 
+/**
+ * Creates polygon vertices with `n` resolution.
+ * Values will be between -1 and 1 (sin and cos uses).
+ */
 var create_polygon = function ( n ) {
   var step = 2 * pi / n,
       int_n = floor( n ),
@@ -2544,21 +2716,18 @@ var create_polygon = function ( n ) {
   return vertices;
 };
 
-RendererWebGL.prototype._polygon = function ( x, y, rx, ry, resolution, angle, degrees ) {
-  if ( degrees && angle ) {
-    angle *= pi / 180;
-  }
-
-  var polygon = polygons[ resolution ];
-
-  if ( !polygon ) {
-    polygon = polygons[ resolution ] = create_polygon( resolution );
-  }
+/**
+ * Draw polygon in `x` and `y` location with
+ * the width (2 * `rx`) and height (2 * `ry`),
+ * resolution `n`, and rotated by `a` angle.
+ */
+RendererWebGL.prototype._polygon = function ( x, y, rx, ry, n, a, degrees ) {
+  var polygon = get_polygon( n );
 
   this.matrix
     .save()
     .translate( x, y )
-    .rotate( angle )
+    .rotate( degrees ? a * pi / 180 : a )
     .scale( rx, ry );
 
   this.drawVertices( polygon, polygon.length >> 1 );
@@ -2574,20 +2743,7 @@ RendererWebGL.prototype.arc = function ( x, y, r ) {
   return this._polygon( x, y, r, r, 24, 0 );
 };
 
-RendererWebGL.prototype.polygon = function ( x, y, r, n, a ) {
-  if ( n % 1 ) {
-    n = floor( n * 100 ) * 0.01;
-  }
-
-  if ( a === undefined ) {
-    this._polygon( x, y, r, r, n, -pi * 0.5 );
-  } else {
-    this._polygon( x, y, r, r, n, a, settings.degrees );
-  }
-
-  return this;
-};
-
+RendererWebGL.prototype.polygon = Renderer2D.prototype.polygon;
 RendererWebGL.prototype.font = Renderer2D.prototype.font;
 
 RendererWebGL.prototype.save = function () {
@@ -2614,17 +2770,42 @@ RendererWebGL.prototype.setTransform = function ( a, b, c, d, e, f ) {
   return this.matrix.set( a, b, c, d, e, f ), this;
 };
 
+// not tested
 RendererWebGL.prototype.transform = function ( a, b, c, d, e, f ) {
   return this.matrix.transform( a, b, c, d, e, f ), this;
 };
 
 RendererWebGL.prototype.noFill = Renderer2D.prototype.noFill;
 RendererWebGL.prototype.noStroke = Renderer2D.prototype.noStroke;
-RendererWebGL.prototype.beginShape = Renderer2D.prototype.beginShape;
-RendererWebGL.prototype.vertex = Renderer2D.prototype.vertex;
 
+// not tested
+RendererWebGL.prototype.beginShape = function () {
+  this.vertices.length = 0;
+  this._vertices_is_updated = false;
+  return this;
+};
+
+// not tested
+RendererWebGL.prototype.vertex = function ( x, y ) {
+  this.vertices.push( x, y );
+
+  if ( this._vertices_is_updated ) {
+    this._vertices_is_updated = false;
+  }
+
+  return this;
+};
+
+// not tested
 RendererWebGL.prototype.endShape = function () {
-  return this.drawVertices( new Float32Array( this.vertices ), this.vertices.length * 0.5 );
+  if ( !this._vertices_is_updated ) {
+    this._vertices = copy_array(
+      new Float32Array( this.vertices.length ),
+      this.vertices,
+      this.vertices.length );
+  }
+
+  return this.drawVertices( this._vertices, this._vertices.length * 0.5 );
 };
 
 RendererWebGL.prototype.rectAlign = Renderer2D.prototype.rectAlign;

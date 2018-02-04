@@ -156,7 +156,7 @@ var default_options = {
     /**
      * Number between 0 and 1:
      * When 1 camera will be "fixed" on lookAt location.
-     * When 0.01 camera will be smoothly.
+     * When 0.01 camera will be smooth.
      */
     speed: 1
   }
@@ -1004,7 +1004,7 @@ RGBA.prototype.hsla = function () {
   return hsla;
 };
 
-// Uses in <RendererWebGL>.
+// Uses in <v6.RendererWebGL>.
 RGBA.prototype.rgba = function () {
   return this;
 };
@@ -1509,12 +1509,12 @@ var shapes = {
 // var options = {
 //   settings: {
 //     scale: SCALE // default 1
-//   }, // default default_options.renderer
+//   }, // default default_options.renderer.settings
 //
 //   alpha : false, // default true
 //   width : 100,   // default window width
 //   height: 100    // default window height
-// };
+// }; // default default_options.renderer
 //
 // var renderer = new v6.Renderer2D( options );
 

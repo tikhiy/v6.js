@@ -2949,6 +2949,11 @@ var create_renderer = function ( renderer, mode, options ) {
 
 /* CAMERA */
 
+// var camera = v6.camera( options );
+// var camera = new v6.Camera( options );
+// // default offset to renderer center
+// var camera = renderer.camera( options );
+
 var Camera = function ( options ) {
   options = defaults( options, default_options.camera );
 
@@ -3002,8 +3007,8 @@ Camera.prototype = {
     var scl = this.scale[ 0 ];
 
     return new Vector2D(
-      ( this.offset[ 0 ] - this.location[ 0 ] ) / scl,
-      ( this.offset[ 1 ] - this.location[ 1 ] ) / scl );
+      ( this.offset[ 0 ] - this.location[ 0 ] * scl ) / scl,
+      ( this.offset[ 1 ] - this.location[ 1 ] * scl ) / scl );
   },
 
   constructor: Camera

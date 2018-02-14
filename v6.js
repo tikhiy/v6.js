@@ -7,9 +7,7 @@
  * https://github.com/processing/p5.js/
  */
 
-/* jshint esversion: 5 */
-/* jshint unused: true */
-/* jshint undef: true */
+/* jshint esversion: 5, unused: true, undef: true */
 /* global Float32Array, Uint8ClampedArray, ImageData */
 
 ;( function ( window, undefined ) {
@@ -88,7 +86,7 @@ var v6 = function ( options ) {
       return new RendererWebGL( options );
     }
 
-    warn( 'Can not get WebGL context. Falling back to 2D context' );
+    warn( "Can't get WebGL context. Falling back to 2D context" );
   }
 
   return new Renderer2D( options );
@@ -275,6 +273,7 @@ var Ticker = function ( update, render ) {
   var ticker = this,
       tick = ticker.tick;
 
+  // v6.ticker( render );
   if ( render === undefined ) {
     render = update;
     update = _.noop;
@@ -461,6 +460,19 @@ Vector2D.prototype.rotate = function ( angle ) {
   this[ 1 ] = length * sin( angle );
 
   return this;
+
+  /* var x = this[ 0 ],
+      y = this[ 1 ],
+      c, s;
+
+  if ( settings.degrees ) {
+    angle *= pi / 180;
+  }
+
+  this[ 0 ] = x * ( c = cos( angle ) ) - y * s;
+  this[ 1 ] = x * ( s = sin( angle ) ) + y * c;
+
+  return this; */
 };
 
 Vector2D.prototype.dot = function ( x, y ) {
@@ -1013,6 +1025,11 @@ RGBA.prototype.lerp = function ( color, value ) {
     lerp( this[ 2 ], color[ 2 ], value ) );
 };
 
+// it requires optimization
+RGBA.prototype.shade = function ( value ) {
+  return this.hsla().shade( value ).rgba(); 
+};
+
 var hsla = function ( h, s, l, a ) {
   return new HSLA( h, s, l, a );
 };
@@ -1118,6 +1135,16 @@ HSLA.prototype.lerp = function ( color, value ) {
     lerp( that[ 0 ], color[ 0 ], value ),
     lerp( that[ 1 ], color[ 1 ], value ),
     lerp( that[ 2 ], color[ 2 ], value ) ).hsla();
+};
+
+// it also requires optimization
+HSLA.prototype.shade = function ( value ) {
+  var shaded_hsl = new HSLA();
+  shaded_hsl[ 0 ] = this[ 0 ];
+  shaded_hsl[ 1 ] = this[ 1 ];
+  shaded_hsl[ 2 ] = _.clamp( this[ 2 ] + value, 0, 100 );
+  shaded_hsl[ 3 ] = this[ 3 ];
+  return shaded_hsl;
 };
 
 var ColorData = function ( match, constructor ) {
@@ -1549,22 +1576,21 @@ Renderer2D.prototype.smooth = function ( value ) {
 
 Renderer2D.prototype.resize = function ( w, h ) {
   var scale = this.settings.scale,
-      canvas = this.canvas,
-      style = canvas.style;
+      canvas = this.canvas;
 
   // rescale canvas
-  if ( w === undefined ) {
-    w = this.rWidth;
-    h = this.rHeight;
+  if ( w == null ) {
+    w = this._canvas_w;
+    h = this._canvas_h;
   } else {
-    this.rWidth = w;
-    this.rHeight = h;
+    w = this._canvas_w = floor( w );
+    h = this._canvas_h = floor( h );
   }
 
-  style.width = w + 'px';
-  style.height = h + 'px';
-  canvas.width = this.width = w * scale;
-  canvas.height = this.height = h * scale;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  canvas.width = this.width = floor( w * scale );
+  canvas.height = this.height = floor( h * scale );
   return this;
 };
 

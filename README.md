@@ -3,14 +3,14 @@ A simple JavaScript render engine, with which you can easily create cool games a
 
 ## Install
 This library has a dependency on [Peako](https://github.com/silent-tempest/Peako).
-```
+```html
 <script src="peako.js"></script>
 <script src="v6.js"></script>
 ```
 
 ## Hello World
 A simple example of use this library:
-```
+```javascript
 /** Create and setup the renderer. */
 var renderer = v6()
   .stroke(0)

@@ -125,7 +125,13 @@ var default_options = {
     alpha: true,
 
     /** Will be renderer added to the DOM? */
-    append: true
+    append: true,
+
+    /**
+     * WebGL. when `false` you can use colors with
+     * transparency (but I'm not good at this).
+     */
+    blending: false
   }
 };
 
@@ -1527,6 +1533,7 @@ var shapes = {
 // var renderer = new v6.Renderer2D( options );
 
 var Renderer2D = function ( options ) {
+  options = defaults( options, default_options.renderer );
   create_renderer( this, '2d', options );
 
   this.state = {
@@ -2518,6 +2525,7 @@ var shaders = new Shader( default_shaders.vertex, default_shaders.fragment ),
  */
 
 var RendererWebGL = function ( options ) {
+  options = defaults( options, default_options.renderer );
   create_renderer( this, 'webgl', options );
   /** For transformation functions (scale, translate, save...). */
   this.matrix = new Transform();
@@ -2532,7 +2540,7 @@ var RendererWebGL = function ( options ) {
   /** With a separate buffer, `rect` will run a little faster. (maybe add buffers for the arc?) */
   this.rectangleBuffer = new Buffer( this.context ).bind().data( rectangle_vertices );
   /** Some weird bullshit. */
-  this.blending( true );
+  this.blending( options.blending );
 };
 
 RendererWebGL.prototype = _.create( null );
@@ -2900,7 +2908,6 @@ var defaults = function ( options, defaults ) {
 
 /** Initializes the renderer. */
 var create_renderer = function ( renderer, mode, options ) {
-  options = defaults( options, default_options.renderer );
   renderer.settings = options.settings;
   renderer.mode = mode;
   renderer.index = ++renderer_index;

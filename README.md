@@ -4,8 +4,13 @@ A simple JavaScript render engine, with which you can easily create cool games a
 ## Install
 This library has a dependency on [Peako](https://github.com/silent-tempest/Peako).
 ```html
+<!-- Import from GitHub CDN. -->
+<script src="https://rawgit.com/silent-tempest/Peako/master/peako.js"></script>
+<script src="https://rawgit.com/silent-tempest/v6/master/v6.js"></script>
+<!-- Import local files. -->
 <script src="peako.js"></script>
 <script src="v6.js"></script>
+<!-- Of course, you can combine it. -->
 ```
 
 ## Hello World

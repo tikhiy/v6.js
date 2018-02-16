@@ -1536,6 +1536,12 @@ var Renderer2D = function ( options ) {
   options = defaults( options, default_options.renderer );
   create_renderer( this, '2d', options );
 
+  /**
+   * This is necessary for some methods (setTransformFromCamera),
+   * which are assigned from `Renderer2D` to` RendererWebGL`.
+   */
+  this.matrix = this.context;
+
   this.state = {
     beginPath: false
   };
@@ -2037,13 +2043,15 @@ Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
   var scale = camera.scale[ 0 ],
       location = camera.location;
 
-  return this.setTransform(
+  this.matrix.setTransform(
     scale,
     0,
     0,
     scale,
     location[ 0 ] * scale,
     location[ 1 ] * scale );
+
+  return this;
 };
 
 _.forOwnRight( {
@@ -2188,15 +2196,65 @@ Program.prototype.uniform = function ( name, data ) {
       uniform = this.uniforms[ name ];
 
   switch ( uniform.type ) {
-    case gl.BOOL: gl.uniform1i( uniform.location, data ? 1 : 0 ); break;
-    case gl.INT: gl.uniform1i( uniform.location, data ); break;
-    case gl.FLOAT: gl[ uniform.size > 1 ? 'uniform1fv' : 'uniform1f' ]( uniform.location, data ); break;
-    case gl.FLOAT_MAT3: gl.uniformMatrix3fv( uniform.location, false, data ); break;
-    case gl.FLOAT_MAT4: gl.uniformMatrix4fv( uniform.location, false, data ); break;
-    case gl.FLOAT_VEC2: uniform.size > 1 ? gl.uniform2fv( uniform.location, data ) : gl.uniform2f( uniform.location, data[ 0 ], data[ 1 ] ); break;
-    case gl.FLOAT_VEC3: uniform.size > 1 ? gl.uniform3fv( uniform.location, data ) : gl.uniform3f( uniform.location, data[ 0 ], data[ 1 ], data[ 2 ] ); break;
-    case gl.FLOAT_VEC4: uniform.size > 1 ? gl.uniform4fv( uniform.location, data ) : gl.uniform4f( uniform.location, data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] ); break;
-    default: throw TypeError( "This uniform type isn't supported for setting: " + uniform.type );
+    case gl.BOOL:
+      if ( data ) {
+        gl.uniform1i( uniform.location, 1 );
+      } else {
+        gl.uniform1i( uniform.location, 0 );
+      }
+
+      break;
+
+    case gl.INT:
+      gl.uniform1i( uniform.location, data );
+      break;
+
+    case gl.FLOAT:
+      if ( uniform.size > 1 ) {
+        gl.uniform1fv( uniform.location, data );
+      } else {
+        gl.uniform1f( uniform.location, data );
+      }
+
+      break;
+
+    case gl.FLOAT_MAT3:
+      gl.uniformMatrix3fv( uniform.location, false, data );
+      break;
+
+    case gl.FLOAT_MAT4:
+      gl.uniformMatrix4fv( uniform.location, false, data );
+      break;
+
+    case gl.FLOAT_VEC2:
+      if ( uniform.size > 1 ) {
+        gl.uniform2fv( uniform.location, data );
+      } else {
+        gl.uniform2f( uniform.location, data[ 0 ], data[ 1 ] );
+      }
+
+      break;
+
+    case gl.FLOAT_VEC3:
+      if ( uniform.size > 1 ) {
+        gl.uniform3fv( uniform.location, data );
+      } else {
+        gl.uniform3f( uniform.location, data[ 0 ], data[ 1 ], data[ 2 ] );
+      }
+
+      break;
+
+    case gl.FLOAT_VEC4:
+      if ( uniform.size > 1 ) {
+        gl.uniform4fv( uniform.location, data );
+      } else {
+        gl.uniform4f( uniform.location, data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] );
+      }
+
+      break;
+
+    default:
+      throw TypeError( "This uniform type isn't supported for setting: " + uniform.type );
   }
 
   return this;
@@ -2253,20 +2311,8 @@ Shader.prototype.create = function ( renderer ) {
   return this;
 };
 
-Shader.prototype.use = function ( renderer ) {
-  return this.programs[ renderer.index ].use(), this;
-};
-
 Shader.prototype.program = function ( renderer ) {
   return this.programs[ renderer.index ];
-};
-
-Shader.prototype.uniform = function ( renderer, name, data ) {
-  return this.programs[ renderer.index ].uniform( name, data ), this;
-};
-
-Shader.prototype.vertexPointer = function ( renderer, index, size, type, normalized, stride, offset ) {
-  return this.programs[ renderer.index ].vertexPointer( index, size, type, normalized, stride, offset ), this;
 };
 
 var create_shader = function ( context, source, type ) {
@@ -2299,7 +2345,7 @@ var get_source = function ( script ) {
 };
 
 /**
- * Wrapper for WebGL buffer.
+ * Wrapper for the WebGL buffer.
  * But I want to delete this.
  */
 
@@ -2316,11 +2362,18 @@ Buffer.prototype = _.create( null );
 Buffer.prototype.constructor = Buffer;
 
 Buffer.prototype.bind = function () {
-  return this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffer ), this;
+  this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffer );
+  return this;
 };
 
 Buffer.prototype.data = function ( data, mode ) {
-  return this.context.bufferData( this.context.ARRAY_BUFFER, data, mode === undefined ? this.context.STATIC_DRAW : mode ), this;
+  if ( mode === undefined ) {
+    this.context.bufferData( this.context.ARRAY_BUFFER, data, this.context.STATIC_DRAW );
+  } else {
+    this.context.bufferData( this.context.ARRAY_BUFFER, data, mode );
+  }
+
+  return this;
 };
 
 /* TRANSFORM */
@@ -3015,7 +3068,8 @@ var Camera = function ( options, renderer ) {
 
   this.location = [
     0, 0, // current location
-    0, 0  // tranformed location of the object to be viewed
+    0, 0, // tranformed location of the object to be viewed
+    0, 0  // not transformed location...
   ];
 
   /** Will be zoom in/out animation with the linear effect? */
@@ -3045,9 +3099,15 @@ Camera.prototype = {
 
   /** Changes `lookAt` location. */
   lookAt: function ( at ) {
-    this.location[ 2 ] = this.offset[ 0 ] / this.scale[ 0 ] - at[ 0 ];
-    this.location[ 3 ] = this.offset[ 1 ] / this.scale[ 0 ] - at[ 1 ];
+    var loc = this.location;
+    loc[ 2 ] = this.offset[ 0 ] / this.scale[ 0 ] - ( loc[ 4 ] = at[ 0 ] );
+    loc[ 3 ] = this.offset[ 1 ] / this.scale[ 0 ] - ( loc[ 5 ] = at[ 1 ] );
     return this;
+  },
+
+  /** Returns vector that is passed to the `lookAt` method. */
+  shouldLookAt: function () {
+    return new Vector2D( this.location[ 4 ], this.location[ 5 ] );
   },
 
   /** At what position the camera looking now? */

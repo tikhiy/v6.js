@@ -294,7 +294,6 @@ var Ticker = function ( update, render ) {
   };
 };
 
-Ticker.prototype = _.create( null );
 Ticker.prototype.constructor = Ticker;
 Ticker.prototype.step = 1 / 60;
 Ticker.prototype.stopped = true;
@@ -361,7 +360,6 @@ var Vector2D = function ( x, y ) {
   this.set( x, y );
 };
 
-Vector2D.prototype = _.create( null );
 Vector2D.prototype.constructor = Vector2D;
 Vector2D.prototype.length = 2;
 
@@ -530,7 +528,6 @@ var Vector3D = function ( x, y, z ) {
   this.set( x, y, z );
 };
 
-Vector3D.prototype = _.create( null );
 Vector3D.prototype.constructor = Vector3D;
 Vector3D.prototype.length = 3;
 
@@ -903,7 +900,6 @@ var RGBA = function ( r, g, b, a ) {
   this.set( r, g, b, a );
 };
 
-RGBA.prototype = _.create( null );
 RGBA.prototype.constructor = RGBA;
 RGBA.prototype.type = 'rgba';
 
@@ -1044,7 +1040,6 @@ var HSLA = function ( h, s, l, a ) {
   this.set( h, s, l, a );
 };
 
-HSLA.prototype = _.create( null );
 HSLA.prototype.constructor = HSLA;
 HSLA.prototype.type = 'hsla';
 
@@ -1088,6 +1083,22 @@ HSLA.prototype.set = function ( h, s, l, a ) {
   return this;
 };
 
+var baz = function ( val, p, q ) {
+  if ( val < 1 / 6 ) {
+    return round( ( p + ( q - p ) * 6 * val ) * 255 );
+  }
+
+  if ( val < 0.5 ) {
+    return round( q * 255 );
+  }
+
+  if ( val < 2 / 3 ) {
+    return round( ( p + ( q - p ) * ( 2 / 3 - val ) * 6 ) * 255 );
+  }
+
+  return round( p * 255 );
+};
+
 HSLA.prototype.rgba = function () {
   var rgba = new RGBA(),
       h = this[ 0 ] % 360 / 360,
@@ -1099,28 +1110,33 @@ HSLA.prototype.rgba = function () {
       tg = h,
       tb = h - 1 / 3;
 
-  if ( tr < 0 ) { ++tr; }
-  if ( tg < 0 ) { ++tg; }
-  if ( tb < 0 ) { ++tb; }
-  if ( tr > 1 ) { --tr; }
-  if ( tg > 1 ) { --tg; }
-  if ( tb > 1 ) { --tb; }
+  if ( tr < 0 ) {
+    ++tr;
+  }
 
-  rgba[ 0 ] = round( 255 * ( tr < 1 / 6 ?
-    p + ( q - p ) * 6 * tr : tr < 0.5 ?
-    q : tr < 2 / 3 ?
-    p + ( q - p ) * ( 2 / 3 - tr ) * 6 : p ) );
+  if ( tg < 0 ) {
+    ++tg;
+  }
 
-  rgba[ 1 ] = round( 255 * ( tg < 1 / 6 ?
-    p + ( q - p ) * 6 * tg : tg < 0.5 ?
-    q : tg < 2 / 3 ?
-    p + ( q - p ) * ( 2 / 3 - tg ) * 6 : p ) );
+  if ( tb < 0 ) {
+   ++tb;
+  }
 
-  rgba[ 2 ] = round( 255 * ( tb < 1 / 6 ?
-    p + ( q - p ) * 6 * tb : tb < 0.5 ?
-    q : tb < 2 / 3 ?
-    p + ( q - p ) * ( 2 / 3 - tb ) * 6 : p ) );
+  if ( tr > 1 ) {
+    --tr;
+  }
 
+  if ( tg > 1 ) {
+    --tg;
+  }
+
+  if ( tb > 1 ) {
+    --tb;
+  }
+
+  rgba[ 0 ] = baz( tr, p, q );
+  rgba[ 1 ] = baz( tg, p, q );
+  rgba[ 2 ] = baz( tb, p, q );
   rgba[ 3 ] = this[ 3 ];
 
   return rgba;
@@ -1161,8 +1177,6 @@ var ColorData = function ( match, constructor ) {
   this.constructor = constructor;
 };
 
-ColorData.prototype = _.create( null );
-
 /* FONT */
 
 var is_global = function ( value ) {
@@ -1199,7 +1213,6 @@ var Font = function ( style, variant, weight, size, family ) {
   this.set( style, variant, weight, size, family );
 };
 
-Font.prototype = _.create( null );
 Font.prototype.constructor = Font;
 Font.prototype.style = Font.prototype.variant = Font.prototype.weight = 'normal';
 Font.prototype.size = 'medium';
@@ -1320,7 +1333,6 @@ var Image = function ( path, x, y, w, h ) {
   }
 };
 
-Image.prototype = _.create( null );
 Image.prototype.constructor = Image;
 Image.prototype.x = Image.prototype.y = Image.prototype.width = Image.prototype.height = 0;
 Image.prototype.loaded = false;
@@ -1364,7 +1376,6 @@ var Loader = function () {
   this.list = _.create( null );
 };
 
-Loader.prototype = _.create( null );
 Loader.prototype.constructor = Loader;
 
 /**
@@ -1547,7 +1558,6 @@ var Renderer2D = function ( options ) {
   };
 };
 
-Renderer2D.prototype = _.create( null );
 Renderer2D.prototype.constructor = Renderer2D;
 
 /**
@@ -2068,7 +2078,7 @@ _.forEachRight( [
   'scale',  'translate', 'moveTo', 'lineTo', 'setTransform', 'transform'
 ], function ( name ) {
   /* jshint evil: true */
-  this[ name ] = Function( 'a, b, c, d, e, f', 'return this.context.' + name + '( a, b, c, d, e, f ), this;' );
+  this[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' );
   /* jshint evil: false */
 }, Renderer2D.prototype );
 
@@ -2122,7 +2132,6 @@ var Program = function ( context, vShader, fShader ) {
   this.loadUniforms();
 };
 
-Program.prototype = _.create( null );
 Program.prototype.constructor = Program;
 Program.prototype.loadedAttributes = Program.prototype.loadedUniforms = false;
 
@@ -2298,7 +2307,6 @@ var Shader = function ( v, f ) {
   this.programs = _.create( null );
 };
 
-Shader.prototype = _.create( null );
 Shader.prototype.constructor = Shader;
 
 Shader.prototype.create = function ( renderer ) {
@@ -2358,7 +2366,6 @@ var Buffer = function ( context ) {
   this.buffer = context.createBuffer();
 };
 
-Buffer.prototype = _.create( null );
 Buffer.prototype.constructor = Buffer;
 
 Buffer.prototype.bind = function () {
@@ -2385,11 +2392,10 @@ var Transform = function () {
   this.matrix = mat3.identity();
 };
 
-Transform.prototype = _.create( null );
 Transform.prototype.constructor = Transform;
 Transform.prototype.index = -1;
 
-Transform.prototype.set = function ( a, b, c, d, e, f ) {
+Transform.prototype.setTransform = function ( a, b, c, d, e, f ) {
   var matrix = this.matrix;
   matrix[ 0 ] = a; // x scale
   matrix[ 1 ] = b; // x skew
@@ -2596,7 +2602,6 @@ var RendererWebGL = function ( options ) {
   this.blending( options.blending );
 };
 
-RendererWebGL.prototype = _.create( null );
 RendererWebGL.prototype.constructor = RendererWebGL;
 RendererWebGL.prototype.add = Renderer2D.prototype.add;
 RendererWebGL.prototype.destroy = Renderer2D.prototype.destroy;
@@ -2873,10 +2878,9 @@ RendererWebGL.prototype.scale = function ( x, y ) {
 };
 
 RendererWebGL.prototype.setTransform = function ( a, b, c, d, e, f ) {
-  return this.matrix.set( a, b, c, d, e, f ), this;
+  return this.matrix.setTransform( a, b, c, d, e, f ), this;
 };
 
-// not tested
 RendererWebGL.prototype.transform = function ( a, b, c, d, e, f ) {
   return this.matrix.transform( a, b, c, d, e, f ), this;
 };
@@ -2884,14 +2888,12 @@ RendererWebGL.prototype.transform = function ( a, b, c, d, e, f ) {
 RendererWebGL.prototype.noFill = Renderer2D.prototype.noFill;
 RendererWebGL.prototype.noStroke = Renderer2D.prototype.noStroke;
 
-// not tested
 RendererWebGL.prototype.beginShape = function () {
   this.vertices.length = 0;
   this._vertices_is_updated = false;
   return this;
 };
 
-// not tested
 RendererWebGL.prototype.vertex = function ( x, y ) {
   this.vertices.push( x, y );
 
@@ -2902,7 +2904,6 @@ RendererWebGL.prototype.vertex = function ( x, y ) {
   return this;
 };
 
-// not tested
 RendererWebGL.prototype.endShape = function () {
   if ( !this._vertices_is_updated ) {
     this._vertices = copy_array(

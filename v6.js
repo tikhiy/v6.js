@@ -1,7 +1,7 @@
-/**
+/*!
  * Copyright (c) 2017-2018 SILENT
  * Released under the MIT License.
- * v6.js is a JavaScript Graphic Library.
+ * v6.js - Simple graphics library.
  * https://github.com/silent-tempest/v6
  * p5.js:
  * https://github.com/processing/p5.js/
@@ -31,13 +31,9 @@ var _ = window.peako,
     renderer_index = -1;
 
 /**
- * Copies elements from the `b` array to `a`.
- * This is useful when `a` is TypedArray,
- * because it's faster:
+ * Copies elements from the `b` array to `a`. This is useful when `a` is
+ * TypedArray, because it's faster:
  * https://jsperf.com/set-values-to-float32array-instance
- * (no matter what jsperf says
- * "something went wrong", believe me
- * (although I don't believe myself already))
  */
 
 // var a = [],
@@ -70,42 +66,43 @@ var has_context = function ( canvas, type ) {
 
 var support = {
   webgl: function ( canvas ) {
-    if ( typeof canvas.getContext != 'function' ) {
-      return 0;
+    if ( typeof canvas.getContext == 'function' ) {
+      if ( has_context( canvas, 'webgl' ) ) {
+        return 1;
+      }
+
+      if ( has_context( canvas, 'webgl-experemental' ) ) {
+        return 2;
+      }
     }
 
-    return has_context( canvas, 'webgl' ) ?
-      1 : has_context( canvas, 'webgl-experemental' ) ?
-      2 : 0;
+    return 0;
   }( document.createElement( 'canvas' ) )
 };
 
-var v6 = function ( options ) {
-  if ( ( options && options.mode || default_options.renderer.mode ) === 'webgl' ) {
+var v6 = function ( opts ) {
+  if ( ( opts && opts.mode || dflt_opts.renderer.mode ) === 'webgl' ) {
     if ( support.webgl ) {
-      return new RendererWebGL( options );
+      return new RendererWebGL( opts );
     }
 
-    warn( "Can't get WebGL context. Falling back to 2D context" );
+    warn( "It's not possible to get the WebGL context. The 2D context will be used instead" );
   }
 
-  return new Renderer2D( options );
+  return new Renderer2D( opts );
 };
 
 var settings = {
   degrees: false
 };
 
-var default_options = {
+var dflt_opts = {
   renderer: {
     settings: {
       /** Pixel density of context. */
       scale: 1,
 
-      /**
-       * MDN: Can be set to change if images are smoothed
-       * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
-       */
+      /** You can think that this is a `ctx.imageSmoothingEnabled`. */
       smooth: false,
 
       colorMode: 'rgba'
@@ -115,11 +112,9 @@ var default_options = {
     mode: '2d',
 
     /**
-     * MDN: Boolean that indicates if the canvas
-     * contains an alpha channel.  If set to false,
-     * the browser now knows that the backdrop is
-     * always opaque,  which can speed up drawing of
-     * transparent content and images.
+     * MDN: Boolean that indicates if the canvas contains an alpha channel. If
+     * set to false, the browser now knows that the backdrop is always opaque,
+     * which can speed up drawing of transparent content and images.
      * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      */
     alpha: true,
@@ -127,27 +122,41 @@ var default_options = {
     /** Will be renderer added to the DOM? */
     append: true,
 
-    /**
-     * WebGL. when `false` you can use colors with
-     * transparency (but I'm not good at this).
-     */
-    blending: false
+    blending: false,
+    antialias: true
   }
+};
+
+var dflt_draw_settings = {
+  _rectAlignX  : 'left',
+  _rectAlignY  : 'top',
+  _doFill      : true,
+  _doStroke    : true,
+  // _fillColor   : renderer.color(),
+  // _font        : new Font(),
+  // todo move lineHeight to font
+  _lineHeight  : 14,
+  _lineWidth   : 2,
+  // _strokeColor : renderer.color(),
+  _textAlign   : 'left',
+  _textBaseline: 'top'
 };
 
 // v6.map( 20, 0, 100, 0, 1 ); // -> 0.2
 // v6.map( -0.1, -1, 1, 0, 10 ) // -> 4.5
 
-var map = function ( value, start1, stop1, start2, stop2, clamp ) {
-  value = ( ( value - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
+var map = function ( val, start1, stop1, start2, stop2, clamp ) {
+  val = ( ( val - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
 
-  if ( clamp ) {
-    return start2 < stop2 ?
-      _.clamp( value, start2, stop2 ) :
-      _.clamp( value, stop2, start2 );
+  if ( !clamp ) {
+    return val;
   }
 
-  return value;
+  if ( start2 < stop2 ) {
+    return _.clamp( val, start2, stop2 );
+  }
+
+  return _.clamp( val, stop2, start2 );
 };
 
 /**
@@ -162,50 +171,64 @@ var dist = function ( x1, y1, x2, y2 ) {
 
 // var purple = v6.lerpColor( 'red', 'blue', 0.5 );
 
-var lerp_color = function ( a, b, value ) {
-  return ( typeof a != 'object' ? parse_color( a ) : a ).lerp( b, value );
+var lerp_color = function ( a, b, val ) {
+  if ( typeof a != 'object' ) {
+    a = parse_color( a );
+  }
+
+  return a.lerp( b, val );
 };
 
 var lerp = function ( a, b, value ) {
   return a + ( b - a ) * value;
 };
 
-/**
- * Clone renderer `style` to `object`.
- */
-var clone_style = function ( style, object ) {
-  object.rectAlignX = style.rectAlignX;
-  object.rectAlignY = style.rectAlignY;
-  object.doFill = style.doFill;
-  object.doStroke = style.doStroke;
-  object.fillStyle[ 0 ] = style.fillStyle[ 0 ];
-  object.fillStyle[ 1 ] = style.fillStyle[ 1 ];
-  object.fillStyle[ 2 ] = style.fillStyle[ 2 ];
-  object.fillStyle[ 3 ] = style.fillStyle[ 3 ];
-  object.font.style = style.font.style;
-  object.font.variant = style.font.variant;
-  object.font.weight = style.font.weight;
-  object.font.size = style.font.size;
-  object.font.family = style.font.family;
-  object.lineHeight = style.lineHeight;
-  object.lineWidth = style.lineWidth;
-  object.strokeStyle[ 0 ] = style.strokeStyle[ 0 ];
-  object.strokeStyle[ 1 ] = style.strokeStyle[ 1 ];
-  object.strokeStyle[ 2 ] = style.strokeStyle[ 2 ];
-  object.strokeStyle[ 3 ] = style.strokeStyle[ 3 ];
-  object.textAlign = style.textAlign;
-  object.textBaseline = style.textBaseline;
-  return object;
+var set_dflt_draw_settings = function ( obj ) {
+  copy_draw_settings( obj, dflt_draw_settings );
+  obj._strokeColor = obj.color();
+  obj._fillColor = obj.color();
+  obj._font = new Font();
+  return obj;
 };
 
-var set_image_smoothing = function ( context, value ) {
-  context.imageSmoothingEnabled =
-    context.oImageSmoothingEnabled =
-    context.msImageSmoothingEnabled =
-    context.mozImageSmoothingEnabled =
-    context.webkitImageSmoothingEnabled = value;
+/** Copy renderer draw settings. */
+var copy_draw_settings = function ( obj, src, all ) {
+  if ( all ) {
+    obj._fillColor[ 0 ]   = src._fillColor[ 0 ];
+    obj._fillColor[ 1 ]   = src._fillColor[ 1 ];
+    obj._fillColor[ 2 ]   = src._fillColor[ 2 ];
+    obj._fillColor[ 3 ]   = src._fillColor[ 3 ];
+    obj._font.style       = src._font.style;
+    obj._font.variant     = src._font.variant;
+    obj._font.weight      = src._font.weight;
+    obj._font.size        = src._font.size;
+    obj._font.family      = src._font.family;
+    obj._strokeColor[ 0 ] = src._strokeColor[ 0 ];
+    obj._strokeColor[ 1 ] = src._strokeColor[ 1 ];
+    obj._strokeColor[ 2 ] = src._strokeColor[ 2 ];
+    obj._strokeColor[ 3 ] = src._strokeColor[ 3 ];
+  }
 
-  return context.imageSmoothingEnabled;
+  obj._rectAlignX   = src._rectAlignX;
+  obj._rectAlignY   = src._rectAlignY;
+  obj._doFill       = src._doFill;
+  obj._doStroke     = src._doStroke;
+  obj._lineHeight   = src._lineHeight;
+  obj._lineWidth    = src._lineWidth;
+  obj._textAlign    = src._textAlign;
+  obj._textBaseline = src._textBaseline;
+
+  return obj;
+};
+
+var set_image_smoothing = function ( ctx, val ) {
+  ctx.imageSmoothingEnabled =
+    ctx.oImageSmoothingEnabled =
+    ctx.msImageSmoothingEnabled =
+    ctx.mozImageSmoothingEnabled =
+    ctx.webkitImageSmoothingEnabled = val;
+
+  return ctx.imageSmoothingEnabled;
 };
 
 var align = function ( value, size, align ) {
@@ -228,41 +251,39 @@ var align = function ( value, size, align ) {
 
 var filters = {
   negative: function ( data ) {
-    var r = data.length - 4,
-        g, b;
+    var r = data.length - 4;
 
     for ( ; r >= 0; r -= 4 ) {
       data[ r ] = 255 - data[ r ];
-      data[ g = r + 1 ] = 255 - data[ g ];
-      data[ b = r + 2 ] = 255 - data[ b ];
+      data[ r + 1 ] = 255 - data[ r + 1 ];
+      data[ r + 2 ] = 255 - data[ r + 2 ];
     }
 
     return data;
   },
 
   contrast: function ( data ) {
-    var r = data.length - 4,
-        g, b;
+    var r = data.length - 4;
 
     for ( ; r >= 0; r -= 4 ) {
-      data[ r ] = data[ g = r + 1 ] = data[ b = r + 2 ] =
-        data[ r ] * 0.299 + data[ g ] * 0.587 + data[ b ] * 0.114;
+      data[ r ] = data[ r + 1 ] = data[ r + 2 ] =
+        data[ r ] * 0.299 + data[ r + 1 ] * 0.587 + data[ r + 2 ] * 0.114;
     }
 
     return data;
   },
 
   sepia: function ( data ) {
-    var rindex = data.length - 4,
-        gindex, bindex, r, g, b;
+    var i = data.length - 4,
+        r, g, b;
 
-    for ( ; rindex >= 0; rindex -= 4 ) {
-      r = data[ rindex ];
-      g = data[ gindex = rindex + 1 ];
-      b = data[ bindex = rindex + 2 ];
-      data[ rindex ] = r * 0.393 + g * 0.769 + b * 0.189;
-      data[ gindex ] = r * 0.349 + g * 0.686 + b * 0.168;
-      data[ bindex ] = r * 0.272 + g * 0.534 + b * 0.131;
+    for ( ; i >= 0; i -= 4 ) {
+      r = data[ i ];
+      g = data[ i + 1 ];
+      b = data[ i + 2 ];
+      data[ i ] = r * 0.393 + g * 0.769 + b * 0.189;
+      data[ i + 1 ] = r * 0.349 + g * 0.686 + b * 0.168;
+      data[ i + 2 ] = r * 0.272 + g * 0.534 + b * 0.131;
     }
 
     return data;
@@ -355,7 +376,7 @@ var vec2 = function ( x, y ) {
   return new Vector2D( x, y );
 };
 
-/** IMPORTANT: components are named 0, 1 and 2 (for 3D vector). */
+/** IMPORTANT: components are named 0, 1, and 2 (for 3D vector). */
 var Vector2D = function ( x, y ) {
   this.set( x, y );
 };
@@ -519,7 +540,7 @@ Vector2D.prototype.toString = function () {
 
 /* VECTOR3D */
 
-/** IMPORTANT: components are named 0, 1 and 2. */
+/** IMPORTANT: components are named 0, 1, and 2. */
 var vec3 = function ( x, y, z ) {
   return new Vector3D( x, y, z );
 };
@@ -882,9 +903,11 @@ var parse_hex = function ( hex ) {
  * // -> [ '0', '0', '0', '0' ]
  */
 var compact_match = function ( match ) {
-  return match[ 7 ] ?
-    [ match[ 4 ], match[ 5 ], match[ 6 ], match[ 7 ] ] :
-    [ match[ 1 ], match[ 2 ], match[ 3 ] ];
+  if ( match[ 7 ] ) {
+    return [ +match[ 4 ], +match[ 5 ], +match[ 6 ], +match[ 7 ] ];
+  }
+
+  return [ +match[ 1 ], +match[ 2 ], +match[ 3 ] ];
 };
 
 // I want to make that the methods
@@ -1481,8 +1504,8 @@ Loader.prototype.load = function ( setup, error ) {
 
 var shape = function ( draw, no_fill, no_stroke ) {
   return function ( vertices, close ) {
-    var fill = !no_fill && this.style.doFill,
-        stroke = !no_stroke && this.style.doStroke,
+    var fill = !no_fill && this._doFill,
+        stroke = !no_stroke && this._doStroke,
         context = this.context;
 
     if ( vertices.length && ( fill || stroke || no_stroke && no_fill ) ) {
@@ -1502,10 +1525,10 @@ var shape = function ( draw, no_fill, no_stroke ) {
 var shapes = {
   points: shape( function ( context, vertices ) {
     var len = vertices.length,
-        r = this.style.lineWidth,
+        r = this._lineWidth,
         i = 0;
 
-    context.fillStyle = this.style.strokeStyle;
+    context.fillStyle = this._strokeColor;
 
     for ( ; i < len; i += 2 ) {
       context.beginPath();
@@ -1534,22 +1557,22 @@ var shapes = {
 // var options = {
 //   settings: {
 //     scale: SCALE // default 1
-//   }, // default default_options.renderer.settings
+//   }, // default dflt_opts.renderer.settings
 //
 //   alpha : false, // default true
 //   width : 100,   // default window width
 //   height: 100    // default window height
-// }; // default default_options.renderer
+// }; // default dflt_opts.renderer
 //
 // var renderer = new v6.Renderer2D( options );
 
 var Renderer2D = function ( options ) {
-  options = defaults( options, default_options.renderer );
+  options = defaults( options, dflt_opts.renderer );
   create_renderer( this, '2d', options );
 
   /**
-   * This is necessary for some methods (setTransformFromCamera),
-   * which are assigned from `Renderer2D` to` RendererWebGL`.
+   * This is necessary for some methods (setTransformFromCamera), which are
+   * assigned from `Renderer2D` to` RendererWebGL`.
    */
   this.matrix = this.context;
 
@@ -1568,29 +1591,31 @@ Renderer2D.prototype.add = function () {
 };
 
 /**
- * Removes all event listeners bound to
- * <v6.Renderer2D>.canvas (via peako.js)
+ * Removes all event listeners bound to <v6.Renderer2D>.canvas (via peako.js)
  * and remove it from the html.
  */
 Renderer2D.prototype.destroy = function () {
   return _( this.canvas ).off().remove(), this;
 };
 
-/**
- * Pushes the current style into the stack of saved styles.
- */
 Renderer2D.prototype.push = function () {
-  this.saves.push( clone_style( this.style, {
-    fillStyle: {},
-    font: {},
-    strokeStyle: {}
-  } ) );
+  if ( this._saves_stack[ ++this._cur_save_index ] ) {
+    copy_draw_settings( this._saves_stack[ this._cur_save_index ], this );
+  } else {
+    this._saves_stack.push( set_dflt_draw_settings( {} ) );
+  }
 
   return this;
 };
 
 Renderer2D.prototype.pop = function () {
-  return this.saves.length && clone_style( this.saves.pop(), this.style ), this;
+  if ( this._saves_stack.length ) {
+    copy_draw_settings( this, this._saves_stack[ this.index-- ], true );
+  } else {
+    set_dflt_draw_settings( this );
+  }
+
+  return this;
 };
 
 Renderer2D.prototype.smooth = function ( value ) {
@@ -1599,9 +1624,16 @@ Renderer2D.prototype.smooth = function ( value ) {
 
 Renderer2D.prototype.resize = function ( w, h ) {
   var scale = this.settings.scale,
-      canvas = this.canvas;
+      canvas = this.canvas,
+      $win;
 
-  // rescale canvas
+  if ( w === true ) {
+    $win = _( canvas.ownerDocument.defaultView );
+    w = $win.width();
+    h = $win.height();
+  }
+
+  // Rescale canvas
   if ( w == null ) {
     w = this._canvas_w;
     h = this._canvas_h;
@@ -1617,11 +1649,6 @@ Renderer2D.prototype.resize = function ( w, h ) {
   return this;
 };
 
-Renderer2D.prototype.fullwindow = function () {
-  var window = _( this.canvas.ownerDocument.defaultView );
-  return this.resize( window.width(), window.height() );
-};
-
 Renderer2D.prototype.backgroundColor = function ( a, b, c, d ) {
   this.context.save();
   this.context.setTransform( this.settings.scale, 0, 0, this.settings.scale, 0, 0 );
@@ -1631,22 +1658,21 @@ Renderer2D.prototype.backgroundColor = function ( a, b, c, d ) {
   return this;
 };
 
-Renderer2D.prototype.backgroundImage = function ( image ) {
-  var style = this.style,
-      rectAlignX = style.rectAlignX,
-      rectAlignY = style.rectAlignY;
+Renderer2D.prototype.backgroundImage = function ( img ) {
+  var rectAlignX = this._rectAlignX,
+      rectAlignY = this._rectAlignY;
 
-  style.rectAlignX = 'left';
-  style.rectAlignY = 'top';
+  this._rectAlignX = 'left';
+  this._rectAlignY = 'top';
 
-  if ( image.width / ( image.height / this.height ) < this.width ) {
-    this.image( image, 0, 0, this.width, 'auto' );
+  if ( img.width / ( img.height / this.height ) < this.width ) {
+    this.image( img, 0, 0, this.width, 'auto' );
   } else {
-    this.image( image, 0, 0, 'auto', this.height );
+    this.image( img, 0, 0, 'auto', this.height );
   }
 
-  style.rectAlignX = rectAlignX;
-  style.rectAlignY = rectAlignY;
+  this._rectAlignX = rectAlignX;
+  this._rectAlignY = rectAlignY;
   return this;
 };
 
@@ -1662,8 +1688,8 @@ Renderer2D.prototype.clear = function ( x, y, w, h ) {
     w = this.width;
     h = this.height;
   } else {
-    x = floor( align( x, w, this.style.rectAlignX ) );
-    y = floor( align( y, h, this.style.rectAlignY ) );
+    x = floor( align( x, w, this._rectAlignX ) );
+    y = floor( align( y, h, this._rectAlignY ) );
   }
 
   this.context.clearRect( x, y, w, h );
@@ -1671,8 +1697,8 @@ Renderer2D.prototype.clear = function ( x, y, w, h ) {
 };
 
 Renderer2D.prototype.rect = function ( x, y, w, h ) {
-  x = floor( align( x, w, this.style.rectAlignX ) );
-  y = floor( align( y, h, this.style.rectAlignY ) );
+  x = floor( align( x, w, this._rectAlignX ) );
+  y = floor( align( y, h, this._rectAlignY ) );
 
   if ( this.state.beginPath ) {
     this.context.rect( x, y, w, h );
@@ -1680,11 +1706,11 @@ Renderer2D.prototype.rect = function ( x, y, w, h ) {
     this.context.beginPath();
     this.context.rect( x, y, w, h );
 
-    if ( this.style.doFill ) {
+    if ( this._doFill ) {
       this._fill();
     }
 
-    if ( this.style.doStroke ) {
+    if ( this._doStroke ) {
       this._stroke();
     }
   }
@@ -1696,7 +1722,7 @@ Renderer2D.prototype.line = function ( x1, y1, x2, y2 ) {
   if ( this.state.beginPath ) {
     this.context.moveTo( x1, y1 );
     this.context.lineTo( x2, y2 );
-  } else if ( this.style.doStroke ) {
+  } else if ( this._doStroke ) {
     this.context.beginPath();
     this.context.moveTo( x1, y1 );
     this.context.lineTo( x2, y2 );
@@ -1730,8 +1756,8 @@ Renderer2D.prototype.image = function ( image, x, y, width, height ) {
       h /= image.width / w;
     }
 
-    x = floor( align( x, w, this.style.rectAlignX ) );
-    y = floor( align( y, h, this.style.rectAlignY ) );
+    x = floor( align( x, w, this._rectAlignX ) );
+    y = floor( align( y, h, this._rectAlignY ) );
     this.context.drawImage( image.source, image.x, image.y, image.width, image.height, x, y, w, h );
   }
 
@@ -1739,74 +1765,85 @@ Renderer2D.prototype.image = function ( image, x, y, width, height ) {
 };
 
 Renderer2D.prototype.text = function ( text, x, y, maxWidth, maxHeight ) {
-  var style = this.style,
-      doFill = style.doFill,
-      doStroke = style.doStroke && style.lineWidth > 0;
+  var lineHeight = this._lineHeight,
+      doStroke = this._doStroke,
+      doFill = this._doFill,
+      ctx = this.context,
+      wordsLen, maxLen, words, word, line, test, len, tmp, i, j;
 
-  if ( !( doFill || doStroke ) || !( text += '' ).length ) {
+  if ( !doFill && !doStroke || !( text += '' ).length ) {
     return this;
   }
 
+  if ( maxHeight !== undefined ) {
+    maxLen = floor( maxHeight / lineHeight );
+  } else {
+    maxLen = Infinity;
+  }
+
   text = text.split( '\n' );
+
   x = floor( x );
   y = floor( y );
 
-  var context = this.context,
-      lineHeight = style.lineHeight,
-      maxLength = maxHeight === undefined ? Infinity : floor( maxHeight / lineHeight ),
-      i, length, line, words, word, test, j, k, splittedtext;
-
   if ( maxWidth !== undefined ) {
-    splittedtext = [];
+    tmp = [];
 
-    for ( i = 0, length = text.length; i < length && splittedtext.length < maxLength; ++i ) {
-      words = text[ i ].match( /\s+|\S+/g ) || [];
+    for ( i = 0, len = text.length; i < len && tmp.length < maxLen; ++i ) {
+      // Empty line
+      if ( !( words = text[ i ].match( /\s+|\S+/g ) ) ) {
+        tmp.push( '' );
+        continue;
+      }
+
       line = '';
 
-      for ( j = 0, k = words.length; j < k && splittedtext.length < maxLength; ++j ) {
+      wordsLen = words.length;
+
+      for ( j = 0; j < wordsLen && tmp.length < maxLen; ++j ) {
         word = words[ j ];
         test = line + word;
 
-        if ( context.measureText( test ).width > maxWidth ) {
-          splittedtext.push( line );
+        if ( ctx.measureText( test ).width > maxWidth ) {
+          tmp.push( line );
           line = word;
         } else {
           line = test;
         }
       }
 
-      splittedtext.push( line );
+      tmp.push( line );
     }
 
-    text = splittedtext;
+    text = tmp;
   }
 
-  if ( text.length > maxLength ) {
-    text.length = maxLength;
+  if ( text.length > maxLen ) {
+    text.length = maxLen;
   }
 
-  context.font = style.font.toString();
-  context.textAlign = style.textAlign;
-  context.textBaseline = style.textBaseline;
+  ctx.font = this._font.toString();
+  ctx.textAlign = this._textAlign;
+  ctx.textBaseline = this._textBaseline;
 
   if ( doFill ) {
-    context.fillStyle = style.fillStyle;
+    ctx.fillStyle = this._fillColor;
   }
 
   if ( doStroke ) {
-    context.strokeStyle = style.strokeStyle;
-    context.lineWidth = style.lineWidth;
+    ctx.strokeStyle = this._strokeColor;
+    ctx.lineWidth = this._lineWidth;
   }
 
-  for ( i = 0, length = text.length; i < length; ++i ) {
+  for ( i = 0, len = text.length; i < len; ++i ) {
     line = text[ i ];
 
     if ( doFill ) {
-      context.fillText( line, x, y + i * lineHeight );
+      ctx.fillText( line, x, y + i * lineHeight );
     }
 
     if ( doStroke ) {
-      context.strokeText( line, x, y + i * lineHeight );
+      ctx.strokeText( line, x, y + i * lineHeight );
     }
   }
 
@@ -1826,11 +1863,11 @@ Renderer2D.prototype.arc = function ( x, y, r, begin, end, anticlockwise ) {
     this.context.beginPath();
     this.context.arc( x, y, r, begin, end, anticlockwise );
 
-    if ( this.style.doFill ) {
+    if ( this._doFill ) {
       this._fill();
     }
 
-    if ( this.style.doStroke ) {
+    if ( this._doStroke ) {
       this._stroke( true );
     }
   } else {
@@ -1846,8 +1883,8 @@ Renderer2D.prototype.filter = function ( filter, x, y, w, h ) {
     w = this.width;
     h = this.height;
   } else {
-    x = floor( align( x, w, this.style.rectAlignX ) );
-    y = floor( align( y, h, this.style.rectAlignY ) );
+    x = floor( align( x, w, this._rectAlignX ) );
+    y = floor( align( y, h, this._rectAlignY ) );
   }
 
   var image_data = this.context.getImageData( x, y, w, h );
@@ -1857,7 +1894,7 @@ Renderer2D.prototype.filter = function ( filter, x, y, w, h ) {
 };
 
 Renderer2D.prototype.font = function ( a, b, c, d, e ) {
-  return this.style.font.set( a, b, c, d, e ), this;
+  return this._font.set( a, b, c, d, e ), this;
 };
 
 Renderer2D.prototype.save = function () {
@@ -1869,19 +1906,19 @@ Renderer2D.prototype.restore = function () {
 };
 
 Renderer2D.prototype.noFill = function () {
-  return this.style.doFill = false, this;
+  return this._doFill = false, this;
 };
 
 Renderer2D.prototype.noStroke = function () {
-  return this.style.doStroke = false, this;
+  return this._doStroke = false, this;
 };
 
 Renderer2D.prototype.beginShape = function () {
-  return this.vertices.length = 0, this;
+  return this._vertices.length = 0, this;
 };
 
 Renderer2D.prototype.vertex = function ( x, y ) {
-  return this.vertices.push( floor( x ), floor( y ) ), this;
+  return this._vertices.push( floor( x ), floor( y ) ), this;
 };
 
 Renderer2D.prototype.endShape = function ( type, close ) {
@@ -1890,16 +1927,16 @@ Renderer2D.prototype.endShape = function ( type, close ) {
     type = 'lines';
   }
 
-  return shapes[ type ].call( this, this.vertices, close ), this;
+  return shapes[ type ].call( this, this._vertices, close ), this;
 };
 
 Renderer2D.prototype.rectAlign = function ( x, y ) {
   if ( x != null ) {
-    this.style.rectAlignX = x;
+    this._rectAlignX = x;
   }
 
   if ( y != null ) {
-    this.style.rectAlignY = y;
+    this._rectAlignY = y;
   }
 
   return this;
@@ -1969,11 +2006,11 @@ Renderer2D.prototype.drawVertices = function ( data, length, _rx, _ry ) {
     context.lineTo( data[ i ] * _rx, data[ i + 1 ] * _ry );
   }
 
-  if ( this.style.doFill ) {
+  if ( this._doFill ) {
     this._fill();
   }
 
-  if ( this.style.doStroke && this.style.lineWidth > 0 ) {
+  if ( this._doStroke && this._lineWidth > 0 ) {
     this._stroke( true );
   }
 
@@ -1981,10 +2018,10 @@ Renderer2D.prototype.drawVertices = function ( data, length, _rx, _ry ) {
 };
 
 Renderer2D.prototype.point = function ( x, y ) {
-  if ( this.style.doStroke ) {
+  if ( this._doStroke ) {
     this.context.beginPath();
-    this.context.arc( x, y, this.style.lineWidth * 0.5, 0, pi * 2 );
-    this.context.fillStyle = this.style.strokeStyle;
+    this.context.arc( x, y, this._lineWidth * 0.5, 0, pi * 2 );
+    this.context.fillStyle = this._strokeColor;
     this.context.fill();
   }
 
@@ -2022,22 +2059,21 @@ Renderer2D.prototype.rotate = function ( angle ) {
 };
 
 Renderer2D.prototype._fill = function () {
-  this.context.fillStyle = this.style.fillStyle;
+  this.context.fillStyle = this._fillColor;
   this.context.fill();
   return this;
 };
 
 Renderer2D.prototype._stroke = function ( close ) {
-  var ctx = this.context,
-      style = this.style;
+  var ctx = this.context;
 
   if ( close ) {
     ctx.closePath();
   }
 
-  ctx.strokeStyle = style.strokeStyle;
+  ctx.strokeStyle = this._strokeColor;
 
-  if ( ( ctx.lineWidth = style.lineWidth ) <= 1 ) {
+  if ( ( ctx.lineWidth = this._lineWidth ) <= 1 ) {
     ctx.stroke();
   }
 
@@ -2050,17 +2086,10 @@ Renderer2D.prototype.camera = function ( options ) {
 };
 
 Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
-  var scale = camera.scale[ 0 ],
-      location = camera.location;
+  var scl = camera.scale[ 0 ],
+      loc = camera.location;
 
-  this.matrix.setTransform(
-    scale,
-    0,
-    0,
-    scale,
-    location[ 0 ] * scale,
-    location[ 1 ] * scale );
-
+  this.matrix.setTransform( scl, 0, 0, scl, loc[ 0 ] * scl, loc[ 1 ] * scl );
   return this;
 };
 
@@ -2070,7 +2099,7 @@ _.forOwnRight( {
   fontFamily:  'family'
 }, function ( name, methodname ) {
   /* jshint evil: true */
-  this[ methodname ] = Function( 'value', 'return this.style.font.' + name + ' = value, this;' );
+  this[ methodname ] = Function( 'value', 'return this._font.' + name + ' = value, this;' );
   /* jshint evil: false */
 }, Renderer2D.prototype );
 
@@ -2086,28 +2115,28 @@ _.forEachRight( [
   'lineWidth', 'lineHeight', 'textAlign', 'textBaseline'
 ], function ( name ) {
   /* jshint evil: true */
-  this[ name ] = Function( 'value', 'return this.style.' + name + ' = value, this;' );
+  this[ name ] = Function( 'value', 'return this._' + name + ' = value, this;' );
   /* jshint evil: false */
 }, Renderer2D.prototype );
 
-_.forOwnRight( { fill: 'fillStyle', stroke: 'strokeStyle' }, function ( name, method_name ) {
-  var style = _.upperFirst( method_name ),
-      do_style = 'do' + style,
-      _method_name = '_' + method_name;
+_.forOwnRight( { Fill: 'fill', Stroke: 'stroke' }, function ( name, Name ) {
+  var _nameColor = '_' + name + 'Color',
+      _doName = '_do' + Name,
+      _name = '_' + name;
 
-  this[ method_name ] = function ( a, b, c, d ) {
+  this[ name ] = function ( a, b, c, d ) {
     if ( a === undefined ) {
-      this[ _method_name ]();
+      this[ _name ]();
     } else if ( typeof a != 'boolean' ) {
-      this.style[ do_style ] = true;
+      this[ _doName ] = true;
 
-      if ( typeof a != 'string' && this.style[ name ].type === this.settings.colorMode ) {
-        this.style[ name ].set( a, b, c, d );
+      if ( typeof a != 'string' && this[ _nameColor ].type === this.settings.colorMode ) {
+        this[ _nameColor ].set( a, b, c, d );
       } else {
-        this.style[ name ] = this.color( a, b, c, d );
+        this[ _nameColor ] = this.color( a, b, c, d );
       }
     } else {
-      this.style[ do_style ] = a;
+      this[ _doName ] = a;
     }
 
     return this;
@@ -2529,7 +2558,7 @@ var mat3 = {
   }
 };
 
-var default_shaders = {
+var dflt_shaders = {
 
   vertex:
 
@@ -2575,8 +2604,8 @@ var default_shaders = {
 
 };
 
-var shaders = new Shader( default_shaders.vertex, default_shaders.fragment ),
-    background_shaders = new Shader( default_shaders.background_vertex, default_shaders.background_fragment );
+var shaders = new Shader( dflt_shaders.vertex, dflt_shaders.fragment ),
+    background_shaders = new Shader( dflt_shaders.background_vertex, dflt_shaders.background_fragment );
 
 /**
  * In most cases, on phones (except iOS Safari)
@@ -2584,7 +2613,7 @@ var shaders = new Shader( default_shaders.vertex, default_shaders.fragment ),
  */
 
 var RendererWebGL = function ( options ) {
-  options = defaults( options, default_options.renderer );
+  options = defaults( options, dflt_opts.renderer );
   create_renderer( this, 'webgl', options );
   /** For transformation functions (scale, translate, save...). */
   this.matrix = new Transform();
@@ -2613,8 +2642,6 @@ RendererWebGL.prototype.resize = function ( w, h ) {
   this.context.viewport( 0, 0, this.width, this.height );
   return this;
 };
-
-RendererWebGL.prototype.fullwindow = Renderer2D.prototype.fullwindow;
 
 RendererWebGL.prototype.blending = function ( blending ) {
   var gl = this.context;
@@ -2726,14 +2753,14 @@ RendererWebGL.prototype.drawVertices = function ( data, length ) {
     .uniform( 'u_transform', this.matrix.matrix )
     .vertexPointer( program.attributes.a_position.location, 2, gl.FLOAT, false, 0, 0 );
 
-  if ( this.style.doFill ) {
-    program.uniform( 'u_color', this.style.fillStyle.rgba() );
+  if ( this._doFill ) {
+    program.uniform( 'u_color', this._fillColor.rgba() );
     gl.drawArrays( gl.TRIANGLE_FAN, 0, length );
   }
 
-  if ( this.style.doStroke && this.style.lineWidth > 0 ) {
-    program.uniform( 'u_color', this.style.strokeStyle.rgba() );
-    gl.lineWidth( this.style.lineWidth );
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    program.uniform( 'u_color', this._strokeColor.rgba() );
+    gl.lineWidth( this._lineWidth );
     gl.drawArrays( gl.LINE_LOOP, 0, length );
   }
 
@@ -2754,8 +2781,8 @@ var rectangle_vertices = new Float32Array( [
 ] );
 
 RendererWebGL.prototype.rect = function ( x, y, w, h ) {
-  x = align( x, w, this.style.rectAlignX );
-  y = align( y, h, this.style.rectAlignY );
+  x = align( x, w, this._rectAlignX );
+  y = align( y, h, this._rectAlignY );
 
   this.matrix
     .save()
@@ -2769,7 +2796,7 @@ RendererWebGL.prototype.rect = function ( x, y, w, h ) {
 };
 
 RendererWebGL.prototype.line = function ( x1, y1, x2, y2 ) {
-  if ( !this.style.doStroke || this.style.lineWidth <= 0 ) {
+  if ( !this._doStroke || this._lineWidth <= 0 ) {
     return this;
   }
 
@@ -2789,12 +2816,12 @@ RendererWebGL.prototype.line = function ( x1, y1, x2, y2 ) {
 
   program
     .use()
-    .uniform( 'u_color', this.style.strokeStyle.rgba() )
+    .uniform( 'u_color', this._strokeColor.rgba() )
     .uniform( 'u_resolution', [ this.width, this.height ] )
     .uniform( 'u_transform', this.matrix.matrix )
     .vertexPointer( program.attributes.a_position.location, 2, gl.FLOAT, false, 0, 0 );
 
-  gl.lineWidth( this.style.lineWidth );
+  gl.lineWidth( this._lineWidth );
   gl.drawArrays( gl.LINE_LOOP, 0, 2 );
 
   return this;
@@ -2889,13 +2916,13 @@ RendererWebGL.prototype.noFill = Renderer2D.prototype.noFill;
 RendererWebGL.prototype.noStroke = Renderer2D.prototype.noStroke;
 
 RendererWebGL.prototype.beginShape = function () {
-  this.vertices.length = 0;
+  this._vertices.length = 0;
   this._vertices_is_updated = false;
   return this;
 };
 
 RendererWebGL.prototype.vertex = function ( x, y ) {
-  this.vertices.push( x, y );
+  this._vertices.push( x, y );
 
   if ( this._vertices_is_updated ) {
     this._vertices_is_updated = false;
@@ -2907,9 +2934,9 @@ RendererWebGL.prototype.vertex = function ( x, y ) {
 RendererWebGL.prototype.endShape = function () {
   if ( !this._vertices_is_updated ) {
     this._vertices = copy_array(
-      new Float32Array( this.vertices.length ),
-      this.vertices,
-      this.vertices.length );
+      new Float32Array( this._vertices.length ),
+      this._vertices,
+      this._vertices.length );
   }
 
   return this.drawVertices( this._vertices, this._vertices.length * 0.5 );
@@ -2927,8 +2954,8 @@ RendererWebGL.prototype.point = function ( x, y ) {
   return this
     .push()
     .noStroke()
-    .fill( this.style.strokeStyle )
-    .arc( x, y, this.style.lineWidth >> 1 )
+    .fill( this._strokeColor )
+    .arc( x, y, this._lineWidth >> 1 )
     .pop();
 };
 
@@ -2961,59 +2988,57 @@ var defaults = function ( options, defaults ) {
 };
 
 /** Initializes the renderer. */
-var create_renderer = function ( renderer, mode, options ) {
-  renderer.settings = options.settings;
+var create_renderer = function ( renderer, mode, opts ) {
+  var ctx_opts = {
+    alpha: opts.alpha
+  },
+      canv;
+
+  renderer.settings = opts.settings;
   renderer.mode = mode;
   renderer.index = ++renderer_index;
-  /** Stack of saved styles (push, pop). */
-  renderer.saves = [];
+  /** Stack of saved draw settings (push, pop). */
+  renderer._saves_stack = [];
+  renderer._cur_save_index = 0;
   /** Shape vertices (beginShape, vertex, endShape). */
-  renderer.vertices = [];
+  renderer._vertices = [];
 
-  if ( !options.canvas ) {
+  if ( !opts.canvas ) {
     renderer.canvas = document.createElement( 'canvas' );
     renderer.canvas.innerHTML = 'Unable to run that application. Try to update your browser.';
   } else {
-    renderer.canvas = options.canvas;
+    renderer.canvas = opts.canvas;
   }
 
-  renderer.style = {
-    rectAlignX: 'left',
-    rectAlignY: 'top',
-    doFill: true,
-    doStroke: true,
-    fillStyle: renderer.color(),
-    font: new Font(),
-    lineHeight: 14,
-    lineWidth: 2,
-    strokeStyle: renderer.color(),
-    textAlign: 'left',
-    textBaseline: 'top'
-  };
+  canv = renderer.canvas;
 
-  var context_options = {
-    alpha: options.alpha
-  };
+  // Set default draw settings
+  renderer.pop();
 
   if ( mode === '2d' ) {
-    renderer.context = renderer.canvas.getContext( '2d', context_options );
+    renderer.context = canv.getContext( '2d', ctx_opts );
     renderer.smooth( renderer.settings.smooth );
   } else if ( mode === 'webgl' ) {
     switch ( support.webgl ) {
-      case 1: renderer.context = renderer.canvas.getContext( 'webgl', context_options ); break;
-      case 2: renderer.context = renderer.canvas.getContext( 'webgl-experemental', context_options ); break;
-      case 0: throw Error( 'WebGL not supports' );
+      case 1:
+        renderer.context = canv.getContext( 'webgl', ctx_opts );
+        break;
+      case 2:
+        renderer.context = canv.getContext( 'webgl-experemental', ctx_opts );
+        break;
+      case 0:
+        throw Error( "It's not possible to get the WebGL context" );
     }
   }
 
-  if ( options.append ) {
+  if ( opts.append ) {
     renderer.add();
   }
 
-  if ( options.width != null || options.height != null ) {
-    renderer.resize( options.width, options.height );
+  if ( opts.width != null || opts.height != null ) {
+    renderer.resize( opts.width, opts.height );
   } else {
-    renderer.fullwindow();
+    renderer.resize( true );
   }
 };
 
@@ -3215,8 +3240,8 @@ v6.getShaderSource = get_source;
 v6.support = support;
 v6.filters = filters;
 v6.shapes = shapes;
-v6.options = default_options;
-v6.shaders = default_shaders;
+v6.options = dflt_opts;
+v6.shaders = dflt_shaders;
 v6.settings = settings;
 window.v6 = v6;
 

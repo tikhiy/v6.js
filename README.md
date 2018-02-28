@@ -1,5 +1,5 @@
 # v6
-A simple JavaScript render engine, with which you can easily create cool games and applications.
+A simple graphics library, with which you can easily create cool games and applications.
 
 ## Install
 This library has a dependency on [Peako](https://github.com/silent-tempest/Peako).

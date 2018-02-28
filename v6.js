@@ -101,16 +101,13 @@ var dflt_opts = {
     settings: {
       /** Pixel density of context. */
       scale: 1,
-
       /** You can think that this is a `ctx.imageSmoothingEnabled`. */
       smooth: false,
-
       colorMode: 'rgba'
     },
 
     /** One of: "2d", "webgl". */
     mode: '2d',
-
     /**
      * MDN: Boolean that indicates if the canvas contains an alpha channel. If
      * set to false, the browser now knows that the backdrop is always opaque,
@@ -118,11 +115,9 @@ var dflt_opts = {
      * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      */
     alpha: true,
-
     /** Will be renderer added to the DOM? */
     append: true,
-
-    blending: false,
+    blending: true,
     antialias: true
   }
 };
@@ -2125,16 +2120,24 @@ _.forOwnRight( { Fill: 'fill', Stroke: 'stroke' }, function ( name, Name ) {
       _name = '_' + name;
 
   this[ name ] = function ( a, b, c, d ) {
+    // Fill path, e.g.
+    // .fill()
     if ( a === undefined ) {
       this[ _name ]();
+    // Set color, e.g.
+    // .fill( 'magenta' )
     } else if ( typeof a != 'boolean' ) {
-      this[ _doName ] = true;
-
-      if ( typeof a != 'string' && this[ _nameColor ].type === this.settings.colorMode ) {
-        this[ _nameColor ].set( a, b, c, d );
-      } else {
+      if ( typeof a == 'string' || this[ _nameColor ].type !== this.settings.colorMode ) {
         this[ _nameColor ] = this.color( a, b, c, d );
+      } else {
+        this[ _nameColor ].set( a, b, c, d );
       }
+
+      this[ _doName ] = true;
+    // Do or not to do
+    // .fill( false ) same as .noFill()
+    // But we also can enable it
+    // .fill( true )
     } else {
       this[ _doName ] = a;
     }
@@ -2796,15 +2799,15 @@ RendererWebGL.prototype.rect = function ( x, y, w, h ) {
 };
 
 RendererWebGL.prototype.line = function ( x1, y1, x2, y2 ) {
+  var gl = this.context,
+      buffer = this.buffer,
+      program = this.program;
+
   if ( !this._doStroke || this._lineWidth <= 0 ) {
     return this;
   }
 
-  var gl = this.context,
-      buffer = this.buffer,
-      program = this.program,
-      vertices = new Float32Array( 4 );
-
+  vertices = new Float32Array( 4 );
   vertices[ 0 ] = x1;
   vertices[ 1 ] = y1;
   vertices[ 2 ] = x2;

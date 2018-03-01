@@ -123,17 +123,17 @@ var dflt_opts = {
 };
 
 var dflt_draw_settings = {
-  _rectAlignX  : 'left',
-  _rectAlignY  : 'top',
-  _doFill      : true,
-  _doStroke    : true,
-  // _fillColor   : renderer.color(),
-  // _font        : new Font(),
+  _rectAlignX:   'left',
+  _rectAlignY:   'top',
+  _doFill:       true,
+  _doStroke:     true,
+  // _fillColor:    renderer.color(),
+  // font:          new Font(),
   // todo move lineHeight to font
-  _lineHeight  : 14,
-  _lineWidth   : 2,
-  // _strokeColor : renderer.color(),
-  _textAlign   : 'left',
+  _lineHeight:   14,
+  _lineWidth:    2,
+  // _strokeColor:  renderer.color(),
+  _textAlign:    'left',
   _textBaseline: 'top'
 };
 
@@ -287,82 +287,94 @@ var filters = {
 
 /* TICKER */
 
-var ticker = function ( update, render ) {
-  return new Ticker( update, render );
+var ticker = function ( update, render, ctx ) {
+  return new Ticker( update, render, ctx );
 };
 
-var Ticker = function ( update, render ) {
-  var ticker = this,
-      tick = ticker.tick;
+var Ticker = function ( update, render, ctx ) {
+  var that = this;
 
   // v6.ticker( render );
-  if ( render === undefined ) {
+  if ( render == null ) {
     render = update;
     update = _.noop;
   }
 
-  ticker.lasttime = _.timestamp();
-  ticker.update = update;
-  ticker.render = render;
+  this.lastReqAnimId = 0;
+  this.lastTime = 0;
+  this.skipped = 0;
+  this.stopped = true;
+  this.update = update;
+  this.render = render;
 
-  ticker.boundtick = function () {
-    tick.call( ticker, null, true );
+  if ( ctx === undefined ) {
+    ctx = this;
+  }
+
+  this.tick = function ( now ) {
+    var step = that.step,
+        dt;
+
+    if ( that.stopped ) {
+      // if this call not from requestAnimationFrame
+      // we do return to get deltaTime > 0
+      if ( !now ) {
+        that.lastReqAnimId = _.timer.request( that.tick );
+        that.lastTime = _.timestamp();
+        that.stopped = false;
+      }
+
+      return;
+    }
+
+    if ( !now ) {
+      now = _.timestamp();
+    }
+
+    dt = min( 1, ( now - that.lastTime ) * 0.001 );
+    that.skipped += dt;
+    that.total += dt;
+
+    while ( that.skipped > step && !that.stopped ) {
+      that.skipped -= step;
+
+      if ( ctx ) {
+        that.update.call( ctx, step, now );
+      } else {
+        that.update( step, now );
+      }
+    }
+
+    if ( ctx ) {
+      that.render.call( ctx, dt, now );
+    } else {
+      that.render( dt, now );
+    }
+
+    that.lastTime = now;
+    that.lastReqAnimId = _.timer.request( that.tick );
+    return this;
   };
 };
 
-Ticker.prototype.constructor = Ticker;
-Ticker.prototype.step = 1 / 60;
-Ticker.prototype.stopped = true;
+Ticker.prototype = {
+  stop: function () {
+    this.stopped = true;
+    return this;
+  },
 
-Ticker.prototype.skipped =
-  Ticker.prototype.lastid =
-  Ticker.prototype.idoffset =
-  Ticker.prototype.total = 0;
-
-Ticker.prototype.tick = function ( fps, requested ) {
-  if ( this.stopped ) {
-    if ( requested ) {
-      return this;
-    }
-
-    this.stopped = false;
-  }
-
-  if ( fps != null ) {
+  setFrameRate: function ( fps ) {
     this.step = 1 / fps;
-  }
+    return this;
+  },
 
-  var now = _.timestamp(),
-      dt = min( 1, ( now - this.lasttime ) * 0.001 ),
-      step = this.step;
-
-  this.skipped += dt;
-  this.total += dt;
-
-  while ( this.skipped > step && !this.stopped ) {
-    this.skipped -= step;
-    this.update.call( this, step );
-  }
-
-  this.render.call( this, dt );
-  this.lasttime = now;
-  this.lastid = _.timer.request( this.boundtick );
-  return this;
-};
-
-Ticker.prototype.clear = function ( skipped ) {
-  _.timer.cancel( this.lastid );
-  this.lasttime = _.timestamp();
-
-  if ( skipped ) {
+  clear: function () {
     this.skipped = 0;
-  }
+    return this;
+  },
 
-  return this;
-};
-
-Ticker.prototype.stop = function () {
-  return this.stopped = true, this;
+  constructor: Ticker,
+  step: 1 / 60
 };
 
 /* VECTOR2D */
@@ -371,171 +383,160 @@ var vec2 = function ( x, y ) {
   return new Vector2D( x, y );
 };
 
-/** IMPORTANT: components are named 0, 1, and 2 (for 3D vector). */
 var Vector2D = function ( x, y ) {
   this.set( x, y );
 };
 
-Vector2D.prototype.constructor = Vector2D;
-Vector2D.prototype.length = 2;
+Vector2D.prototype = {
+  set: function ( x, y ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x = x.x || 0;
+      this.y = x.y || 0;
+    } else {
+      this.x = x || 0;
+      this.y = y || 0;
+    }
 
-Vector2D.prototype.set = function ( x, y ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] = x[ 0 ] || 0;
-    this[ 1 ] = x[ 1 ] || 0;
-  } else {
-    this[ 0 ] = x || 0;
-    this[ 1 ] = y || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  lerp: function ( x, y, value ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x += ( x.x - this.x ) * y || 0;
+      this.y += ( x.y - this.y ) * y || 0;
+    } else {
+      this.x += ( x - this.x ) * value || 0;
+      this.y += ( y - this.y ) * value || 0;
+    }
 
-Vector2D.prototype.lerp = function ( x, y, value ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] += ( x[ 0 ] - this[ 0 ] ) * y || 0;
-    this[ 1 ] += ( x[ 1 ] - this[ 1 ] ) * y || 0;
-  } else {
-    this[ 0 ] += ( x - this[ 0 ] ) * value || 0;
-    this[ 1 ] += ( y - this[ 1 ] ) * value || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  add: function ( x, y ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x += x.x || 0;
+      this.y += x.y || 0;
+    } else {
+      this.x += x || 0;
+      this.y += y || 0;
+    }
 
-Vector2D.prototype.add = function ( x, y ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] += x[ 0 ] || 0;
-    this[ 1 ] += x[ 1 ] || 0;
-  } else {
-    this[ 0 ] += x || 0;
-    this[ 1 ] += y || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  sub: function ( x, y ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x -= x.x || 0;
+      this.y -= x.y || 0;
+    } else {
+      this.x -= x || 0;
+      this.y -= y || 0;
+    }
 
-Vector2D.prototype.sub = function ( x, y ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] -= x[ 0 ] || 0;
-    this[ 1 ] -= x[ 1 ] || 0;
-  } else {
-    this[ 0 ] -= x || 0;
-    this[ 1 ] -= y || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  mult: function ( value ) {
+    this.x = this.x * value || 0;
+    this.y = this.y * value || 0;
+    return this;
+  },
 
-Vector2D.prototype.mult = function ( value ) {
-  this[ 0 ] = this[ 0 ] * value || 0;
-  this[ 1 ] = this[ 1 ] * value || 0;
-  return this;
-};
+  div: function ( value ) {
+    this.x = this.x / value || 0;
+    this.y = this.y / value || 0;
+    return this;
+  },
 
-Vector2D.prototype.div = function ( value ) {
-  this[ 0 ] = this[ 0 ] / value || 0;
-  this[ 1 ] = this[ 1 ] / value || 0;
-  return this;
-};
+  angle: function () {
+    if ( settings.degrees ) {
+      return atan2( this.y, this.x ) * 180 / pi;
+    }
 
-Vector2D.prototype.angle = function () {
-  return settings.degrees ?
-    atan2( this[ 1 ], this[ 0 ] ) * 180 / pi :
-    atan2( this[ 1 ], this[ 0 ] );
-};
+    return atan2( this.y, this.x );
+  },
 
-Vector2D.prototype.mag = function () {
-  return sqrt( this[ 0 ] * this[ 0 ] + this[ 1 ] * this[ 1 ] );
-};
+  mag: function () {
+    return sqrt( this.magSq() );
+  },
 
-Vector2D.prototype.magSq = function () {
-  return this[ 0 ] * this[ 0 ] + this[ 1 ] * this[ 1 ];
-};
+  magSq: function () {
+    return this.x * this.x + this.y * this.y;
+  },
 
-Vector2D.prototype.setMag = function ( value ) {
-  return this.normalize().mult( value );
-};
+  setMag: function ( value ) {
+    return this.normalize().mult( value );
+  },
 
-Vector2D.prototype.normalize = function () {
-  var mag = this.mag();
+  normalize: function () {
+    var mag = this.mag();
 
-  if ( mag && mag !== 1 ) {
-    this.div( mag );
-  }
+    if ( mag && mag !== 1 ) {
+      this.div( mag );
+    }
 
-  return this;
-};
+    return this;
+  },
 
-Vector2D.prototype.rotate = function ( angle ) {
-  var length = this.mag();
+  dot: function ( x, y ) {
+    if ( typeof x != 'object' || x === null ) {
+      return this.x * ( x || 0 ) + this.y * ( y || 0 );
+    }
 
-  if ( settings.degrees ) {
-    angle = angle * pi / 180 + this.angle();
-  } else {
-    angle += this.angle();
-  }
+    return this.x * ( x.x || 0 ) + this.y * ( x.y || 0 );
+  },
 
-  this[ 0 ] = length * cos( angle );
-  this[ 1 ] = length * sin( angle );
+  copy: function () {
+    return new Vector2D( this.x, this.y );
+  },
 
-  return this;
+  dist: function ( vector ) {
+    return dist( this.x, this.y, vector.x, vector.y );
+  },
 
-  /* var x = this[ 0 ],
-      y = this[ 1 ],
-      c, s;
+  limit: function ( value ) {
+    var mag = this.magSq();
 
-  if ( settings.degrees ) {
-    angle *= pi / 180;
-  }
+    if ( mag > value * value && ( mag = sqrt( mag ) ) ) {
+      this.div( mag ).mult( value );
+    }
 
-  this[ 0 ] = x * ( c = cos( angle ) ) - y * s;
-  this[ 1 ] = x * ( s = sin( angle ) ) + y * c;
+    return this;
+  },
 
-  return this; */
-};
+  cross: function( vector ) {
+    return Vector2D.cross( this, vector );
+  },
 
-Vector2D.prototype.dot = function ( x, y ) {
-  if ( typeof x != 'object' || x == null ) {
-    return this[ 0 ] * ( x || 0 ) +
-           this[ 1 ] * ( y || 0 );
-  }
+  toString: function () {
+    return 'vec2(' +
+      this.x.toFixed( 2 ) + ', ' +
+      this.y.toFixed( 2 ) + ')';
+  },
 
-  return this[ 0 ] * ( x[ 0 ] || 0 ) +
-         this[ 1 ] * ( x[ 1 ] || 0 );
-};
+  rotate: function ( angle ) {
+    var x = this.x,
+        y = this.y,
+        c, s;
 
-Vector2D.prototype.copy = function () {
-  return new Vector2D( this[ 0 ], this[ 1 ] );
-};
+    if ( settings.degrees ) {
+      angle *= pi / 180;
+    }
 
-Vector2D.prototype.dist = function ( vector ) {
-  return dist( this[ 0 ], this[ 1 ], vector[ 0 ], vector[ 1 ] );
-};
+    c = cos( angle );
+    s = sin( angle );
 
-Vector2D.prototype.limit = function ( value ) {
-  var mag = this.magSq();
+    this.x = x * c - y * s;
+    this.y = x * s + y * c;
 
-  if ( mag > value * value && ( mag = sqrt( mag ) ) ) {
-    this.div( mag ).mult( value );
-  }
+    return this;
+  },
 
-  return this;
-};
-
-Vector2D.prototype.cross = function( vector ) {
-  return Vector2D.cross( this, vector );
-};
-
-Vector2D.prototype.toString = function () {
-  return 'vec2(' +
-    ( floor( this[ 0 ] * 100 ) * 0.01 ) + ', ' +
-    ( floor( this[ 1 ] * 100 ) * 0.01 ) + ')';
+  constructor: Vector2D
 };
 
 /* VECTOR3D */
 
-/** IMPORTANT: components are named 0, 1, and 2. */
 var vec3 = function ( x, y, z ) {
   return new Vector3D( x, y, z );
 };
@@ -544,144 +545,135 @@ var Vector3D = function ( x, y, z ) {
   this.set( x, y, z );
 };
 
-Vector3D.prototype.constructor = Vector3D;
-Vector3D.prototype.length = 3;
+Vector3D.prototype = {
+  set: function ( x, y, z ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x = x.x || 0;
+      this.y = x.y || 0;
+      this.z = x.z || 0;
+    } else {
+      this.x = x || 0;
+      this.y = y || 0;
+      this.z = z || 0;
+    }
 
-Vector3D.prototype.set = function ( x, y, z ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 2 ] = x[ 2 ] || 0;
-    this[ 0 ] = x[ 0 ] || 0;
-    this[ 1 ] = x[ 1 ] || 0;
-  } else {
-    this[ 0 ] = x || 0;
-    this[ 1 ] = y || 0;
-    this[ 2 ] = z || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  lerp: function ( x, y, z, value ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x += ( x.x - this.x ) * y || 0;
+      this.y += ( x.y - this.y ) * y || 0;
+      this.z += ( x.z - this.z ) * y || 0;
+    } else {
+      this.x += ( x - this.x ) * value || 0;
+      this.y += ( y - this.y ) * value || 0;
+      this.z += ( z - this.z ) * value || 0;
+    }
 
-Vector3D.prototype.lerp = function ( x, y, z, value ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] += ( x[ 0 ] - this[ 0 ] ) * y || 0;
-    this[ 1 ] += ( x[ 1 ] - this[ 1 ] ) * y || 0;
-    this[ 2 ] += ( x[ 2 ] - this[ 2 ] ) * y || 0;
-  } else {
-    this[ 0 ] += ( x - this[ 0 ] ) * value || 0;
-    this[ 1 ] += ( y - this[ 1 ] ) * value || 0;
-    this[ 2 ] += ( z - this[ 2 ] ) * value || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  add: function ( x, y, z ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x += x.x || 0;
+      this.y += x.y || 0;
+      this.z += x.z || 0;
+    } else {
+      this.x += x || 0;
+      this.y += y || 0;
+      this.z += z || 0;
+    }
 
-Vector3D.prototype.add = function ( x, y, z ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] += x[ 0 ] || 0;
-    this[ 1 ] += x[ 1 ] || 0;
-    this[ 2 ] += x[ 2 ] || 0;
-  } else {
-    this[ 0 ] += x || 0;
-    this[ 1 ] += y || 0;
-    this[ 2 ] += z || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  sub: function ( x, y, z ) {
+    if ( typeof x == 'object' && x !== null ) {
+      this.x -= x.x || 0;
+      this.y -= x.y || 0;
+      this.z -= x.z || 0;
+    } else {
+      this.x -= x || 0;
+      this.y -= y || 0;
+      this.z -= z || 0;
+    }
 
-Vector3D.prototype.sub = function ( x, y, z ) {
-  if ( typeof x == 'object' && x != null ) {
-    this[ 0 ] -= x[ 0 ] || 0;
-    this[ 1 ] -= x[ 1 ] || 0;
-    this[ 2 ] -= x[ 2 ] || 0;
-  } else {
-    this[ 0 ] -= x || 0;
-    this[ 1 ] -= y || 0;
-    this[ 2 ] -= z || 0;
-  }
+    return this;
+  },
 
-  return this;
-};
+  mult: function ( value ) {
+    this.x = this.x * value || 0;
+    this.y = this.y * value || 0;
+    this.z = this.z * value || 0;
+    return this;
+  },
 
-Vector3D.prototype.mult = function ( value ) {
-  this[ 0 ] = this[ 0 ] * value || 0;
-  this[ 1 ] = this[ 1 ] * value || 0;
-  this[ 2 ] = this[ 2 ] * value || 0;
-  return this;
-};
+  div: function ( value ) {
+    this.x = this.x / value || 0;
+    this.y = this.y / value || 0;
+    this.z = this.z / value || 0;
+    return this;
+  },
 
-Vector3D.prototype.div = function ( value ) {
-  this[ 0 ] = this[ 0 ] / value || 0;
-  this[ 1 ] = this[ 1 ] / value || 0;
-  this[ 2 ] = this[ 2 ] / value || 0;
-  return this;
+  magSq: function () {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+  },
+
+  dot: function ( x, y, z ) {
+    if ( typeof x != 'object' || x === null ) {
+      return this.x * ( x || 0 ) +
+             this.y * ( y || 0 ) +
+             this.z * ( z || 0 );
+    }
+
+    return this.x * ( x.x || 0 ) +
+           this.y * ( x.y || 0 ) +
+           this.z * ( x.z || 0 );
+  },
+
+  copy: function () {
+    return new Vector3D( this.x, this.y, this.z );
+  },
+
+  dist: function ( vec ) {
+    var x = ( vec.x - this.x ),
+        y = ( vec.y - this.y ),
+        z = ( vec.z - this.z );
+
+    return sqrt( x * x + y * y + z * z );
+  },
+
+  toString: function () {
+    return 'vec3(' +
+      this.x.toFixed( 2 ) + ', ' +
+      this.y.toFixed( 2 ) + ', ' +
+      this.z.toFixed( 2 ) + ')';
+  },
+
+  constructor: Vector3D
 };
 
 Vector3D.prototype.angle = Vector2D.prototype.angle;
-
-Vector3D.prototype.mag = function () {
-  return sqrt( this[ 0 ] * this[ 0 ] + this[ 1 ] * this[ 1 ] + this[ 2 ] * this[ 2 ] );
-};
-
-Vector3D.prototype.magSq = function () {
-  return this[ 0 ] * this[ 0 ] + this[ 1 ] * this[ 1 ] + this[ 2 ] * this[ 2 ];
-};
-
+Vector3D.prototype.mag = Vector2D.prototype.mag;
 Vector3D.prototype.setMag = Vector2D.prototype.setMag;
 Vector3D.prototype.normalize = Vector2D.prototype.normalize;
+Vector3D.prototype.limit = Vector2D.prototype.limit;
 Vector3D.prototype.rotate = Vector2D.prototype.rotate;
 
-Vector3D.prototype.dot = function ( x, y, z ) {
-  if ( typeof x != 'object' || x == null ) {
-    return this[ 0 ] * ( x || 0 ) +
-           this[ 1 ] * ( y || 0 ) +
-           this[ 2 ] * ( z || 0 );
-  }
-
-  return this[ 0 ] * ( x[ 0 ] || 0 ) +
-         this[ 1 ] * ( x[ 1 ] || 0 ) +
-         this[ 2 ] * ( x[ 2 ] || 0 );
-};
-
-Vector3D.prototype.copy = function () {
-  return new Vector3D( this[ 0 ], this[ 1 ], this[ 2 ] );
-};
-
-Vector3D.prototype.dist = function ( vector ) {
-  var x = ( vector[ 0 ] - this[ 0 ] ),
-      y = ( vector[ 1 ] - this[ 1 ] ),
-      z = ( vector[ 2 ] - this[ 2 ] );
-
-  return sqrt( x * x + y * y + z * z );
-};
-
-Vector3D.prototype.limit = Vector2D.prototype.limit;
-
-Vector3D.prototype.cross = function ( vector ) {
-  return Vector3D.cross( this, vector );
-};
-
-Vector3D.prototype.toString = function () {
-  return 'vec3(' +
-    ( floor( this[ 0 ] * 100 ) * 0.01 ) + ', ' +
-    ( floor( this[ 1 ] * 100 ) * 0.01 ) + ', ' +
-    ( floor( this[ 2 ] * 100 ) * 0.01 ) + ')';
-};
-
-var names = [ 'set', 'lerp', 'add', 'sub', 'mult', 'div', 'setMag', 'normalize', 'rotate', 'limit' ],
-    i = names.length - 1;
-
-for ( ; i >= 0; --i ) {
+_.forEach( [ 'set', 'lerp', 'add', 'sub', 'mult', 'div', 'setMag', 'normalize', 'rotate', 'limit' ], function ( name ) {
+  Vector2D[ name ] = Vector3D[ name ] =
   /* jshint evil: true */
-  Vector2D[ names[ i ] ] = Vector3D[ names[ i ] ] =
-    Function( 'vector, x, y, z, value', 'return vector.copy().' + names[ i ] + '( x, y, z, value );' );
+    Function( 'vec, x, y, z, val', 'return vec.copy().' + name + '( x, y, z, val );' );
   /* jshint evil: false */
-}
+} );
 
 Vector2D.angle = Vector3D.angle = function ( x, y ) {
-  return settings.degrees ?
-    atan2( y, x ) * 180 / pi :
-    atan2( y, x );
+  if ( settings.degrees ) {
+    return atan2( y, x ) * 180 / pi;
+  }
+
+  return atan2( y, x );
 };
 
 Vector2D.random = function () {
@@ -697,26 +689,23 @@ Vector3D.random = function () {
 };
 
 Vector2D.fromAngle = function ( angle ) {
-  return settings.degrees ?
-    new Vector2D( cos( angle *= pi / 180 ), sin( angle ) ) :
-    new Vector2D( cos( angle ), sin( angle ) );
+  if ( settings.degrees ) {
+    angle *= pi / 180;
+  }
+
+  return new Vector2D( cos( angle ), sin( angle ) );
 };
 
 Vector3D.fromAngle = function ( angle ) {
-  return settings.degrees ?
-    new Vector3D( cos( angle *= pi / 180 ), sin( angle ) ) :
-    new Vector3D( cos( angle ), sin( angle ) );
+  if ( settings.degrees ) {
+    angle *= pi / 180;
+  }
+
+  return new Vector3D( cos( angle ), sin( angle ) );
 };
 
-Vector2D.cross = function( a, b ) {
-  return a[ 0 ] * b[ 1 ] - a[ 1 ] * b[ 0 ];
-};
-
-Vector3D.cross = function ( a, b ) {
-  return new Vector3D(
-    a[ 1 ] * b[ 2 ] - a[ 2 ] * b[ 1 ],
-    a[ 2 ] * b[ 0 ] - a[ 0 ] * b[ 2 ],
-    a[ 0 ] * b[ 1 ] - a[ 1 ] * b[ 0 ] );
+Vector2D.cross = function ( a, b ) {
+  return a.x * b.y - a.y * b.x;
 };
 
 /* COLORS */
@@ -796,11 +785,17 @@ var colors = {
   yellowgreen:     '9acd32ff', transparent:          '00000000'
 };
 
-var rhsl = /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
-    rrgb = /^rgb\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$|^\s*rgba\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
-    rhex = /^(?:#)([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])([0-9a-f][0-9a-f])?$/,
-    rhex3 = /^(?:#)([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/,
-    parsed = _.create( null ),
+var regexps = {
+  hsl:  /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
+  rgb:  /^rgb\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$|^\s*rgba\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
+  // this regex works faster:
+  // /^#([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])([0-9a-f][0-9a-f])?$/
+  // than this:
+  hex:  /^#([0-9a-f]{6})([0-9a-f]{2})?$/,
+  hex3: /^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/
+};
+
+var parsed = _.create( null ),
     transparent = [ 0, 0, 0, 0 ];
 
 var color = function ( a, b, c, d ) {
@@ -825,23 +820,23 @@ var color = function ( a, b, c, d ) {
  * parse_color( 'hsla( 0, 100%, 50%, 0.5 )' );
  * // -> hsla(0, 100%, 50%, 0.5)
  */
-var parse_color = function ( string ) {
-  var cache = parsed[ string ] ||
-    parsed[ string = _.trim( string ).toLowerCase() ];
+var parse_color = function ( str ) {
+  var cache = parsed[ str ] ||
+    parsed[ str = _.trim( str ).toLowerCase() ];
 
   if ( !cache ) {
-    if ( ( cache = colors[ string ] ) ) {
-      cache = parsed[ string ] = new ColorData( parse_hex( cache ), RGBA );
-    } else if ( ( cache = rhex.exec( string ) ) ) {
-      cache = parsed[ string ] = new ColorData( parse_hex( format_hex( cache ) ), RGBA );
-    } else if ( ( cache = rrgb.exec( string ) ) ) {
-      cache = parsed[ string ] = new ColorData( compact_match( cache ), RGBA );
-    } else if ( ( cache = rhsl.exec( string ) ) ) {
-      cache = parsed[ string ] = new ColorData( compact_match( cache ), HSLA );
-    } else if ( ( cache = rhex3.exec( string ) ) ) {
-      cache = parsed[ string ] = new ColorData( parse_hex( format_hex( cache, true ) ), RGBA );
+    if ( ( cache = colors[ str ] ) ) {
+      cache = parsed[ str ] = new ColorData( parse_hex( cache ), RGBA );
+    } else if ( ( cache = regexps.hex.exec( str ) ) ) {
+      cache = parsed[ str ] = new ColorData( parse_hex( format_hex( cache ) ), RGBA );
+    } else if ( ( cache = regexps.rgb.exec( str ) ) ) {
+      cache = parsed[ str ] = new ColorData( compact_match( cache ), RGBA );
+    } else if ( ( cache = regexps.hsl.exec( str ) ) ) {
+      cache = parsed[ str ] = new ColorData( compact_match( cache ), HSLA );
+    } else if ( ( cache = regexps.hex3.exec( str ) ) ) {
+      cache = parsed[ str ] = new ColorData( parse_hex( format_hex( cache, true ) ), RGBA );
     } else {
-      throw SyntaxError( string + " isn't valid syntax" );
+      throw SyntaxError( str + " isn't valid syntax" );
     }
   }
 
@@ -858,14 +853,16 @@ var parse_color = function ( string ) {
  * Theoretically, because I didn't test these examples.
  */
 var format_hex = function ( match, short_syntax ) {
+  var r, g, b, a;
+
   if ( !short_syntax ) {
     return match[ 1 ] + ( match[ 2 ] || 'ff' );
   }
 
-  var r = match[ 1 ],
-      g = match[ 2 ],
-      b = match[ 3 ],
-      a = match[ 4 ] || 'f';
+  r = match[ 1 ];
+  g = match[ 2 ];
+  b = match[ 3 ];
+  a = match[ 4 ] || 'f';
 
   return r + r + g + g + b + b + a + a;
 };
@@ -950,7 +947,7 @@ RGBA.prototype.toString = function () {
  * // r = 0, g = 0, b = 0, a = 0
  */
 RGBA.prototype.set = function ( r, g, b, a ) {
-  if ( r == null || typeof r != 'object' && typeof r != 'string' ) {
+  if ( typeof r != 'string' && typeof r != 'object' || r == null ) {
     switch ( undefined ) {
       case r: a = 1; b = g = r = 0; break;
       case g: a = 1; b = g = r = floor( r ); break;
@@ -1070,7 +1067,7 @@ HSLA.prototype.toString = function () {
 };
 
 HSLA.prototype.set = function ( h, s, l, a ) {
-  if ( h == null || typeof h != 'object' && typeof h != 'string' ) {
+  if ( typeof h != 'object' && typeof h != 'string' || h == null ) {
     switch ( undefined ) {
       case h: a = 1; l = s = h = 0; break;
       case s: a = 1; l = floor( h ); s = h = 0; break;
@@ -1892,14 +1889,6 @@ Renderer2D.prototype.font = function ( a, b, c, d, e ) {
   return this._font.set( a, b, c, d, e ), this;
 };
 
-Renderer2D.prototype.save = function () {
-  return this.context.save(), this;
-};
-
-Renderer2D.prototype.restore = function () {
-  return this.context.restore(), this;
-};
-
 Renderer2D.prototype.noFill = function () {
   return this._doFill = false, this;
 };
@@ -1938,9 +1927,11 @@ Renderer2D.prototype.rectAlign = function ( x, y ) {
 };
 
 Renderer2D.prototype.color = function ( a, b, c, d ) {
-  return typeof a == 'string' ?
-    v6[ this.settings.colorMode ]( parse_color( a ) ) :
-    v6[ this.settings.colorMode ]( a, b, c, d );
+  if ( typeof a != 'string' ) {
+    return v6[ this.settings.colorMode ]( a, b, c, d );
+  }
+
+  return v6[ this.settings.colorMode ]( parse_color( a ) );
 };
 
 Renderer2D.prototype.colorMode = function ( mode ) {
@@ -2050,7 +2041,13 @@ Renderer2D.prototype.putImageData = function ( imageData, x, y, sx, sy, sw, sh )
 };
 
 Renderer2D.prototype.rotate = function ( angle ) {
-  return this.context.rotate( settings.degrees ? angle * pi / 180 : angle ), this;
+  if ( settings.degrees ) {
+    this.matrix.rotate( angle * pi / 180 );
+  } else {
+    this.matrix.rotate( angle );
+  }
+
+  return this;
 };
 
 Renderer2D.prototype._fill = function () {
@@ -2089,62 +2086,29 @@ Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
 };
 
 _.forOwnRight( {
-  fontVariant: 'variant', fontStyle: 'style',
-  fontWeight:  'weight',  fontSize:  'size',
-  fontFamily:  'family'
-}, function ( name, methodname ) {
+  fontVariant: 'variant',
+  fontWeight:  'weight',
+  fontFamily:  'family',
+  fontStyle:   'style',
+  fontSize:    'size'
+}, function ( name, methodName ) {
+  Renderer2D.prototype[ methodName ] =
   /* jshint evil: true */
-  this[ methodname ] = Function( 'value', 'return this._font.' + name + ' = value, this;' );
+    Function( 'value', 'return this._font.' + name + ' = value, this;' );
   /* jshint evil: false */
-}, Renderer2D.prototype );
+} );
 
 _.forEachRight( [
-  'scale',  'translate', 'moveTo', 'lineTo', 'setTransform', 'transform'
+  'textBaseline',
+  'lineHeight',
+  'lineWidth',
+  'textAlign'
 ], function ( name ) {
+  Renderer2D.prototype[ name ] =
   /* jshint evil: true */
-  this[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' );
+    Function( 'value', 'return this._' + name + ' = value, this;' );
   /* jshint evil: false */
-}, Renderer2D.prototype );
-
-_.forEachRight( [
-  'lineWidth', 'lineHeight', 'textAlign', 'textBaseline'
-], function ( name ) {
-  /* jshint evil: true */
-  this[ name ] = Function( 'value', 'return this._' + name + ' = value, this;' );
-  /* jshint evil: false */
-}, Renderer2D.prototype );
-
-_.forOwnRight( { Fill: 'fill', Stroke: 'stroke' }, function ( name, Name ) {
-  var _nameColor = '_' + name + 'Color',
-      _doName = '_do' + Name,
-      _name = '_' + name;
-
-  this[ name ] = function ( a, b, c, d ) {
-    // Fill path, e.g.
-    // .fill()
-    if ( a === undefined ) {
-      this[ _name ]();
-    // Set color, e.g.
-    // .fill( 'magenta' )
-    } else if ( typeof a != 'boolean' ) {
-      if ( typeof a == 'string' || this[ _nameColor ].type !== this.settings.colorMode ) {
-        this[ _nameColor ] = this.color( a, b, c, d );
-      } else {
-        this[ _nameColor ].set( a, b, c, d );
-      }
-
-      this[ _doName ] = true;
-    // Do or not to do
-    // .fill( false ) same as .noFill()
-    // But we also can enable it
-    // .fill( true )
-    } else {
-      this[ _doName ] = a;
-    }
-
-    return this;
-  };
-}, Renderer2D.prototype );
+} );
 
 /* PROGRAM */
 
@@ -2801,7 +2765,8 @@ RendererWebGL.prototype.rect = function ( x, y, w, h ) {
 RendererWebGL.prototype.line = function ( x1, y1, x2, y2 ) {
   var gl = this.context,
       buffer = this.buffer,
-      program = this.program;
+      program = this.program,
+      vertices;
 
   if ( !this._doStroke || this._lineWidth <= 0 ) {
     return this;
@@ -2887,34 +2852,53 @@ RendererWebGL.prototype.arc = function ( x, y, r ) {
 RendererWebGL.prototype.polygon = Renderer2D.prototype.polygon;
 RendererWebGL.prototype.font = Renderer2D.prototype.font;
 
-RendererWebGL.prototype.save = function () {
-  return this.matrix.save(), this;
-};
+_.forEachRight( [
+  'setTransform',
+  'transform',
+  'translate',
+  'restore',
+  'scale',
+  'save'
+], function ( name ) {
+  Renderer2D.prototype[ name ] = RendererWebGL.prototype[ name ] =
+  /* jshint evil: true */
+    Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' );
+  /* jshint evil: false */
+} );
 
-RendererWebGL.prototype.restore = function () {
-  return this.matrix.restore(), this;
-};
+_.forOwnRight( { Stroke: 'stroke', Fill: 'fill' }, function ( name, Name ) {
+  var _nameColor = '_' + name + 'Color',
+      _doName = '_do' + Name,
+      _name = '_' + name;
 
-RendererWebGL.prototype.translate = function ( x, y ) {
-  return this.matrix.translate( x, y ), this;
-};
+  Renderer2D.prototype[ name ] = RendererWebGL.prototype[ name ] = function ( a, b, c, d ) {
+    // Fill path, e.g.
+    // .fill()
+    if ( a === undefined ) {
+      this[ _name ]();
+    // Set color, e.g.
+    // .fill( 'magenta' )
+    } else if ( typeof a != 'boolean' ) {
+      if ( typeof a == 'string' || this[ _nameColor ].type !== this.settings.colorMode ) {
+        this[ _nameColor ] = this.color( a, b, c, d );
+      } else {
+        this[ _nameColor ].set( a, b, c, d );
+      }
 
-RendererWebGL.prototype.rotate = function ( angle ) {
-  return this.matrix.rotate( settings.degrees ? angle * pi / 180 : angle ), this;
-};
+      this[ _doName ] = true;
+    // Do or not to do
+    // .fill( false ) same as .noFill()
+    // But we also can enable it
+    // .fill( true )
+    } else {
+      this[ _doName ] = a;
+    }
 
-RendererWebGL.prototype.scale = function ( x, y ) {
-  return this.matrix.scale( x, y ), this;
-};
+    return this;
+  };
+} );
 
-RendererWebGL.prototype.setTransform = function ( a, b, c, d, e, f ) {
-  return this.matrix.setTransform( a, b, c, d, e, f ), this;
-};
-
-RendererWebGL.prototype.transform = function ( a, b, c, d, e, f ) {
-  return this.matrix.transform( a, b, c, d, e, f ), this;
-};
-
+RendererWebGL.prototype.rotate = Renderer2D.prototype.rotate;
 RendererWebGL.prototype.noFill = Renderer2D.prototype.noFill;
 RendererWebGL.prototype.noStroke = Renderer2D.prototype.noStroke;
 
@@ -2948,8 +2932,6 @@ RendererWebGL.prototype.endShape = function () {
 RendererWebGL.prototype.rectAlign = Renderer2D.prototype.rectAlign;
 RendererWebGL.prototype.color = Renderer2D.prototype.color;
 RendererWebGL.prototype.colorMode = Renderer2D.prototype.colorMode;
-RendererWebGL.prototype.fill = Renderer2D.prototype.fill;
-RendererWebGL.prototype.stroke = Renderer2D.prototype.stroke;
 RendererWebGL.prototype.lineWidth = Renderer2D.prototype.lineWidth;
 
 // todo implement point
@@ -3103,7 +3085,7 @@ var Camera = function ( options, renderer ) {
 
   /** Will be zoom in/out animation with the linear effect? */
   this.linearZoom = options.linearZoom || {
-    zoomIn : true,
+    zoomIn: true,
     zoomOut: true
   };
 };
@@ -3129,8 +3111,8 @@ Camera.prototype = {
   /** Changes `lookAt` location. */
   lookAt: function ( at ) {
     var loc = this.location;
-    loc[ 2 ] = this.offset[ 0 ] / this.scale[ 0 ] - ( loc[ 4 ] = at[ 0 ] );
-    loc[ 3 ] = this.offset[ 1 ] / this.scale[ 0 ] - ( loc[ 5 ] = at[ 1 ] );
+    loc[ 2 ] = this.offset.x / this.scale[ 0 ] - ( loc[ 4 ] = at.x );
+    loc[ 3 ] = this.offset.y / this.scale[ 0 ] - ( loc[ 5 ] = at.y );
     return this;
   },
 
@@ -3144,8 +3126,8 @@ Camera.prototype = {
     var scl = this.scale[ 0 ];
 
     return new Vector2D(
-      ( this.offset[ 0 ] - this.location[ 0 ] * scl ) / scl,
-      ( this.offset[ 1 ] - this.location[ 1 ] * scl ) / scl );
+      ( this.offset.x - this.location[ 0 ] * scl ) / scl,
+      ( this.offset.y - this.location[ 1 ] * scl ) / scl );
   },
 
   /** There is no need to draw something if it's not visible. */
@@ -3163,10 +3145,10 @@ Camera.prototype = {
       renderer = this.renderer;
     }
 
-    return x + w > at[ 0 ] - off[ 0 ] / scl &&
-           x     < at[ 0 ] + ( renderer.width - off[ 0 ] ) / scl &&
-           y + h > at[ 1 ] - off[ 1 ] / scl &&
-           y     < at[ 1 ] + ( renderer.height - off[ 1 ] ) / scl;
+    return x + w > at.x - off.x / scl &&
+           x     < at.x + ( renderer.width - off.x ) / scl &&
+           y + h > at.y - off.y / scl &&
+           y     < at.y + ( renderer.height - off.y ) / scl;
   },
 
   /** Increases `scale[0]` to `scale[2]` with `speed[2]` speed. */

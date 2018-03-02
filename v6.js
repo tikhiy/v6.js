@@ -8,14 +8,13 @@
  */
 
 /* jshint esversion: 5, unused: true, undef: true */
-/* global Float32Array, Uint8ClampedArray, ImageData */
+/* global Float32Array, Uint8ClampedArray, ImageData, document */
 
 ;( function ( window, undefined ) {
 
 'use strict';
 
 var _ = window.peako,
-    document = window.document,
     warn = window.console && window.console.warn || _.noop,
     err = window.console && window.console.error || _.noop,
     floor = Math.floor,
@@ -49,40 +48,47 @@ var copy_array = function ( a, b, length ) {
   return a;
 };
 
-/**
- * Checks if `canvas` has `type` context, using `getContext`.
- */
-var has_context = function ( canvas, type ) {
-  try {
-    if ( canvas.getContext( type ) ) {
-      return true;
-    }
-  } catch ( ex ) {
-    warn( ex );
-  }
-
-  return false;
-};
+var canvas = document.createElement( 'canvas' );
 
 var support = {
-  webgl: function ( canvas ) {
-    if ( typeof canvas.getContext == 'function' ) {
-      if ( has_context( canvas, 'webgl' ) ) {
-        return 1;
-      }
+  webgl: _.once( function () {
+    var types, i;
 
-      if ( has_context( canvas, 'webgl-experemental' ) ) {
-        return 2;
+    if ( typeof canvas.getContext != 'function' ) {
+      return null;
+    }
+
+    types = [
+      // These types from:
+      // https://m.habrahabr.ru/post/112430/
+      // 'moz-webgl',
+      // 'webkit-3d',
+      'experimental-webgl',
+      'webgl',
+      // From MDN:
+      // https://hacks.mozilla.org/2017/01/webgl-2-lands-in-firefox/
+      // WebGL 2 is not strictly backwards compatible with WebGL 1
+      // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1
+      // 'webgl2'
+    ];
+
+    for ( i = types.length - 1; i >= 0; --i ) {
+      try {
+        if ( canvas.getContext( types[ i ] ) ) {
+          return types[ i ];
+        }
+      } catch ( ex ) {
+        // warn( "Can't get " + types[ i ] + ' context', ex );
       }
     }
 
-    return 0;
-  }( document.createElement( 'canvas' ) )
+    return null;
+  } )
 };
 
 var v6 = function ( opts ) {
   if ( ( opts && opts.mode || dflt_opts.renderer.mode ) === 'webgl' ) {
-    if ( support.webgl ) {
+    if ( support.webgl() ) {
       return new RendererWebGL( opts );
     }
 
@@ -164,9 +170,20 @@ var dist = function ( x1, y1, x2, y2 ) {
   return sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 };
 
-// var purple = v6.lerpColor( 'red', 'blue', 0.5 );
+/**
+ * Returns the interpolated color between the `a` and `b` colors.
+ */
 
-var lerp_color = function ( a, b, val ) {
+// var
+//   red = v6.hsla( 0, 50, 100 ),
+//   blue = v6.rgba( 0, 0, 255 );
+//
+// var purple = v6.lerpColor( red, blue, 0.5 );
+// // -> hsla purple color
+// var purple = v6.lerpColor( 'red', 'blue', 0.5 );
+// // -> rgba purple color
+
+var lerpColor = function ( a, b, val ) {
   if ( typeof a != 'object' ) {
     a = parse_color( a );
   }
@@ -174,19 +191,29 @@ var lerp_color = function ( a, b, val ) {
   return a.lerp( b, val );
 };
 
+/**
+ * Returns the interpolated value between the `a` and `b` values.
+ */
 var lerp = function ( a, b, value ) {
   return a + ( b - a ) * value;
 };
 
-var set_dflt_draw_settings = function ( obj ) {
+/**
+ * Used to set the default drawing settings to a new renderer or when
+ * renderer.pop() called with empty stack of saved drawing settings.
+ */
+var set_dflt_draw_settings = function ( obj, renderer ) {
   copy_draw_settings( obj, dflt_draw_settings );
-  obj._strokeColor = obj.color();
-  obj._fillColor = obj.color();
+  obj._strokeColor = renderer.color();
+  obj._fillColor = renderer.color();
   obj._font = new Font();
   return obj;
 };
 
-/** Copy renderer draw settings. */
+/**
+ * Copy the drawing settings from `src` to another object. When `all` is true, it
+ * will also copy the nested objects: "_strokeStyle", "_fillStyle", "_font".
+ */
 var copy_draw_settings = function ( obj, src, all ) {
   if ( all ) {
     obj._fillColor[ 0 ]   = src._fillColor[ 0 ];
@@ -225,6 +252,17 @@ var set_image_smoothing = function ( ctx, val ) {
 
   return ctx.imageSmoothingEnabled;
 };
+
+/**
+ * Used to implement the .rectAlign() method.
+ */
+
+// var
+//   x = 100,
+//   w = 50;
+//
+// x = align( x, w, 'center' );
+// // -> 75
 
 var align = function ( value, size, align ) {
   switch ( align ) {
@@ -302,6 +340,7 @@ var Ticker = function ( update, render, ctx ) {
 
   this.lastReqAnimId = 0;
   this.lastTime = 0;
+  this.totalTime = 0;
   this.skipped = 0;
   this.stopped = true;
   this.update = update;
@@ -327,13 +366,14 @@ var Ticker = function ( update, render, ctx ) {
       return;
     }
 
+    // User call, e.g. ticker.tick()
     if ( !now ) {
       now = _.timestamp();
     }
 
     dt = min( 1, ( now - that.lastTime ) * 0.001 );
     that.skipped += dt;
-    that.total += dt;
+    that.totalTime += dt;
 
     while ( that.skipped > step && !that.stopped ) {
       that.skipped -= step;
@@ -436,15 +476,15 @@ Vector2D.prototype = {
     return this;
   },
 
-  mult: function ( value ) {
-    this.x = this.x * value || 0;
-    this.y = this.y * value || 0;
+  mult: function ( val ) {
+    this.x = this.x * val || 0;
+    this.y = this.y * val || 0;
     return this;
   },
 
-  div: function ( value ) {
-    this.x = this.x / value || 0;
-    this.y = this.y / value || 0;
+  div: function ( val ) {
+    this.x = this.x / val || 0;
+    this.y = this.y / val || 0;
     return this;
   },
 
@@ -464,8 +504,8 @@ Vector2D.prototype = {
     return this.x * this.x + this.y * this.y;
   },
 
-  setMag: function ( value ) {
-    return this.normalize().mult( value );
+  setMag: function ( val ) {
+    return this.normalize().mult( val );
   },
 
   normalize: function () {
@@ -490,8 +530,8 @@ Vector2D.prototype = {
     return new Vector2D( this.x, this.y );
   },
 
-  dist: function ( vector ) {
-    return dist( this.x, this.y, vector.x, vector.y );
+  dist: function ( vec ) {
+    return dist( this.x, this.y, vec.x, vec.y );
   },
 
   limit: function ( value ) {
@@ -504,7 +544,7 @@ Vector2D.prototype = {
     return this;
   },
 
-  cross: function( vector ) {
+  cross: function ( vector ) {
     return Vector2D.cross( this, vector );
   },
 
@@ -661,7 +701,18 @@ Vector3D.prototype.normalize = Vector2D.prototype.normalize;
 Vector3D.prototype.limit = Vector2D.prototype.limit;
 Vector3D.prototype.rotate = Vector2D.prototype.rotate;
 
-_.forEach( [ 'set', 'lerp', 'add', 'sub', 'mult', 'div', 'setMag', 'normalize', 'rotate', 'limit' ], function ( name ) {
+_.forEach( [
+  'normalize',
+  'setMag',
+  'rotate',
+  'limit',
+  'lerp',
+  'mult',
+  'div',
+  'add',
+  'sub',
+  'set'
+], function ( name ) {
   Vector2D[ name ] = Vector3D[ name ] =
   /* jshint evil: true */
     Function( 'vec, x, y, z, val', 'return vec.copy().' + name + '( x, y, z, val );' );
@@ -1174,6 +1225,11 @@ HSLA.prototype.lerp = function ( color, value ) {
     lerp( that[ 2 ], color[ 2 ], value ) ).hsla();
 };
 
+HSLA.prototype.contrast = function () {
+  // can i make it more optimized?
+  return this.rgba().contrast();
+};
+
 // it also requires optimization
 HSLA.prototype.shade = function ( value ) {
   var shaded_hsl = new HSLA();
@@ -1594,17 +1650,19 @@ Renderer2D.prototype.push = function () {
   if ( this._saves_stack[ ++this._cur_save_index ] ) {
     copy_draw_settings( this._saves_stack[ this._cur_save_index ], this );
   } else {
-    this._saves_stack.push( set_dflt_draw_settings( {} ) );
+    this._saves_stack.push( set_dflt_draw_settings( {}, this ) );
   }
 
   return this;
 };
 
 Renderer2D.prototype.pop = function () {
-  if ( this._saves_stack.length ) {
-    copy_draw_settings( this, this._saves_stack[ this.index-- ], true );
+  var save = this._saves_stack[ this._cur_save_index-- ];
+
+  if ( save ) {
+    copy_draw_settings( this, save, true );
   } else {
-    set_dflt_draw_settings( this );
+    set_dflt_draw_settings( this, this );
   }
 
   return this;
@@ -2866,7 +2924,10 @@ _.forEachRight( [
   /* jshint evil: false */
 } );
 
-_.forOwnRight( { Stroke: 'stroke', Fill: 'fill' }, function ( name, Name ) {
+_.forOwnRight( {
+  stroke: 'Stroke',
+  fill: 'Fill'
+}, function ( Name, name ) {
   var _nameColor = '_' + name + 'Color',
       _doName = '_do' + Name,
       _name = '_' + name;
@@ -2940,7 +3001,7 @@ RendererWebGL.prototype.point = function ( x, y ) {
     .push()
     .noStroke()
     .fill( this._strokeColor )
-    .arc( x, y, this._lineWidth >> 1 )
+    .arc( x, y, this._lineWidth * 0.5 )
     .pop();
 };
 
@@ -2984,7 +3045,7 @@ var create_renderer = function ( renderer, mode, opts ) {
   renderer.index = ++renderer_index;
   /** Stack of saved draw settings (push, pop). */
   renderer._saves_stack = [];
-  renderer._cur_save_index = 0;
+  renderer._cur_save_index = -1;
   /** Shape vertices (beginShape, vertex, endShape). */
   renderer._vertices = [];
 
@@ -2997,22 +3058,17 @@ var create_renderer = function ( renderer, mode, opts ) {
 
   canv = renderer.canvas;
 
-  // Set default draw settings
-  renderer.pop();
+  // Set default drawing settings
+  set_dflt_draw_settings( renderer, renderer );
 
   if ( mode === '2d' ) {
     renderer.context = canv.getContext( '2d', ctx_opts );
     renderer.smooth( renderer.settings.smooth );
   } else if ( mode === 'webgl' ) {
-    switch ( support.webgl ) {
-      case 1:
-        renderer.context = canv.getContext( 'webgl', ctx_opts );
-        break;
-      case 2:
-        renderer.context = canv.getContext( 'webgl-experemental', ctx_opts );
-        break;
-      case 0:
-        throw Error( "It's not possible to get the WebGL context" );
+    if ( ( mode = support.webgl() ) ) {
+      renderer.context = canv.getContext( mode, ctx_opts );
+    } else {
+      throw Error( "It's not possible to get the WebGL context" );
     }
   }
 
@@ -3220,7 +3276,7 @@ v6.program = program;
 v6.map = map;
 v6.dist = dist;
 v6.lerp = lerp;
-v6.lerpColor = lerp_color;
+v6.lerpColor = lerpColor;
 v6.getShaderSource = get_source;
 v6.support = support;
 v6.filters = filters;

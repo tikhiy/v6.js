@@ -572,6 +572,19 @@ Vector2D.prototype = {
     return this;
   },
 
+  setAngle: function ( angle ) {
+    var mag = this.mag();
+
+    if ( settings.degrees ) {
+      angle *= pi / 180;
+    }
+
+    this.x = mag * cos( angle );
+    this.y = mag * sin( angle );
+
+    return this;
+  },
+
   constructor: Vector2D
 };
 
@@ -694,12 +707,13 @@ Vector3D.prototype = {
   constructor: Vector3D
 };
 
-Vector3D.prototype.angle = Vector2D.prototype.angle;
-Vector3D.prototype.mag = Vector2D.prototype.mag;
-Vector3D.prototype.setMag = Vector2D.prototype.setMag;
+Vector3D.prototype.angle     = Vector2D.prototype.angle;
+Vector3D.prototype.mag       = Vector2D.prototype.mag;
+Vector3D.prototype.setMag    = Vector2D.prototype.setMag;
 Vector3D.prototype.normalize = Vector2D.prototype.normalize;
-Vector3D.prototype.limit = Vector2D.prototype.limit;
-Vector3D.prototype.rotate = Vector2D.prototype.rotate;
+Vector3D.prototype.limit     = Vector2D.prototype.limit;
+Vector3D.prototype.rotate    = Vector2D.prototype.rotate;
+Vector3D.prototype.setAngle  = Vector2D.prototype.setAngle;
 
 _.forEach( [
   'normalize',
@@ -2136,10 +2150,10 @@ Renderer2D.prototype.camera = function ( options ) {
 };
 
 Renderer2D.prototype.setTransformFromCamera = function ( camera ) {
-  var scl = camera.scale[ 0 ],
-      loc = camera.location;
+  var zoom = camera.zoom[ 0 ],
+      pos = camera.position;
 
-  this.matrix.setTransform( scl, 0, 0, scl, loc[ 0 ] * scl, loc[ 1 ] * scl );
+  this.matrix.setTransform( zoom, 0, 0, zoom, pos[ 0 ] * zoom, pos[ 1 ] * zoom );
   return this;
 };
 
@@ -2881,7 +2895,7 @@ var create_polygon = function ( n ) {
 };
 
 /**
- * Draw polygon in `x` and `y` location with
+ * Draw polygon in `x` and `y` position with
  * the width (2 * `rx`) and height (2 * `ry`),
  * resolution `n`, and rotated by `a` angle.
  */
@@ -3110,10 +3124,10 @@ var Camera = function ( options, renderer ) {
     1  // zoom out speed
   ];
 
-  this.scale = options.scale || [
-    1, // scale
-    1, // min scale (zoom out)
-    1  // max scale (zoom in)
+  this.zoom = options.zoom || [
+    1, // zoom
+    1, // min zoom (zoom out)
+    1  // max zoom (zoom in)
   ];
 
   /**
@@ -3133,10 +3147,10 @@ var Camera = function ( options, renderer ) {
     this.offset = new Vector2D();
   }
 
-  this.location = [
-    0, 0, // current location
-    0, 0, // tranformed location of the object to be viewed
-    0, 0  // not transformed location...
+  this.position = [
+    0, 0, // current position
+    0, 0, // tranformed position of the object to be viewed
+    0, 0  // not transformed position...
   ];
 
   /** Will be zoom in/out animation with the linear effect? */
@@ -3150,40 +3164,40 @@ Camera.prototype = {
   /** Moves the camera to the `lookAt` position with its speed. */
   update: function ( /* dt */ ) {
     // how to use delta time here?
-    var loc = this.location,
+    var pos = this.position,
         spd = this.speed;
 
-    if ( loc[ 0 ] !== loc[ 2 ] ) {
-      loc[ 0 ] += ( loc[ 2 ] - loc[ 0 ] ) * spd[ 0 ];
+    if ( pos[ 0 ] !== pos[ 2 ] ) {
+      pos[ 0 ] += ( pos[ 2 ] - pos[ 0 ] ) * spd[ 0 ];
     }
 
-    if ( loc[ 1 ] !== loc[ 3 ] ) {
-      loc[ 1 ] += ( loc[ 3 ] - loc[ 1 ] ) * spd[ 1 ];
+    if ( pos[ 1 ] !== pos[ 3 ] ) {
+      pos[ 1 ] += ( pos[ 3 ] - pos[ 1 ] ) * spd[ 1 ];
     }
 
     return this;
   },
 
-  /** Changes `lookAt` location. */
+  /** Changes `lookAt` position. */
   lookAt: function ( at ) {
-    var loc = this.location;
-    loc[ 2 ] = this.offset.x / this.scale[ 0 ] - ( loc[ 4 ] = at.x );
-    loc[ 3 ] = this.offset.y / this.scale[ 0 ] - ( loc[ 5 ] = at.y );
+    var pos = this.position;
+    pos[ 2 ] = this.offset.x / this.zoom[ 0 ] - ( pos[ 4 ] = at.x );
+    pos[ 3 ] = this.offset.y / this.zoom[ 0 ] - ( pos[ 5 ] = at.y );
     return this;
   },
 
   /** Returns vector that is passed to the `lookAt` method. */
   shouldLookAt: function () {
-    return new Vector2D( this.location[ 4 ], this.location[ 5 ] );
+    return new Vector2D( this.position[ 4 ], this.position[ 5 ] );
   },
 
   /** At what position the camera looking now? */
   looksAt: function () {
-    var scl = this.scale[ 0 ];
+    var zoom = this.zoom[ 0 ];
 
     return new Vector2D(
-      ( this.offset.x - this.location[ 0 ] * scl ) / scl,
-      ( this.offset.y - this.location[ 1 ] * scl ) / scl );
+      ( this.offset.x - this.position[ 0 ] * zoom ) / zoom,
+      ( this.offset.y - this.position[ 1 ] * zoom ) / zoom );
   },
 
   /** There is no need to draw something if it's not visible. */
@@ -3193,50 +3207,50 @@ Camera.prototype = {
   // }
 
   sees: function ( x, y, w, h, renderer ) {
-    var off = this.offset,
-        scl = this.scale[ 0 ],
+    var zoom = this.zoom[ 0 ],
+        off = this.offset,
         at = this.looksAt();
 
     if ( !renderer ) {
       renderer = this.renderer;
     }
 
-    return x + w > at.x - off.x / scl &&
-           x     < at.x + ( renderer.width - off.x ) / scl &&
-           y + h > at.y - off.y / scl &&
-           y     < at.y + ( renderer.height - off.y ) / scl;
+    return x + w > at.x - off.x / zoom &&
+           x     < at.x + ( renderer.width - off.x ) / zoom &&
+           y + h > at.y - off.y / zoom &&
+           y     < at.y + ( renderer.height - off.y ) / zoom;
   },
 
-  /** Increases `scale[0]` to `scale[2]` with `speed[2]` speed. */
+  /** Increases `zoom[0]` to `zoom[2]` with `speed[2]` speed. */
   zoomIn: function () {
-    var scl = this.scale,
+    var zoom = this.zoom,
         spd;
 
-    if ( scl[ 0 ] !== scl[ 2 ] ) {
+    if ( zoom[ 0 ] !== zoom[ 2 ] ) {
       if ( this.linearZoom.zoomIn ) {
-        spd = this.speed[ 2 ] * scl[ 0 ];
+        spd = this.speed[ 2 ] * zoom[ 0 ];
       } else {
         spd = this.speed[ 2 ];
       }
 
-      scl[ 0 ] = min( scl[ 0 ] + spd, scl[ 2 ] );
+      zoom[ 0 ] = min( zoom[ 0 ] + spd, zoom[ 2 ] );
     }
   },
 
-  /** Decreases `scale[0]` to `scale[1]` with `speed[3]` speed. */
+  /** Decreases `zoom[0]` to `zoom[1]` with `speed[3]` speed. */
   zoomOut: function () {
     // copy-paste :(
-    var scl = this.scale,
+    var zoom = this.zoom,
         spd;
 
-    if ( scl[ 0 ] !== scl[ 1 ] ) {
+    if ( zoom[ 0 ] !== zoom[ 1 ] ) {
       if ( this.linearZoom.zoomOut ) {
-        spd = this.speed[ 3 ] * scl[ 0 ];
+        spd = this.speed[ 3 ] * zoom[ 0 ];
       } else {
         spd = this.speed[ 3 ];
       }
 
-      scl[ 0 ] = max( scl[ 0 ] - spd, scl[ 1 ] );
+      zoom[ 0 ] = max( zoom[ 0 ] - spd, zoom[ 1 ] );
     }
   },
 

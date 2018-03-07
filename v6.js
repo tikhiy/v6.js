@@ -8,7 +8,7 @@
  */
 
 /* jshint esversion: 5, unused: true, undef: true */
-/* global Float32Array, Uint8ClampedArray, ImageData, document */
+/* global Float32Array, Uint8ClampedArray, ImageData, document, platform */
 
 ;( function ( window, undefined ) {
 
@@ -48,47 +48,73 @@ var copy_array = function ( a, b, length ) {
   return a;
 };
 
-var canvas = document.createElement( 'canvas' );
+var get_gl_ctx_name = _.once( function () {
+  var canvas = document.createElement( 'canvas' ),
+      type = null,
+      types, i;
 
-var support = {
-  webgl: _.once( function () {
-    var types, i;
-
-    if ( typeof canvas.getContext != 'function' ) {
-      return null;
-    }
-
-    types = [
-      // These types from:
-      // https://m.habrahabr.ru/post/112430/
-      // 'moz-webgl',
-      // 'webkit-3d',
-      'experimental-webgl',
-      'webgl',
-      // From MDN:
-      // https://hacks.mozilla.org/2017/01/webgl-2-lands-in-firefox/
-      // WebGL 2 is not strictly backwards compatible with WebGL 1
-      // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1
-      // 'webgl2'
-    ];
-
-    for ( i = types.length - 1; i >= 0; --i ) {
-      try {
-        if ( canvas.getContext( types[ i ] ) ) {
-          return types[ i ];
-        }
-      } catch ( ex ) {
-        // warn( "Can't get " + types[ i ] + ' context', ex );
-      }
-    }
-
+  if ( typeof canvas.getContext != 'function' ) {
+    canvas = null;
     return null;
-  } )
-};
+  }
+
+  types = [
+    // These types from:
+    // https://m.habrahabr.ru/post/112430/
+    // 'moz-webgl',
+    // 'webkit-3d',
+    'experimental-webgl',
+    'webgl'
+    // From MDN:
+    // https://hacks.mozilla.org/2017/01/webgl-2-lands-in-firefox/
+    // WebGL 2 is not strictly backwards compatible with WebGL 1
+    // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1
+    // 'webgl2'
+  ];
+
+  for ( i = types.length - 1; i >= 0; --i ) {
+    try {
+      if ( canvas.getContext( types[ i ] ) ) {
+        type = types[ i ];
+        break;
+      }
+    } catch ( ex ) {
+      // warn( "Can't get " + types[ i ] + ' context', ex );
+    }
+  }
+
+  canvas = null;
+  return type;
+} );
+
+var get_renderer_auto_mode = _.once( function () {
+  var touchable = 'ontouchend' in window && 'ontouchmove' in window && 'ontouchstart' in window,
+      safari;
+
+  if ( 'platform' in window && platform ) {
+    safari = platform.os &&
+      platform.os.family === 'iOS' &&
+      platform.name === 'Safari';
+  } else {
+    safari = false;
+  }
+
+  if ( touchable && !safari ) {
+    return 'webgl';
+  }
+
+  return '2d';
+} );
 
 var v6 = function ( opts ) {
-  if ( ( opts && opts.mode || dflt_opts.renderer.mode ) === 'webgl' ) {
-    if ( support.webgl() ) {
+  var mode = opts && opts.mode || dflt_opts.renderer.mode;
+
+  if ( mode === 'auto' ) {
+    mode = get_renderer_auto_mode();
+  }
+
+  if ( mode === 'webgl' ) {
+    if ( get_gl_ctx_name() ) {
       return new RendererWebGL( opts );
     }
 
@@ -112,7 +138,7 @@ var dflt_opts = {
       colorMode: 'rgba'
     },
 
-    /** One of: "2d", "webgl". */
+    /** One of: "2d", "webgl", "auto". */
     mode: '2d',
     /**
      * MDN: Boolean that indicates if the canvas contains an alpha channel. If
@@ -853,9 +879,6 @@ var colors = {
 var regexps = {
   hsl:  /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
   rgb:  /^rgb\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$|^\s*rgba\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
-  // this regex works faster:
-  // /^#([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])([0-9a-f][0-9a-f])?$/
-  // than this:
   hex:  /^#([0-9a-f]{6})([0-9a-f]{2})?$/,
   hex3: /^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/
 };
@@ -980,7 +1003,6 @@ var RGBA = function ( r, g, b, a ) {
   this.set( r, g, b, a );
 };
 
-RGBA.prototype.constructor = RGBA;
 RGBA.prototype.type = 'rgba';
 
 RGBA.prototype.contrast = function () {
@@ -1120,7 +1142,6 @@ var HSLA = function ( h, s, l, a ) {
   this.set( h, s, l, a );
 };
 
-HSLA.prototype.constructor = HSLA;
 HSLA.prototype.type = 'hsla';
 
 HSLA.prototype.toString = function () {
@@ -1298,7 +1319,6 @@ var Font = function ( style, variant, weight, size, family ) {
   this.set( style, variant, weight, size, family );
 };
 
-Font.prototype.constructor = Font;
 Font.prototype.style = Font.prototype.variant = Font.prototype.weight = 'normal';
 Font.prototype.size = 'medium';
 Font.prototype.family = 'sans-serif';
@@ -1418,7 +1438,6 @@ var Image = function ( path, x, y, w, h ) {
   }
 };
 
-Image.prototype.constructor = Image;
 Image.prototype.x = Image.prototype.y = Image.prototype.width = Image.prototype.height = 0;
 Image.prototype.loaded = false;
 Image.prototype.path = '';
@@ -1460,8 +1479,6 @@ var loader = function () {
 var Loader = function () {
   this.list = _.create( null );
 };
-
-Loader.prototype.constructor = Loader;
 
 /**
  * .add( 'id', 'path.json' );
@@ -1642,8 +1659,6 @@ var Renderer2D = function ( options ) {
     beginPath: false
   };
 };
-
-Renderer2D.prototype.constructor = Renderer2D;
 
 /**
  * Adds <v6.Renderer2D>.canvas to the body element.
@@ -2011,18 +2026,21 @@ Renderer2D.prototype.colorMode = function ( mode ) {
 };
 
 var get_polygon = function ( n ) {
-  return polygons[ n ] ||
-    ( polygons[ n ] = create_polygon( n ) );
+  return polygons[ n ] || ( polygons[ n ] = create_polygon( n ) );
 };
 
 Renderer2D.prototype._polygon = function ( x, y, rx, ry, n, a, degrees ) {
   var polygon = get_polygon( n ),
       context = this.context;
 
+  if ( degrees ) {
+    a *= pi / 180;
+  }
+
   context.save();
   context.translate( x, y );
-  context.rotate( degrees ? a * pi / 180 : a );
-  this.drawVertices( polygon, polygon.length >> 1, rx, ry );
+  context.rotate( a );
+  this.drawVertices( polygon, polygon.length * 0.5, rx, ry );
   context.restore();
   return this;
 };
@@ -2196,12 +2214,11 @@ var Program = function ( context, vShader, fShader ) {
   this.attributes = _.create( null );
   this.uniforms = _.create( null );
   this.samplers = [];
+  this.loadedAttributes = false;
+  this.loadedUniforms = false;
   this.loadAttributes();
   this.loadUniforms();
 };
-
-Program.prototype.constructor = Program;
-Program.prototype.loadedAttributes = Program.prototype.loadedUniforms = false;
 
 Program.prototype.loadAttributes = function () {
   if ( !this.loadedAttributes ) {
@@ -2375,8 +2392,6 @@ var Shader = function ( v, f ) {
   this.programs = _.create( null );
 };
 
-Shader.prototype.constructor = Shader;
-
 Shader.prototype.create = function ( renderer ) {
   if ( !this.programs[ renderer.index ] ) {
     this.programs[ renderer.index ] = new Program( renderer.context,
@@ -2422,7 +2437,6 @@ var get_source = function ( script ) {
 
 /**
  * Wrapper for the WebGL buffer.
- * But I want to delete this.
  */
 
 var buffer = function ( context ) {
@@ -2433,8 +2447,6 @@ var Buffer = function ( context ) {
   this.context = context;
   this.buffer = context.createBuffer();
 };
-
-Buffer.prototype.constructor = Buffer;
 
 Buffer.prototype.bind = function () {
   this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffer );
@@ -2460,7 +2472,6 @@ var Transform = function () {
   this.matrix = mat3.identity();
 };
 
-Transform.prototype.constructor = Transform;
 Transform.prototype.index = -1;
 
 Transform.prototype.setTransform = function ( a, b, c, d, e, f ) {
@@ -2670,7 +2681,6 @@ var RendererWebGL = function ( options ) {
   this.blending( options.blending );
 };
 
-RendererWebGL.prototype.constructor = RendererWebGL;
 RendererWebGL.prototype.add = Renderer2D.prototype.add;
 RendererWebGL.prototype.destroy = Renderer2D.prototype.destroy;
 RendererWebGL.prototype.push = Renderer2D.prototype.push;
@@ -2707,7 +2717,7 @@ RendererWebGL.prototype._clear_color = function ( r, g, b, a ) {
 };
 
 RendererWebGL.prototype.clearColor = function ( a, b, c, d ) {
-  var rgba = fast_rgba( this.color( a, b, c, d ) );
+  var rgba = this.color( a, b, c, d ).rgba();
 
   return this._clear_color(
     rgba[ 0 ] / 255,
@@ -2736,14 +2746,6 @@ RendererWebGL.prototype._background_color = function ( r, g, b, a ) {
 
   gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 );
   return this;
-};
-
-var fast_rgba = function ( color ) {
-  if ( color.type === 'rgba' ) {
-    return color;
-  }
-
-  return color.rgba();
 };
 
 RendererWebGL.prototype.backgroundColor = function ( a, b, c, d ) {
@@ -2877,15 +2879,19 @@ var polygons = _.create( null );
  * Values will be between -1 and 1 (sin and cos uses).
  */
 var create_polygon = function ( n ) {
+  // TODODODODODODODO
   var step = 2 * pi / n,
       int_n = floor( n ),
       vertices = new Float32Array( int_n * 2 + 2 ),
+      // ???
       i = int_n,
       angle = step * n;
 
+  // WHAT R I DOING??!!
   vertices[     int_n * 2 ] = cos( angle );
   vertices[ 1 + int_n * 2 ] = sin( angle );
 
+  // WHY???
   for ( ; i >= 0; --i ) {
     vertices[     i * 2 ] = cos( angle = step * i );
     vertices[ 1 + i * 2 ] = sin( angle );
@@ -2902,13 +2908,17 @@ var create_polygon = function ( n ) {
 RendererWebGL.prototype._polygon = function ( x, y, rx, ry, n, a, degrees ) {
   var polygon = get_polygon( n );
 
+  if ( degrees ) {
+    a *= pi / 180;
+  }
+
   this.matrix
     .save()
     .translate( x, y )
-    .rotate( degrees ? a * pi / 180 : a )
+    .rotate( a )
     .scale( rx, ry );
 
-  this.drawVertices( polygon, polygon.length >> 1 );
+  this.drawVertices( polygon, polygon.length * 0.5 );
   this.matrix.restore();
   return this;
 };
@@ -3079,7 +3089,7 @@ var create_renderer = function ( renderer, mode, opts ) {
     renderer.context = canv.getContext( '2d', ctx_opts );
     renderer.smooth( renderer.settings.smooth );
   } else if ( mode === 'webgl' ) {
-    if ( ( mode = support.webgl() ) ) {
+    if ( ( mode = get_gl_ctx_name() ) ) {
       renderer.context = canv.getContext( mode, ctx_opts );
     } else {
       throw Error( "It's not possible to get the WebGL context" );
@@ -3180,9 +3190,13 @@ Camera.prototype = {
 
   /** Changes `lookAt` position. */
   lookAt: function ( at ) {
-    var pos = this.position;
-    pos[ 2 ] = this.offset.x / this.zoom[ 0 ] - ( pos[ 4 ] = at.x );
-    pos[ 3 ] = this.offset.y / this.zoom[ 0 ] - ( pos[ 5 ] = at.y );
+    var pos = this.position,
+        off = this.offset,
+        zoom = this.zoom;
+
+    pos[ 2 ] = off.x / zoom[ 0 ] - ( pos[ 4 ] = at.x );
+    pos[ 3 ] = off.y / zoom[ 0 ] - ( pos[ 5 ] = at.y );
+
     return this;
   },
 
@@ -3292,7 +3306,6 @@ v6.dist = dist;
 v6.lerp = lerp;
 v6.lerpColor = lerpColor;
 v6.getShaderSource = get_source;
-v6.support = support;
 v6.filters = filters;
 v6.shapes = shapes;
 v6.options = dflt_opts;

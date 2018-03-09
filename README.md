@@ -1,8 +1,11 @@
 # v6
+
 A simple graphics library, with which you can easily create cool games and applications.
 
 ## Install
+
 This library has a dependency on [Peako](https://github.com/silent-tempest/Peako).
+
 ```html
 <!-- Import from GitHub CDN. -->
 <script src="https://rawgit.com/silent-tempest/Peako/master/peako.js"></script>
@@ -14,7 +17,9 @@ This library has a dependency on [Peako](https://github.com/silent-tempest/Peako
 ```
 
 ## Hello World
+
 A simple example of use this library:
+
 ```javascript
 /** Create and setup the renderer. */
 var renderer = v6()
@@ -30,7 +35,7 @@ var ticker = v6.ticker(update, render)
 
 /** Update function (you can use `deltaTime`, it's passed as the first argument). */
 function update() {
-  sides = v6.map(Math.sin(ticker.total), -1, 1, 3, 12);
+  sides = v6.map(Math.sin(ticker.totalTime), -1, 1, 3, 12);
 }
 
 /** Render function. */
@@ -44,3 +49,154 @@ function render() {
     .polygon(x, y, radius, sides);
 }
 ```
+
+## v6.ticker(update, render, context)
+
+This class used to loop an animation.
+
+#### Simple example
+
+Do you wrote code like this before?
+
+```
+var reqAnimFrame = requestAnimationFrame || lalala...;
+
+function loop () {
+  reqAnimFrame(loop);
+  someDrawStuff();
+}
+
+loop();
+```
+
+Now you can write this:
+
+```
+v6
+  .ticker(someDrawStuff)
+  .tick();
+```
+
+It will work well in old browsers too.
+
+#### Adavnced example
+
+```
+var game = {
+  update: function (elapsedTime, now) {
+    console.log(elapsedTime, now, this === game);
+    // -> 0.0166 168 true
+  },
+
+  render: update: function (elapsedTime, now) {
+    console.log(elapsedTime, now, this === game);
+    // -> 0.0166 168 true
+  },
+
+  init: function () {
+    this.ticker = v6
+      .ticker(this.update, this.render, this)
+      .setFrameRate(60) // 60 by default
+      .tick();
+  }
+};
+
+game.init();
+```
+
+#### Why update and render
+
+The difference between `update` and` render` is that `render` will be called regardless of the specified FPS, and` update` only when more than 1 / FPS seconds has passed.
+
+#### Context
+
+* null: the functions will called without context (`undefined`).
+* undefined (by default): `this` will point to the `ticker` object.
+* otherwise the passed context will be used.
+
+## v6(options)
+
+#### Options
+
+Some basic options (to find more see v6.options):
+
+```
+options = {
+  settings: {
+    // The renderer pixel density (1 default)
+    scale: window.devicePixelRatio || 1,
+    // The renderer default color mode ('rgba' default)
+    colorMode: 'hsla'
+  },
+
+  // Mode will me selected automatically, it's dependence on the client platform.
+  // For mobiles "webgl" mode will be used, instead of '2d'.
+  // NOTE To fully use the auto mode you need to include the platform.js library
+  mode: 'auto',
+
+  // The default mode
+  mode: '2d',
+
+  // Use WebGL to draw graphics (2D)
+  mode: 'webgl'
+};
+```
+
+#### Example
+
+```
+var renderer = v6();
+
+renderer
+  // Set fill color
+  .fill(51)
+  // Set stroke color
+  .stroke('white')
+  // Draw circle in the middle
+  .arc(renderer.width / 2, renderer.height / 2, 100);
+```
+
+#### Color Mode
+
+```
+renderer
+  // Set color mode ('rgba', 'hsla')
+  .colorMode('hsla')
+  // Shortcut for (0, 0, 20, 1)
+  .fill(20)
+  // Some blue stroke color
+  .stroke(220, 100, 50);
+```
+
+## v6.color(), v6.rgba(), v6.hsla()
+
+The results is the same.
+
+```
+renderer
+  .fill('rgb(0, 0, 0)')
+  .fill('rgba(0, 0, 0, 1)')
+  .fill('hsl(0, 0%, 0%)')
+  .fill('hsla(0, 0%, 0%, 1)')
+  .fill('#000')
+  .fill('#000f')
+  .fill('#000000')
+  .fill('#000000ff')
+  .fill('black')
+  .colorMode('rgba')
+  .fill(0)
+  .fill(0, 1)
+  .fill(0, 0, 0)
+  .fill(0, 0, 0, 1)
+  .colorMode('hsla')
+  .fill(0)
+  .fill(0, 1)
+  .fill(0, 0, 0)
+  .fill(0, 0, 0, 1)
+  .fill(v6.rgba('hsl(0, 0%, 0%)'))
+  // ... do you understand what i mean?
+```
+
+## License
+
+[MIT License](LICENSE).

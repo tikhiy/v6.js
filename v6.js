@@ -2879,25 +2879,18 @@ var polygons = _.create( null );
  * Values will be between -1 and 1 (sin and cos uses).
  */
 var create_polygon = function ( n ) {
-  // TODODODODODODODO
-  var step = 2 * pi / n,
-      int_n = floor( n ),
-      vertices = new Float32Array( int_n * 2 + 2 ),
-      // ???
-      i = int_n,
-      angle = step * n;
+  var int_n = floor( n ),
+      verts = new Float32Array( int_n * 2 + 2 ),
+      angle = pi * 2 / n,
+      i, cur_angle;
 
-  // WHAT R I DOING??!!
-  vertices[     int_n * 2 ] = cos( angle );
-  vertices[ 1 + int_n * 2 ] = sin( angle );
-
-  // WHY???
-  for ( ; i >= 0; --i ) {
-    vertices[     i * 2 ] = cos( angle = step * i );
-    vertices[ 1 + i * 2 ] = sin( angle );
+  for ( ; int_n >= 0; --int_n ) {
+    cur_angle = angle * int_n;
+    verts[    int_n * 2] = cos( cur_angle );
+    verts[1 + int_n * 2] = sin( cur_angle );
   }
 
-  return vertices;
+  return verts;
 };
 
 /**
@@ -3048,6 +3041,14 @@ RendererWebGL.prototype.putImageData = function ( /* imageData, x, y, sx, sy, sw
 
 RendererWebGL.prototype.camera = Renderer2D.prototype.camera;
 RendererWebGL.prototype.setTransformFromCamera = Renderer2D.prototype.setTransformFromCamera;
+
+/* RendererWebGL.prototype.shaders = function ( shader ) {
+  this.__program = shaders
+    .create( this )
+    .program( this );
+
+  return this;
+}; */
 
 var defaults = function ( options, defaults ) {
   if ( options ) {

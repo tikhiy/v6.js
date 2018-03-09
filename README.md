@@ -201,4 +201,4 @@ renderer
 
 ## License
 
-[MIT License](LICENSE).
+[MIT License](./blob/master/LICENSE).

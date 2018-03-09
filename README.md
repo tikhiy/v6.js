@@ -52,7 +52,7 @@ function render() {
 
 ## v6.ticker(update, render, context)
 
-This class used to loop an animation.
+This class is used to loop an animation.
 
 #### Simple example
 
@@ -88,7 +88,7 @@ var game = {
     // -> 0.0166 168 true
   },
 
-  render: update: function (elapsedTime, now) {
+  render: function (elapsedTime, now) {
     console.log(elapsedTime, now, this === game);
     // -> 0.0166 168 true
   },
@@ -156,19 +156,9 @@ renderer
   .arc(renderer.width / 2, renderer.height / 2, 100);
 ```
 
-#### Color Mode
-
-```javascript
-renderer
-  // Set color mode ('rgba', 'hsla')
-  .colorMode('hsla')
-  // Shortcut for (0, 0, 20, 1)
-  .fill(20)
-  // Some blue stroke color
-  .stroke(220, 100, 50);
-```
-
 ## v6.color(), v6.rgba(), v6.hsla()
+
+#### Use
 
 The results is the same.
 
@@ -197,6 +187,18 @@ renderer
   // ... do you understand what i mean?
 ```
 
+#### Color Mode
+
+```javascript
+renderer
+  // Set color mode ('rgba', 'hsla')
+  .colorMode('hsla')
+  // Shortcut for (0, 0, 20, 1)
+  .fill(20)
+  // Some blue stroke color
+  .stroke(220, 100, 50);
+```
+
 ## License
 
-[MIT License](./LICENSE).
+[MIT License](LICENSE).

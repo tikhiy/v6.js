@@ -2610,7 +2610,7 @@ var mat3 = {
 
 var dflt_shaders = {
 
-  vertex:
+  vert:
 
 'precision mediump float;' +
 'precision mediump int;' +
@@ -2622,7 +2622,7 @@ var dflt_shaders = {
   'gl_Position = vec4( ( ( u_transform * vec3( a_position, 1.0 ) ).xy / u_resolution * 2.0 - 1.0 ) * vec2( 1, -1 ), 0, 1 );' +
 '}',
 
-  fragment:
+  frag:
 
 'precision mediump float;' +
 'precision mediump int;' +
@@ -2632,7 +2632,7 @@ var dflt_shaders = {
   'gl_FragColor = vec4( u_color.rgb / 255.0, u_color.a );' +
 '}',
 
-  background_vertex:
+  backgroundVert:
 
 'precision lowp float;' +
 'precision lowp int;' +
@@ -2642,7 +2642,7 @@ var dflt_shaders = {
   'gl_Position = vec4( a_position, 0, 1 );' +
 '}',
 
-  background_fragment:
+  backgroundFrag:
 
 'precision lowp float;' +
 'precision lowp int;' +
@@ -2654,8 +2654,8 @@ var dflt_shaders = {
 
 };
 
-var shaders = new Shader( dflt_shaders.vertex, dflt_shaders.fragment ),
-    background_shaders = new Shader( dflt_shaders.background_vertex, dflt_shaders.background_fragment );
+var shaders = new Shader( dflt_shaders.vert, dflt_shaders.frag ),
+    bg_shaders = new Shader( dflt_shaders.backgroundVert, dflt_shaders.backgroundFrag );
 
 /**
  * In most cases, on phones (except iOS Safari)
@@ -2672,11 +2672,11 @@ var RendererWebGL = function ( options ) {
   this.shaders = shaders.create( this );
   this.program = shaders.program( this );
   /** Transformation isn't supported. */
-  this.backgroundBuffer = new Buffer( this.context ).bind().data( background_vertices );
-  this.backgroundShaders = background_shaders.create( this );
-  this.backgroundProgram = background_shaders.program( this );
+  this.backgroundBuffer = new Buffer( this.context ).bind().data( bg_verts );
+  this.backgroundShaders = bg_shaders.create( this );
+  this.backgroundProgram = bg_shaders.program( this );
   /** With a separate buffer, `rect` will run a little faster. (maybe add buffers for the arc?) */
-  this.rectangleBuffer = new Buffer( this.context ).bind().data( rectangle_vertices );
+  this.rectangleBuffer = new Buffer( this.context ).bind().data( rect_verts );
   /** Some weird bullshit. */
   this.blending( options.blending );
 };
@@ -2726,7 +2726,7 @@ RendererWebGL.prototype.clearColor = function ( a, b, c, d ) {
     rgba[ 3 ] );
 };
 
-var background_vertices = new Float32Array( [
+var bg_verts = new Float32Array( [
   -1,  1,
    1,  1,
    1, -1,
@@ -2814,7 +2814,7 @@ RendererWebGL.prototype.drawVertices = function ( data, length ) {
  * |        |
  * 4--------3
  */
-var rectangle_vertices = new Float32Array( [
+var rect_verts = new Float32Array( [
   0, 0, /* 1 */
   1, 0, /* 2 */
   1, 1, /* 3 */
@@ -2879,15 +2879,15 @@ var polygons = _.create( null );
  * Values will be between -1 and 1 (sin and cos uses).
  */
 var create_polygon = function ( n ) {
-  var int_n = floor( n ),
-      verts = new Float32Array( int_n * 2 + 2 ),
+  var i = floor( n ),
+      verts = new Float32Array( i * 2 + 2 ),
       angle = pi * 2 / n,
-      i, cur_angle;
+      cur_angle;
 
-  for ( ; int_n >= 0; --int_n ) {
-    cur_angle = angle * int_n;
-    verts[    int_n * 2] = cos( cur_angle );
-    verts[1 + int_n * 2] = sin( cur_angle );
+  for ( ; i >= 0; --i ) {
+    cur_angle = angle * i;
+    verts[     i * 2 ] = cos( cur_angle );
+    verts[ 1 + i * 2 ] = sin( cur_angle );
   }
 
   return verts;

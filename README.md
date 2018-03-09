@@ -4,15 +4,17 @@ A simple graphics library, with which you can easily create cool games and appli
 
 ## Install
 
-This library has a dependency on [Peako](https://github.com/silent-tempest/Peako).
+This library has a hard dependency on [Peako](https://github.com/silent-tempest/Peako), and an optional on [Platform.js](https://github.com/bestiejs/platform.js).
 
 ```html
 <!-- Import from GitHub CDN. -->
 <script src="https://rawgit.com/silent-tempest/Peako/master/peako.js"></script>
 <script src="https://rawgit.com/silent-tempest/v6/master/v6.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
 <!-- Import local files. -->
 <script src="peako.js"></script>
 <script src="v6.js"></script>
+<script src="platform.js"></script>
 <!-- Of course, you can combine it. -->
 ```
 
@@ -33,16 +35,21 @@ var sides = 3;
 var ticker = v6.ticker(update, render)
   .tick();
 
-/** Update function (you can use `elapsedTime`, it's passed as the first argument). */
+/**
+ * Update function.
+ * You can use `elapsedTime`, it's passed as the first argument.
+ */
 function update() {
+  // sides is a number between 3 and 12
   sides = v6.map(Math.sin(ticker.totalTime), -1, 1, 3, 12);
 }
 
 /** Render function. */
 function render() {
-  var x = renderer.width * 0.5,
-      y = renderer.height * 0.5,
-      radius = 100;
+  var
+    x = renderer.width / 2,
+    y = renderer.height / 2,
+    radius = 100;
 
   renderer
     .background('lightskyblue')
@@ -95,6 +102,7 @@ var game = {
 
   init: function () {
     this.ticker = v6
+      // set this as a 'this' in update and render
       .ticker(this.update, this.render, this)
       .setFrameRate(60) // 60 by default
       .tick();
@@ -106,7 +114,7 @@ game.init();
 
 #### Why update and render
 
-The difference between `update` and` render` is that `render` will be called regardless of the specified FPS, and` update` only when more than 1 / FPS seconds has passed.
+The difference between `update` and` render` is that `render` will be called regardless of the specified FPS, but `update` only when more than 1 / FPS seconds has passed.
 
 #### Context
 
@@ -129,8 +137,8 @@ options = {
     colorMode: 'hsla'
   },
 
-  // Mode will me selected automatically, it's dependence on the client platform.
-  // For mobiles "webgl" mode will be used, instead of '2d'.
+  // The mode will be selected automatically, it's dependence on the client platform
+  // For mobiles the "webgl" mode will be used, instead of '2d'
   // NOTE To fully use the auto mode you need to include the platform.js library
   mode: 'auto',
 
@@ -189,6 +197,8 @@ renderer
 
 #### Color Mode
 
+You can change the behaviour of some functions like `renderer.color()`, `renderer.fill()`, `renderer.stroke()`...
+
 ```javascript
 renderer
   // Set color mode ('rgba', 'hsla')
@@ -201,4 +211,4 @@ renderer
 
 ## License
 
-[MIT License](./blob/master/LICENSE).
+[MIT License](https://github.com/silent-tempest/v6/blob/master/LICENSE).

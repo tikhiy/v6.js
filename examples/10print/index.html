@@ -28,17 +28,13 @@
       spacing = 50;
 
     // create and setup a renderer
-    var renderer = v6({ mode: 'auto', blending: false })
+    var renderer = v6({ mode: '2d' })
       .stroke(255)
       .lineWidth(5)
       .background(51);
 
     // create and run a ticker (game loop)
     var ticker = v6.ticker(function () {
-      /* renderer.context.clearColor(1, 1, 1, 1);
-      renderer.context.clear(renderer.context.DEPTH_BUFFER_BIT); */
-      renderer._clear_color( 1, 1, 1, 1 );
-
       // 60% chance for draw a backslash
       if (Math.random() < 0.6) {
         renderer.line(x, y, x + spacing, y + spacing);

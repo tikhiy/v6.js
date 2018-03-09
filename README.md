@@ -33,7 +33,7 @@ var sides = 3;
 var ticker = v6.ticker(update, render)
   .tick();
 
-/** Update function (you can use `deltaTime`, it's passed as the first argument). */
+/** Update function (you can use `elapsedTime`, it's passed as the first argument). */
 function update() {
   sides = v6.map(Math.sin(ticker.totalTime), -1, 1, 3, 12);
 }
@@ -58,7 +58,7 @@ This class used to loop an animation.
 
 Do you wrote code like this before?
 
-```
+```javascript
 var reqAnimFrame = requestAnimationFrame || lalala...;
 
 function loop () {
@@ -71,7 +71,7 @@ loop();
 
 Now you can write this:
 
-```
+```javascript
 v6
   .ticker(someDrawStuff)
   .tick();
@@ -81,7 +81,7 @@ It will work well in old browsers too.
 
 #### Adavnced example
 
-```
+```javascript
 var game = {
   update: function (elapsedTime, now) {
     console.log(elapsedTime, now, this === game);
@@ -120,7 +120,7 @@ The difference between `update` and` render` is that `render` will be called reg
 
 Some basic options (to find more see v6.options):
 
-```
+```javascript
 options = {
   settings: {
     // The renderer pixel density (1 default)
@@ -144,7 +144,7 @@ options = {
 
 #### Example
 
-```
+```javascript
 var renderer = v6();
 
 renderer
@@ -158,7 +158,7 @@ renderer
 
 #### Color Mode
 
-```
+```javascript
 renderer
   // Set color mode ('rgba', 'hsla')
   .colorMode('hsla')
@@ -172,7 +172,7 @@ renderer
 
 The results is the same.
 
-```
+```javascript
 renderer
   .fill('rgb(0, 0, 0)')
   .fill('rgba(0, 0, 0, 1)')
@@ -199,4 +199,4 @@ renderer
 
 ## License
 
-[MIT License](LICENSE).
+[MIT License](./LICENSE).

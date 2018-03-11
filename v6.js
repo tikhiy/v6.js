@@ -7,16 +7,14 @@
  * https://github.com/processing/p5.js/
  */
 
-/* jshint esversion: 5, unused: true, undef: true */
-/* global Float32Array, Uint8ClampedArray, ImageData, document, platform */
+/* jshint esversion: 5, unused: true, undef: true, noarg: true, curly: true, immed: true */
+/* global Float32Array, Uint8ClampedArray, ImageData, document, platform, console */
 
 ;( function ( window, undefined ) {
 
 'use strict';
 
 var _ = window.peako,
-    warn = window.console && window.console.warn || _.noop,
-    err = window.console && window.console.error || _.noop,
     floor = Math.floor,
     round = Math.round,
     atan2 = Math.atan2,
@@ -28,6 +26,26 @@ var _ = window.peako,
     max = Math.max,
     pi = Math.PI,
     renderer_index = -1;
+
+var report = ( function () {
+  var reported = {};
+
+  return function ( msg ) {
+    if ( reported[ msg ] ) {
+      return;
+    }
+
+    if ( typeof console != 'undefined' && console.warn ) {
+      console.warn( msg );
+    }
+
+    reported[ msg ] = true;
+  };
+} )();
+
+var deprecated = function ( foo, bar, baz ) {
+  report( foo + ': ' + bar + ' is deprecated now and will be removed, use ' + baz + ' instead.' );
+};
 
 /**
  * Copies elements from the `b` array to `a`. This is useful when `a` is
@@ -78,9 +96,7 @@ var get_gl_ctx_name = _.once( function () {
         type = types[ i ];
         break;
       }
-    } catch ( ex ) {
-      // warn( "Can't get " + types[ i ] + ' context', ex );
-    }
+    } catch ( ex ) {}
   }
 
   canvas = null;
@@ -91,7 +107,7 @@ var get_renderer_auto_mode = _.once( function () {
   var touchable = 'ontouchend' in window && 'ontouchmove' in window && 'ontouchstart' in window,
       safari;
 
-  if ( 'platform' in window && platform ) {
+  if ( typeof platform != 'undefined' && platform ) {
     safari = platform.os &&
       platform.os.family === 'iOS' &&
       platform.name === 'Safari';
@@ -118,7 +134,7 @@ var v6 = function ( opts ) {
       return new RendererWebGL( opts );
     }
 
-    warn( "It's not possible to get the WebGL context. The 2D context will be used instead" );
+    report( "It's not possible to get the WebGL context. The 2D context will be used instead" );
   }
 
   return new Renderer2D( opts );
@@ -160,7 +176,7 @@ var dflt_draw_settings = {
   _doFill:       true,
   _doStroke:     true,
   // _fillColor:    renderer.color(),
-  // font:          new Font(),
+  // _font:         new Font(),
   // todo move lineHeight to font
   _lineHeight:   14,
   _lineWidth:    2,
@@ -169,8 +185,14 @@ var dflt_draw_settings = {
   _textBaseline: 'top'
 };
 
-// v6.map( 20, 0, 100, 0, 1 ); // -> 0.2
-// v6.map( -0.1, -1, 1, 0, 10 ) // -> 4.5
+// v6.map( 20, 0, 100, 0, 1 );
+// // -> 0.2
+// v6.map( -0.1, -1, 1, 0, 10 );
+// // -> 4.5
+// v6.map( 2, 0, 1, 0, 10 );
+// // -> 20
+// v6.map( 2, 0, 1, 0, 10, true );
+// // -> 10
 
 var map = function ( val, start1, stop1, start2, stop2, clamp ) {
   val = ( ( val - start1 ) / ( stop1 - start1 ) ) * ( stop2 - start2 ) + start2;
@@ -190,7 +212,8 @@ var map = function ( val, start1, stop1, start2, stop2, clamp ) {
  * Returns distance between two points.
  */
 
-// v6.dist( 0, 0, 1, 1 ); // -> 1.4142135623730951
+// v6.dist( 0, 0, 1, 1 );
+// // -> 1.4142135623730951
 
 var dist = function ( x1, y1, x2, y2 ) {
   return sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
@@ -220,6 +243,10 @@ var lerpColor = function ( a, b, val ) {
 /**
  * Returns the interpolated value between the `a` and `b` values.
  */
+
+// v6.lerp( 0, 10, 0.5 );
+// // -> 5
+
 var lerp = function ( a, b, value ) {
   return a + ( b - a ) * value;
 };
@@ -455,9 +482,9 @@ var Vector2D = function ( x, y ) {
 
 Vector2D.prototype = {
   set: function ( x, y ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x = x.x || 0;
-      this.y = x.y || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector2D', '.set( vector )', '.setVector( vector )' );
+      this.setVector( x );
     } else {
       this.x = x || 0;
       this.y = y || 0;
@@ -466,22 +493,34 @@ Vector2D.prototype = {
     return this;
   },
 
-  lerp: function ( x, y, value ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x += ( x.x - this.x ) * y || 0;
-      this.y += ( x.y - this.y ) * y || 0;
+  setVector: function ( vec ) {
+    this.x = vec.x || 0;
+    this.y = vec.y || 0;
+    return this;
+  },
+
+  lerp: function ( x, y, val ) {
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector2D', '.lerp( vector )', '.lerpVector( vector )' );
+      this.lerpVector( x, y );
     } else {
-      this.x += ( x - this.x ) * value || 0;
-      this.y += ( y - this.y ) * value || 0;
+      this.x += ( x - this.x ) * val || 0;
+      this.y += ( y - this.y ) * val || 0;
     }
 
     return this;
   },
 
+  lerpVector: function ( vec, val ) {
+    this.x += ( vec.x - this.x ) * val || 0;
+    this.y += ( vec.y - this.y ) * val || 0;
+    return this;
+  },
+
   add: function ( x, y ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x += x.x || 0;
-      this.y += x.y || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector2D', '.add( vector )', '.addVector( vector )' );
+      this.addVector( x );
     } else {
       this.x += x || 0;
       this.y += y || 0;
@@ -490,10 +529,16 @@ Vector2D.prototype = {
     return this;
   },
 
+  addVector: function ( vec ) {
+    this.x += vec.x || 0;
+    this.y += vec.y || 0;
+    return this;
+  },
+
   sub: function ( x, y ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x -= x.x || 0;
-      this.y -= x.y || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector2D', '.sub( vector )', '.subVector( vector )' );
+      this.subVector( x );
     } else {
       this.x -= x || 0;
       this.y -= y || 0;
@@ -502,15 +547,33 @@ Vector2D.prototype = {
     return this;
   },
 
+  subVector: function ( vec ) {
+    this.x -= vec.x || 0;
+    this.y -= vec.y || 0;
+    return this;
+  },
+
   mult: function ( val ) {
-    this.x = this.x * val || 0;
-    this.y = this.y * val || 0;
+    this.x *= val || 0;
+    this.y *= val || 0;
+    return this;
+  },
+
+  multVector: function ( vec ) {
+    this.x *= vec.x || 0;
+    this.y *= vec.y || 0;
     return this;
   },
 
   div: function ( val ) {
-    this.x = this.x / val || 0;
-    this.y = this.y / val || 0;
+    this.x /= val || 0;
+    this.y /= val || 0;
+    return this;
+  },
+
+  divVector: function ( vec ) {
+    this.x /= vec.x || 0;
+    this.y /= vec.y || 0;
     return this;
   },
 
@@ -626,10 +689,9 @@ var Vector3D = function ( x, y, z ) {
 
 Vector3D.prototype = {
   set: function ( x, y, z ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x = x.x || 0;
-      this.y = x.y || 0;
-      this.z = x.z || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector3D', '.set( vector )', '.setVector( vector )' );
+      this.setVector( x );
     } else {
       this.x = x || 0;
       this.y = y || 0;
@@ -639,25 +701,37 @@ Vector3D.prototype = {
     return this;
   },
 
-  lerp: function ( x, y, z, value ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x += ( x.x - this.x ) * y || 0;
-      this.y += ( x.y - this.y ) * y || 0;
-      this.z += ( x.z - this.z ) * y || 0;
+  setVector: function ( vec ) {
+    this.x = vec.x || 0;
+    this.y = vec.y || 0;
+    this.z = vec.z || 0;
+    return this;
+  },
+
+  lerp: function ( x, y, z, val ) {
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector3D', '.lerp( vector )', '.lerpVector( vector )' );
+      this.lerpVector( x, y );
     } else {
-      this.x += ( x - this.x ) * value || 0;
-      this.y += ( y - this.y ) * value || 0;
-      this.z += ( z - this.z ) * value || 0;
+      this.x += ( x - this.x ) * val || 0;
+      this.y += ( y - this.y ) * val || 0;
+      this.z += ( z - this.z ) * val || 0;
     }
 
     return this;
   },
 
+  lerpVector: function ( vec, val ) {
+    this.x += ( vec.x - this.x ) * val || 0;
+    this.y += ( vec.y - this.y ) * val || 0;
+    this.z += ( vec.z - this.z ) * val || 0;
+    return this;
+  },
+
   add: function ( x, y, z ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x += x.x || 0;
-      this.y += x.y || 0;
-      this.z += x.z || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector3D', '.add( vector )', '.addVector( vector )' );
+      this.addVector( x );
     } else {
       this.x += x || 0;
       this.y += y || 0;
@@ -667,11 +741,17 @@ Vector3D.prototype = {
     return this;
   },
 
+  addVector: function ( vec ) {
+    this.x += vec.x || 0;
+    this.y += vec.y || 0;
+    this.z += vec.z || 0;
+    return this;
+  },
+
   sub: function ( x, y, z ) {
-    if ( typeof x == 'object' && x !== null ) {
-      this.x -= x.x || 0;
-      this.y -= x.y || 0;
-      this.z -= x.z || 0;
+    if ( _.isObjectLike( x ) ) {
+      deprecated( 'v6.Vector3D', '.sub( vector )', '.subVector( vector )' );
+      this.subVector( x );
     } else {
       this.x -= x || 0;
       this.y -= y || 0;
@@ -681,17 +761,38 @@ Vector3D.prototype = {
     return this;
   },
 
-  mult: function ( value ) {
-    this.x = this.x * value || 0;
-    this.y = this.y * value || 0;
-    this.z = this.z * value || 0;
+  subVector: function ( vec ) {
+    this.x -= vec.x || 0;
+    this.y -= vec.y || 0;
+    this.z -= vec.z || 0;
     return this;
   },
 
-  div: function ( value ) {
-    this.x = this.x / value || 0;
-    this.y = this.y / value || 0;
-    this.z = this.z / value || 0;
+  mult: function ( val ) {
+    this.x *= val || 0;
+    this.y *= val || 0;
+    this.z *= val || 0;
+    return this;
+  },
+
+  multVector: function ( vec ) {
+    this.x *= vec.x || 0;
+    this.y *= vec.y || 0;
+    this.z *= vec.z || 0;
+    return this;
+  },
+
+  div: function ( val ) {
+    this.x /= val || 0;
+    this.y /= val || 0;
+    this.z /= val || 0;
+    return this;
+  },
+
+  divVector: function ( vec ) {
+    this.x /= vec.x || 0;
+    this.y /= vec.y || 0;
+    this.z /= vec.z || 0;
     return this;
   },
 
@@ -1131,7 +1232,7 @@ RGBA.prototype.lerp = function ( color, value ) {
 
 // it requires optimization
 RGBA.prototype.shade = function ( value ) {
-  return this.hsla().shade( value ).rgba(); 
+  return this.hsla().shade( value ).rgba();
 };
 
 var hsla = function ( h, s, l, a ) {
@@ -1480,103 +1581,45 @@ var Loader = function () {
   this.list = _.create( null );
 };
 
-/**
- * .add( 'id', 'path.json' );
- * .add( 'path.json' );
- * .add( { id: 'path.json' } );
- * .add( [ 'path.json' ] );
- */
-Loader.prototype.add = function ( name, path ) {
-  if ( typeof name == 'object' ) {
-    if ( _.isArray( name ) ) {
-      var list = this.list,
-          len = name.length,
-          i = 0;
+Loader.prototype = {
+  /**
+   * .add( 'id', 'path.json' );
+   * .add( 'path.json' );
+   * .add( { id: 'path.json' } );
+   * .add( [ 'path.json' ] );
+   */
+  add: function ( name, path ) {
+    var len, i;
 
-      for ( ; i < len; i += 2 ) {
-        list[ name[ i ] ] = name[ i + 1 ];
+    if ( typeof name == 'object' ) {
+      // .add( [ 'tiles.png', 'map.json' ] )
+      if ( _.isArray( name ) ) {
+        for ( len = name.length, i = 0; i < len; i += 2 ) {
+          this.list[ name[ i ] ] = name[ i + 1 ];
+        }
+      // .add( { tiles: 'tiles.png', map: 'map.json' } )
+      } else if ( name !== null ) {
+        _.assign( this.list, name );
+      // Check what are you doing!
+      } else {
+        throw TypeError();
       }
-    } else if ( name != null ) {
-      _.assign( this.list, name );
+    // .add( 'tiles.png' )
+    } else if ( path === undefined ) {
+      this.list[ name ] = name;
+    // .add( 'tiles', 'tiles.png' )
     } else {
-      throw TypeError();
+      this.list[ name ] = path;
     }
-  } else if ( path === undefined ) {
-    this.list[ name ] = name;
-  } else {
-    this.list[ name ] = path;
-  }
 
-  return this;
-};
+    return this;
+  },
 
-var get_promise = function ( path, name ) {
-  return new _.Promise( /\.(?:png|jpe?g)$/i.test( path ) ? function ( resolve, reject ) {
-    var image = new Image( path );
+  load: function () {
+    return;
+  },
 
-    if ( !image.loaded ) {
-      var $source = _( image.source );
-
-      var load = function () {
-        $source.off( 'error', error );
-        resolve( [ name, image ] );
-      };
-
-      var error = function () {
-        $source.off( 'load', load );
-        reject( [ 'Failed to load ' + path, path ] );
-      };
-
-      $source
-        .one( 'load', load )
-        .one( 'error', error );
-    } else {
-      resolve( [ name, image ] );
-    }
-  } : function ( resolve, reject ) {
-    _.file( path, {
-      onload: function ( file ) {
-        resolve( [ name, file ] );
-      },
-
-      onerror: function () {
-        reject( [ 'Failed to load ' + path, path ] );
-      }
-    } );
-  } );
-};
-
-var load_err = function ( data ) {
-  err( data[ 0 ] );
-};
-
-// var files = {
-//    data: 'data.json'
-// };
-//
-// var onload = function ( files ) {
-//   console.log( 'Loaded: ', JSON.parse( files.data ) );
-// };
-//
-// v6.loader()
-//   .add( files )
-//   .load( onload );
-
-Loader.prototype.load = function ( setup, error ) {
-  var list = this.list,
-      names = _.keys( list ),
-      length = names.length,
-      promises = Array( length ),
-      i = 0;
-
-  for ( ; i < length; ++i ) {
-    promises[ i ] = get_promise( list[ names[ i ] ], names[ i ] );
-  }
-
-  _.Promise.all( promises )
-    .then( setup, error || load_err );
-
-  return this;
+  constructor: Loader
 };
 
 /* RENDERER2D SHAPES */
@@ -2448,19 +2491,23 @@ var Buffer = function ( context ) {
   this.buffer = context.createBuffer();
 };
 
-Buffer.prototype.bind = function () {
+Buffer.prototype = {
+  bind: function () {
   this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffer );
   return this;
-};
+  },
 
-Buffer.prototype.data = function ( data, mode ) {
+  data: function ( data, mode ) {
   if ( mode === undefined ) {
     this.context.bufferData( this.context.ARRAY_BUFFER, data, this.context.STATIC_DRAW );
   } else {
     this.context.bufferData( this.context.ARRAY_BUFFER, data, mode );
   }
 
-  return this;
+    return this;
+  },
+
+  constructor: Buffer
 };
 
 /* TRANSFORM */
@@ -2472,66 +2519,70 @@ var Transform = function () {
   this.matrix = mat3.identity();
 };
 
-Transform.prototype.index = -1;
+Transform.prototype = {
+  setTransform: function ( m11, m12, m21, m22, dx, dy ) {
+    var matrix = this.matrix;
+    matrix[ 0 ] = m11; // x scale
+    matrix[ 1 ] = m12; // x skew
+    matrix[ 3 ] = m21; // y skew
+    matrix[ 4 ] = m22; // y scale
+    matrix[ 6 ] = dx;  // x translate
+    matrix[ 7 ] = dy;  // y translate
+    return this;
+  },
 
-Transform.prototype.setTransform = function ( a, b, c, d, e, f ) {
-  var matrix = this.matrix;
-  matrix[ 0 ] = a; // x scale
-  matrix[ 1 ] = b; // x skew
-  matrix[ 3 ] = c; // y skew
-  matrix[ 4 ] = d; // y scale
-  matrix[ 6 ] = e; // x translate
-  matrix[ 7 ] = f; // y translate
-  return this;
-};
+  save: function () {
+    if ( this.stack[ ++this.index ] ) {
+      mat3.copy( this.stack[ this.index ], this.matrix );
+    } else {
+      this.stack.push( mat3.clone( this.matrix ) );
+    }
 
-Transform.prototype.save = function () {
-  // Why create a matrix again, if it already exists?
-  if ( this.stack[ ++this.index ] ) {
-    mat3.copy( this.stack[ this.index ], this.matrix );
-  } else {
-    this.stack.push( mat3.clone( this.matrix ) );
-  }
+    return this;
+  },
 
-  return this;
-};
+  restore: function () {
+    // Restore the saved values.
+    if ( this.stack.length ) {
+      mat3.copy( this.matrix, this.stack[ this.index-- ] );
+    // Set the default values.
+    } else {
+      mat3.setIdentity( this.matrix );
+    }
 
-Transform.prototype.restore = function () {
-  // If the stack isn't empty, restore the last value.
-  if ( this.stack.length ) {
-    mat3.copy( this.matrix, this.stack[ this.index-- ] );
+    return this;
+  },
 
-  // Restore the default values.
-  } else {
-    mat3.setIdentity( this.matrix );
-  }
+  translate: function ( x, y ) {
+    mat3.translate( this.matrix, x, y );
+    return this;
+  },
 
-  return this;
-};
+  rotate: function ( angle ) {
+    mat3.rotate( this.matrix, angle );
+    return this;
+  },
 
-Transform.prototype.translate = function ( x, y ) {
-  return mat3.translate( this.matrix, x, y ), this;
-};
+  scale: function ( x, y ) {
+    mat3.scale( this.matrix, x, y );
+    return this;
+  },
 
-Transform.prototype.rotate = function ( angle ) {
-  return mat3.rotate( this.matrix, angle ), this;
-};
+  transform: function ( m11, m12, m21, m22, dx, dy ) {
+    var matrix = this.matrix;
+    matrix[ 0 ] *= m11;
+    matrix[ 1 ] *= m21;
+    matrix[ 2 ] *= dx;
+    matrix[ 3 ] *= m12;
+    matrix[ 4 ] *= m22;
+    matrix[ 5 ] *= dy;
+    matrix[ 6 ] = 0;
+    matrix[ 7 ] = 0;
+    return this;
+  },
 
-Transform.prototype.scale = function ( x, y ) {
-  return mat3.scale( this.matrix, x, y ), this;
-};
-
-Transform.prototype.transform = function ( m11, m12, m21, m22, dx, dy ) {
-  var matrix = this.matrix;
-  matrix[ 0 ] *= m11;
-  matrix[ 1 ] *= m21;
-  matrix[ 2 ] *= dx;
-  matrix[ 3 ] *= m12;
-  matrix[ 4 ] *= m22;
-  matrix[ 5 ] *= dy;
-  matrix[ 6 ] = 0;
-  matrix[ 7 ] = 0;
-  return this;
+  constructor: Transform,
+  index: -1
 };
 
 /* MATRIX3 */
@@ -2681,7 +2732,7 @@ var RendererWebGL = function ( options ) {
   this.blending( options.blending );
 };
 
-RendererWebGL.prototype.add = Renderer2D.prototype.add;
+RendererWebGL.prototype.add     = Renderer2D.prototype.add;
 RendererWebGL.prototype.destroy = Renderer2D.prototype.destroy;
 RendererWebGL.prototype.push = Renderer2D.prototype.push;
 RendererWebGL.prototype.pop = Renderer2D.prototype.pop;
@@ -3216,7 +3267,7 @@ Camera.prototype = {
   },
 
   /** There is no need to draw something if it's not visible. */
- 
+
   // if ( camera.sees( object.x, object.y, object.w, object.h ) ) {
   //   object.show();
   // }

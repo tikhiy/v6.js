@@ -1,0 +1,16 @@
+{
+  "globals": {
+    "require": true,
+    "module": true
+  },
+
+  "esversion": 5,
+  "strict": "global",
+  "eqeqeq": true,
+  "eqnull": true,
+  "unused": true,
+  "undef": true,
+  "noarg": true,
+  "curly": true,
+  "immed": true
+}

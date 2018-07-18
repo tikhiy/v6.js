@@ -1,214 +1,97 @@
 # v6
 
-A simple graphics library, with which you can easily create cool games and applications.
+The main feature of the v6 is the use of one-code for the 2D and WebGL contexts (**only** 2D).
 
-## Install
+### Install
 
-This library has a hard dependency on [Peako](https://github.com/silent-tempest/Peako), and an optional on [Platform.js](https://github.com/bestiejs/platform.js).
+##### [Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/)
+
+Install the library `$ npm install v6`. Install an optional dependency `$ npm install platform`.
+
+```javascript
+// require whole the library.
+var v6   = require( 'v6' );
+// require a sub-module of the library.
+var hsla = require( 'v6/hsla' );
+
+// Not working in Node.js because there is no Browser/DOM API.
+var renderer = v6.renderer( {
+  mode: v6.constants.RENDERER_MODE_AUTO
+} );
+
+var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
+```
+
+##### Browser
 
 ```html
-<!-- Import from GitHub CDN. -->
-<script src="https://rawgit.com/silent-tempest/Peako/master/peako.js"></script>
-<script src="https://rawgit.com/silent-tempest/v6/master/v6.js"></script>
+<script src="https://rawgit.com/silent-tempest/peako/dev/build/peako.js"></script>
+<script src="https://rawgit.com/silent-tempest/v6/dev/build/v6.js"></script>
+<!-- optional script -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
-<!-- Import local files. -->
-<script src="peako.js"></script>
-<script src="v6.js"></script>
-<script src="platform.js"></script>
-<!-- Of course, you can combine it. -->
 ```
 
-## Hello World
-
-A simple example of use this library:
-
 ```javascript
-/** Create and setup the renderer. */
-var renderer = v6()
-  .stroke(0)
-  .fill(255);
+var ticker = v6.ticker( update, render );
 
-/** Number of sides of the polygon. */
-var sides = 3;
-
-/** Create the game loop and run it. */
-var ticker = v6.ticker(update, render)
-  .tick();
-
-/**
- * Update function.
- * You can use `elapsedTime`, it's passed as the first argument.
- */
-function update() {
-  // sides is a number between 3 and 12
-  sides = v6.map(Math.sin(ticker.totalTime), -1, 1, 3, 12);
+function update ( elapsedTime ) {
+  console.log( elapsedTime );
 }
 
-/** Render function. */
-function render() {
-  var
-    x = renderer.width / 2,
-    y = renderer.height / 2,
-    radius = 100;
+function render ( elapsedTime ) {
+  renderer
+    .backgroundColor( 'lightskyblue' )
+    .polygon( x, y, r, 3 );
+}
+```
+
+### Dependencies
+
+The library has a hard-dependency on [peako](https://github.com/silent-tempest/peako), and an optional on [platform.js](https://github.com/bestiejs/platform.js).
+
+### Hello World
+
+A ~~simple~~ example of use:
+
+```javascript
+var constants = require( 'v6/constants' ),
+    Renderer  = require( 'v6/renderer' ),
+    Ticker    = require( 'v6/ticker' );
+
+var options = {
+  settings: {
+    colorMode: constants.HSLA
+  },
+
+  mode: constants.RENDERER_MODE_AUTO
+};
+
+var renderer = Renderer( options );
+
+function render () {
+  var w = renderer.width,
+      h = renderer.height;
+
+  // r is from min( w, h ) / 10 through 250
+  var r = Math.min( 250, Math.min( w, h ) / 10 );
+
+  // n is from 3 through totalTime in seconds
+  var n = Math.max( 3, this.totalTime );
 
   renderer
-    .background('lightskyblue')
-    .polygon(x, y, radius, sides);
-}
-```
-
-## v6.ticker(update, render, context)
-
-This class is used to loop an animation.
-
-#### Simple example
-
-Do you wrote code like this before?
-
-```javascript
-var reqAnimFrame = requestAnimationFrame || lalala...;
-
-function loop () {
-  reqAnimFrame(loop);
-  someDrawStuff();
+    .background( this.totalTime, 80, 80 )
+    .polygon( w / 2, h / 2, r, n );
 }
 
-loop();
+var ticker = Ticker( render );
+
+ticker.tick()
 ```
 
-Now you can write this:
+### Build
 
-```javascript
-v6
-  .ticker(someDrawStuff)
-  .tick();
-```
+Use `$ make` to build the project.
 
-It will work well in old browsers too.
+### License
 
-#### Adavnced example
-
-```javascript
-var game = {
-  update: function (elapsedTime, now) {
-    console.log(elapsedTime, now, this === game);
-    // -> 0.0166 168 true
-  },
-
-  render: function (elapsedTime, now) {
-    console.log(elapsedTime, now, this === game);
-    // -> 0.0166 168 true
-  },
-
-  init: function () {
-    this.ticker = v6
-      // set this as a 'this' in update and render
-      .ticker(this.update, this.render, this)
-      .setFrameRate(60) // 60 by default
-      .tick();
-  }
-};
-
-game.init();
-```
-
-#### Why update and render
-
-The difference between `update` and` render` is that `render` will be called regardless of the specified FPS, but `update` only when more than 1 / FPS seconds has passed.
-
-#### Context
-
-* null: the functions will called without context (`undefined`).
-* undefined (by default): `this` will point to the `ticker` object.
-* otherwise the passed context will be used.
-
-## v6(options)
-
-#### Options
-
-Some basic options (to find more see v6.options):
-
-```javascript
-options = {
-  settings: {
-    // The renderer pixel density (1 default)
-    scale: window.devicePixelRatio || 1,
-    // The renderer default color mode ('rgba' default)
-    colorMode: 'hsla'
-  },
-
-  // The mode will be selected automatically, it's dependence on the client platform
-  // For mobiles the "webgl" mode will be used, instead of '2d'
-  // NOTE To fully use the auto mode you need to include the platform.js library
-  mode: 'auto',
-
-  // The default mode
-  mode: '2d',
-
-  // Use WebGL to draw graphics (2D)
-  mode: 'webgl'
-};
-```
-
-#### Example
-
-```javascript
-var renderer = v6();
-
-renderer
-  // Set fill color
-  .fill(51)
-  // Set stroke color
-  .stroke('white')
-  // Draw circle in the middle
-  .arc(renderer.width / 2, renderer.height / 2, 100);
-```
-
-## v6.color(), v6.rgba(), v6.hsla()
-
-#### Use
-
-The results is the same.
-
-```javascript
-renderer
-  .fill('rgb(0, 0, 0)')
-  .fill('rgba(0, 0, 0, 1)')
-  .fill('hsl(0, 0%, 0%)')
-  .fill('hsla(0, 0%, 0%, 1)')
-  .fill('#000')
-  .fill('#000f')
-  .fill('#000000')
-  .fill('#000000ff')
-  .fill('black')
-  .colorMode('rgba')
-  .fill(0)
-  .fill(0, 1)
-  .fill(0, 0, 0)
-  .fill(0, 0, 0, 1)
-  .colorMode('hsla')
-  .fill(0)
-  .fill(0, 1)
-  .fill(0, 0, 0)
-  .fill(0, 0, 0, 1)
-  .fill(v6.rgba('hsl(0, 0%, 0%)'))
-  // ... do you understand what i mean?
-```
-
-#### Color Mode
-
-You can change the behaviour of some functions like `renderer.color()`, `renderer.fill()`, `renderer.stroke()`...
-
-```javascript
-renderer
-  // Set color mode ('rgba', 'hsla')
-  .colorMode('hsla')
-  // Shortcut for (0, 0, 20, 1)
-  .fill(20)
-  // Some blue stroke color
-  .stroke(220, 100, 50);
-```
-
-## License
-
-[MIT License](https://github.com/silent-tempest/v6/blob/master/LICENSE).
+Released under the [MIT License](LICENSE).

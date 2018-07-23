@@ -1,21 +1,22 @@
 'use strict';
 
-var timer     = require( 'peako/timer' ),
-    timestamp = require( 'peako/timestamp' ),
-    noop      = require( 'peako/noop' );
+var timestamp = require( 'peako/timestamp' );
 
-// jshint -W024
-var undefined;
-// jshint +W024
+var timer     = require( 'peako/timer' );
+
+var noop      = require( 'peako/noop' );
+
+var constants = require( './constants' );
 
 function Ticker ( update, render, context ) {
   var self = this;
 
-  if ( context === undefined ) {
-    if ( typeof render !== 'function' ) {
-      return new Ticker( update, null, render );
-    }
+  if ( typeof render !== 'function' ) {
+    context = render;
+    render = null;
+  }
 
+  if ( context === constants.SELF_CONTEXT ) {
     context = this;
   }
 
@@ -31,23 +32,25 @@ function Ticker ( update, render, context ) {
   this.running = false;
   this.update = update;
   this.render = render;
-  this.context = context;
 
   function tick ( now ) {
     var elapsedTime;
 
     if ( ! self.running ) {
+
       // if it is just `ticker.tick();` (not `self.lastRequestAnimationFrameID = timer.request( tick );`).
+
       if ( ! now ) {
         self.lastRequestAnimationFrameID = timer.request( tick );
         self.lastRequestTime = timestamp();
         self.running = true;
       }
 
-      return;
+      return this; // jshint ignore: line
     }
 
     // see the comment above
+
     if ( ! now ) {
       now = timestamp();
     }
@@ -55,21 +58,21 @@ function Ticker ( update, render, context ) {
     elapsedTime = Math.min( 1, ( now - self.lastRequestTime ) * 0.001 );
 
     self.skippedTime += elapsedTime;
-    
+
     self.totalTime += elapsedTime;
 
     while ( self.skippedTime >= self.step && self.running ) {
       self.skippedTime -= self.step;
 
-      if ( self.context ) {
-        self.update.call( self.context, self.step, now );
+      if ( typeof context !== 'undefined' ) {
+        self.update.call( context, self.step, now );
       } else {
         self.update( self.step, now );
       }
     }
 
-    if ( self.context ) {
-      self.render.call( self.context, elapsedTime, now );
+    if ( typeof context !== 'undefined' ) {
+      self.render.call( context, elapsedTime, now );
     } else {
       self.render( elapsedTime, now );
     }
@@ -78,10 +81,7 @@ function Ticker ( update, render, context ) {
 
     self.lastRequestAnimationFrameID = timer.request( tick );
 
-    // no reason to return self
-    // jshint -W040
-    return this;
-    // jshint +W040
+    return this; // jshint ignore: line
   }
 
   this.tick = tick;

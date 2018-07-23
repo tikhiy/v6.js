@@ -2,8 +2,9 @@
 
 var forEachRight = require( 'peako/for-each-right' );
 
-var Vector2D     = require( './Vector2D' ),
-    options      = require( '../default-options' );
+var options = require( '../options' );
+
+var Vector2D = require( './Vector2D' );
 
 function Vector3D ( x, y, z ) {
   this.set( x, y, z );

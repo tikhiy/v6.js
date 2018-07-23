@@ -1,14 +1,18 @@
 'use strict';
 
 // export before call recursive require
-module.exports = parseColor;
 
-var create  = require( 'peako/create' ),
-    trim    = require( 'peako/trim' );
+module.exports = _parseColor;
 
-var RGBA    = require( './RGBA' ),
-    HSLA    = require( './HSLA' ),
-    colors  = require( './colors' );
+var create = require( 'peako/create' );
+
+var trim = require( 'peako/trim' );
+
+var RGBA = require( './RGBA' );
+
+var HSLA = require( './HSLA' );
+
+var colors = require( './colors' );
 
 var parsed = create( null );
 
@@ -23,14 +27,14 @@ var regexps = {
   hsl:  /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/
 };
 
-// parseColor( '#f0f0' );                     // -> new RGBA( 255, 0, 255, 0 )
-// parseColor( '#000000ff' );                 // -> new RGBA( 0, 0, 0, 1 )
-// parseColor( 'magenta' );                   // -> new RGBA( 255, 0, 255, 1 )
-// parseColor( 'transparent' );               // -> new RGBA( 0, 0, 0, 0 )
-// parseColor( 'hsl( 0, 100%, 50% )' );       // -> new HSLA( 0, 100, 50, 1 )
-// parseColor( 'hsla( 0, 100%, 50%, 0.5 )' ); // -> new HSLA( 0, 100, 50, 0.5 )
+// _parseColor( '#f0f0' );                     // -> new RGBA( 255, 0, 255, 0 )
+// _parseColor( '#000000ff' );                 // -> new RGBA( 0, 0, 0, 1 )
+// _parseColor( 'magenta' );                   // -> new RGBA( 255, 0, 255, 1 )
+// _parseColor( 'transparent' );               // -> new RGBA( 0, 0, 0, 0 )
+// _parseColor( 'hsl( 0, 100%, 50% )' );       // -> new HSLA( 0, 100, 50, 1 )
+// _parseColor( 'hsla( 0, 100%, 50%, 0.5 )' ); // -> new HSLA( 0, 100, 50, 0.5 )
 
-function parseColor ( string ) {
+function _parseColor ( string ) {
   var cache = parsed[ string ] || parsed[ string = trim( string ).toLowerCase() ];
 
   if ( ! cache ) {

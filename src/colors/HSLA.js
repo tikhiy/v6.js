@@ -1,16 +1,16 @@
 'use strict';
 
 // export before call recursive require
+
 module.exports = HSLA;
 
-var clamp      = require( 'peako/clamp' );
+var clamp = require( 'peako/clamp' );
 
-var parseColor = require( './parse-color' ),
-    RGBA       = require( './RGBA' );
+var _parseColor = require( './_parseColor' );
 
-// jshint -W024
-var undefined;
-// jshint +W024
+var RGBA = require( './RGBA' );
+
+var undefined; // jshint ignore: line
 
 function HSLA ( h, s, l, a ) {
   this.set( h, s, l, a );
@@ -49,7 +49,7 @@ HSLA.prototype = {
   set: function set ( h, s, l, a ) {
     switch ( true ) {
       case typeof h === 'string':
-        h = parseColor( h );
+        h = _parseColor( h );
         /* falls through */
       case typeof h === 'object' && h != null:
         if ( h.type !== this.type ) {
@@ -153,7 +153,7 @@ HSLA.prototype = {
 
   lerp: function lerp ( h, s, l, value ) {
 
-    // HAHA LOL NICE OPTIMIZATION! LOVE ME
+    // HAHA LOL NICE OPTIMIZATION LOVE ME!
 
     var color = new HSLA();
 

@@ -2,7 +2,7 @@
 
 var defaultTo = require( 'peako/default-to' );
 
-var Vector2D  = require( './math/Vector2D' );
+var Vector2D = require( './math/Vector2D' );
 
 function Camera ( options, renderer ) {
   if ( ! options ) {

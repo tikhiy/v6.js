@@ -19,7 +19,7 @@ module.exports = {
        * A color mode of a renderer, use in renderer.fill( r, g, b, a ) or
        * renderer.fill( h, s, l, a ).
        */
-      colorMode: constants.HSLA,
+      colorMode: constants.RGBA,
 
       /**
        * The imageSmoothingEnabled property of a renderer's context.
@@ -38,7 +38,7 @@ module.exports = {
     antialias: true,
 
     /**
-     * Not finalized.
+     * Not completed.
      */
     blending: true,
 

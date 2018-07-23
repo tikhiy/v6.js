@@ -1,14 +1,14 @@
 'use strict';
 
 // export before call recursive require
+
 module.exports = RGBA;
 
-var parseColor = require( './parse-color' ),
-    HSLA       = require( './HSLA' );
+var _parseColor = require( './_parseColor' );
 
-// jshint -W024
-var undefined;
-// jshint +W024
+var HSLA = require( './HSLA' );
+
+var undefined; // jshint ignore: line
 
 function RGBA ( r, g, b, a ) {
   this.set( r, g, b, a );
@@ -66,7 +66,7 @@ RGBA.prototype = {
   set: function set ( r, g, b, a ) {
     switch ( true ) {
       case typeof r === 'string':
-        r = parseColor( r );
+        r = _parseColor( r );
         /* falls through */
       case typeof r === 'object' && r != null:
         if ( r.type !== this.type ) {
@@ -185,14 +185,14 @@ RGBA.prototype = {
 
   // var a = new RGBA( 100, 0.25 ),
   //     b = new RGBA( 200, 0 );
-  //
+
   // var c = a.lerpColor( b, 0.5 ); // -> new RGBA( 150, 150, 150, 0.25 );
 
   lerpColor: function lerpColor ( color, value ) {
     var r, g, b;
 
     if ( typeof color !== 'object' ) {
-      color = parseColor( color );
+      color = _parseColor( color );
     }
 
     if ( color.type !== 'rgba' ) {

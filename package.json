@@ -20,6 +20,10 @@
     "peako": "^0.0.1",
     "platform": "^1.3.5"
   },
+  "devDependencies": {
+    "browserify": "^16.2.2",
+    "browserify-optional": "^1.0.1"
+  },
   "browserify": {
     "transform": [
       "browserify-optional"

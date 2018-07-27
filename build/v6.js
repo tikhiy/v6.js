@@ -2498,21 +2498,16 @@ module.exports = { degress: false };
 if (typeof platform === 'undefined') {
     var platform;
     try {
-        platform = require('platform');
+        platform = function () {
+            throw new Error('Cannot find module \'platform\' from \'/home/silent/git/v6.js\'');
+        }();
     } catch (ex) {
     }
 }
 module.exports = platform;
-},{"platform":93}],94:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 'use strict';
-var once = require('peako/once');
-var _getContextNameGL = require('./_getContextNameGL');
-var RendererGL = require('./RendererGL');
-var Renderer2D = require('./Renderer2D');
-var constants = require('./constants');
-var platform = require('./platform');
-var report = require('./report');
-var o = require('./rendererOptions');
+var once = require('peako/once'), platform = require('./platform'), _getContextNameGL = require('./_getContextNameGL'), RendererGL = require('./RendererGL'), Renderer2D = require('./Renderer2D'), constants = require('./constants'), report = require('./report'), o = require('./rendererOptions');
 var getRendererMode = once(function () {
         var touchable, safari;
         if (typeof window !== 'undefined') {

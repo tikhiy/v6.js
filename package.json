@@ -3,19 +3,17 @@
   "version": "0.0.1",
   "description": "A rendering library: write the same code for both 2D and WebGL contexts.",
   "main": "v6.js",
-  "scripts": {
-    "test": "node -e \"console.log( require( './src/colors/hsla' )( 'magenta' ).shade( -25 ).rgba().shade( 25 ).toString() === 'rgba(255, 0, 255, 1)' ? 'It works.' : 'It not works.' );\""
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/silent-tempest/v6.git"
+    "url": "git+https://github.com/silent-tempest/v6.js.git"
   },
   "author": "SILENT",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/silent-tempest/v6/issues"
+    "url": "https://github.com/silent-tempest/v6.js/issues"
   },
-  "homepage": "https://github.com/silent-tempest/v6#readme",
+  "homepage": "https://github.com/silent-tempest/v6.js#readme",
   "dependencies": {
     "peako": "^0.0.1"
   },
@@ -28,8 +26,5 @@
     "transform": [
       "browserify-optional"
     ]
-  },
-  "browser": {
-    "platform": "./platform.js"
   }
 }

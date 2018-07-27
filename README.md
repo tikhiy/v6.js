@@ -30,13 +30,13 @@ The library has a hard-dependency on [peako](https://github.com/silent-tempest/p
 An example of use:
 
 ```javascript
-var constants = require( 'v6/constants' ),
-    Renderer  = require( 'v6/renderer' ),
-    Ticker    = require( 'v6/ticker' );
+var constants = require( 'v6.js/constants' ),
+    Renderer  = require( 'v6.js/renderer' ),
+    Ticker    = require( 'v6.js/ticker' );
 
 var options = {
   settings: {
-    colorMode: constants.HSLA
+    color: require( 'v6.js/colors/HSLA' )
   },
 
   mode: constants.MODE_AUTO

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function _shader ( source, type, gl ) {
+module.exports = function _createShader ( source, type, gl ) {
 
   var shader = gl.createShader( type );
 

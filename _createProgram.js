@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function _program ( vert, frag, gl ) {
+module.exports = function _createProgram ( vert, frag, gl ) {
 
   var program = gl.createProgram();
 

@@ -94,6 +94,53 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
 
 };
 
+Renderer2D.prototype.clear = function clear ( x, y, w, h ) {
+
+  if ( typeof x === 'undefined' ) {
+    x = y = 0;
+    w = this.w;
+    h = this.h;
+  } else {
+    x = Math.floor( align( x, w, this._rectAlignX ) );
+    y = Math.floor( align( y, h, this._rectAlignY ) );
+  }
+
+  this.context.clearRect( x, y, w, h );
+
+  return this;
+
+};
+
+Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _sy ) {
+  var context = this.context,
+      i;
+
+  if ( count < 2 ) {
+    return this;
+  }
+
+  if ( _sx == null ) {
+    _sx = _sy = 1;
+  }
+
+  context.beginPath();
+  context.moveTo( verts[ 0 ] * _sx, verts[ 1 ] * _sy );
+
+  for ( i = 2, count *= 2; i < count; i += 2 ) {
+    context.lineTo( verts[ i ] * _sx, verts[ i + 1 ] * _sy );
+  }
+
+  if ( this._doFill ) {
+    this._fill();
+  }
+
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    this._stroke( true );
+  }
+
+  return this;
+};
+
 Renderer2D.prototype.constructor = Renderer2D;
 
 module.exports = Renderer2D;

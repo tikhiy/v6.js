@@ -67,13 +67,54 @@ RendererGL.prototype._clearColor = function _clearColor ( r, g, b, a ) {
 };
 
 RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
-  var rgba = this.settings.color( r, g, b, a ).rgba();
+  var rgba = new this.settings.color( r, g, b, a ).rgba();
   this._clearColor( rgba[ 0 ] / 255, rgba[ 1 ] / 255, rgba[ 2 ] / 255, rgba[ 3 ] );
   return this;
 };
 
 RendererGL.prototype.clear = function clear () {
   this._clearColor( 0, 0, 0, 0 );
+  return this;
+};
+
+RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy ) {
+  var program = this.shaders.basic,
+      gl      = this.context;
+
+  if ( count < 2 ) {
+    return this;
+  }
+
+  if ( verts ) {
+    if ( mode == null ) {
+      mode = gl.STATIC_DRAW;
+    }
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, this.buffers.default );
+    gl.bufferData( gl.ARRAY_BUFFER, verts, mode );
+  }
+
+  if ( _sx != null ) {
+    this.matrix.scale( _sx, _sy );
+  }
+
+  program
+    .use()
+    .uniform( 'utransform', this.matrix.matrix )
+    .uniform( 'ures', [ this.w, this.h ] )
+    .pointer( 'apos', 2, gl.FLOAT, false, 0, 0 );
+
+  if ( this._doFill ) {
+    program.uniform( 'ucolor', this._fillColor.rgba() );
+    gl.drawArrays( gl.TRIANGLE_FAN, 0, count );
+  }
+
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    program.uniform( 'u_color', this._strokeColor.rgba() );
+    gl.lineWidth( this._lineWidth );
+    gl.drawArrays( gl.LINE_LOOP, 0, count );
+  }
+
   return this;
 };
 

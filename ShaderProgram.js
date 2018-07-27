@@ -1,18 +1,18 @@
 'use strict';
 
-var _program = require( './_program' ),
-    _shader  = require( './_shader' );
+var _createProgram = require( './_createProgram' ),
+    _createShader  = require( './_createShader' );
 
 function ShaderProgram ( vert, frag, gl ) {
   if ( typeof vert === 'string' ) {
-    vert = _shader( vert, gl.VERTEX_SHADER, gl );
+    vert = _createShader( vert, gl.VERTEX_SHADER, gl );
   }
 
   if ( typeof frag === 'string' ) {
-    frag = _shader( frag, gl.FRAGMENT_SHADER, gl );
+    frag = _createShader( frag, gl.FRAGMENT_SHADER, gl );
   }
 
-  this._program   = _program( vert, frag, gl );
+  this._program   = _createProgram( vert, frag, gl );
   this._gl        = gl;
   this.attributes = attributes( gl, this._program );
   this.uniforms   = uniforms( gl, this._program );
@@ -27,7 +27,7 @@ ShaderProgram.prototype = {
 
   },
 
-  vertexAttributePointer: function vertexAttributePointer ( name, size, type, normalized, stride, offset ) {
+  pointer: function pointer ( name, size, type, normalized, stride, offset ) {
 
     var location = this.attributes[ name ].location;
 
@@ -140,7 +140,7 @@ function uniforms ( gl, program ) {
     info = gl.getActiveUniform( program, i );
 
     uniform = {
-      location: gl.getUniformLocation( program, uniform.name ),
+      location: gl.getUniformLocation( program, info.name ),
       size: info.size,
       type: info.type
     };

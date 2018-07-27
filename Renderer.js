@@ -1,20 +1,17 @@
 'use strict';
 
-var getElementW = require( 'peako/get-element-w' );
+var getElementW = require( 'peako/get-element-w' ),
+    getElementH = require( 'peako/get-element-h' );
 
-var getElementH = require( 'peako/get-element-h' );
-
-var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' );
-
-var _copyDrawingSettings = require( './_copyDrawingSettings' );
-
-var _getContextNameGL = require( './_getContextNameGL' );
-
-var CompoundedImage = require( './CompoundedImage' );
-
-var constants = require( './constants' );
-
-var Image = require( './Image' );
+var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
+    _copyDrawingSettings       = require( './_copyDrawingSettings' ),
+    _getContextNameGL          = require( './_getContextNameGL' ),
+    _createPolygon             = require( './_createPolygon' ),
+    _polygons                  = require( './_polygons' ),
+    CompoundedImage            = require( './CompoundedImage' ),
+    constants                  = require( './constants' ),
+    options                    = require( './options' ),
+    Image                      = require( './Image' );
 
 var rendererIndex = 0;
 
@@ -165,6 +162,43 @@ Renderer.prototype = {
     }
 
     return this.backgroundColor( r, g, b, a );
+  },
+
+  _polygon: function _polygon ( x, y, rx, ry, n, a, degrees ) {
+
+    var polygon = _polygons[ n ];
+
+    var matrix = this.matrix;
+
+    if ( ! polygon ) {
+      polygon = _polygons[ n ] = _createPolygon( n );
+    }
+
+    if ( degrees ) {
+      a *= Math.PI / 180;
+    }
+
+    matrix.save();
+    matrix.translate( x, y );
+    matrix.rotate( a );
+    this.vertices( polygon, polygon.length * 0.5, null, rx, ry );
+    matrix.restore();
+
+    return this;
+  },
+
+  polygon: function polygon ( x, y, r, n, a ) {
+    if ( n % 1 ) {
+      n = Math.floor( n * 100 ) * 0.01;
+    }
+
+    if ( typeof a !== 'undefined' ) {
+      this._polygon( x, y, r, r, n, a, options.degrees );
+    } else {
+      this._polygon( x, y, r, r, n, -Math.PI * 0.5 );
+    }
+
+    return this;
   },
 
   constructor: Renderer

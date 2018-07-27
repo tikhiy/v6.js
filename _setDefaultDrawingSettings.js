@@ -19,8 +19,8 @@ module.exports = function _setDefaultDrawingSettings ( obj, renderer ) {
 
   _copyDrawingSettings( obj, defaultDrawingSettings );
 
-  obj._strokeColor = renderer.color();
-  obj._fillColor   = renderer.color();
+  obj._strokeColor = new renderer.settings.color();
+  obj._fillColor   = new renderer.settings.color();
   obj._font        = new Font();
 
   return obj;

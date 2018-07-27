@@ -1,14 +1,10 @@
 'use strict';
 
-// export before call recursive require
-
-module.exports = HSLA;
-
 var clamp = require( 'peako/clamp' );
 
-var _parseColor = require( './_parseColor' );
+// there is a circular recursion
 
-var RGBA = require( './RGBA' );
+var _parseColor, RGBA;
 
 var undefined; // jshint ignore: line
 
@@ -203,3 +199,13 @@ function foo ( t, p, q ) {
 
   return Math.round( p * 255 );
 }
+
+// export
+
+module.exports = HSLA;
+
+// then require modules that requires this module
+
+_parseColor = require( './_parseColor' );
+
+RGBA = require( './RGBA' );

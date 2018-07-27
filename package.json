@@ -1,8 +1,8 @@
 {
-  "name": "v6",
+  "name": "v6.js",
   "version": "0.0.1",
   "description": "A rendering library: write the same code for both 2D and WebGL contexts.",
-  "main": "src/v6.js",
+  "main": "v6.js",
   "scripts": {
     "test": "node -e \"console.log( require( './src/colors/hsla' )( 'magenta' ).shade( -25 ).rgba().shade( 25 ).toString() === 'rgba(255, 0, 255, 1)' ? 'It works.' : 'It not works.' );\""
   },
@@ -17,16 +17,19 @@
   },
   "homepage": "https://github.com/silent-tempest/v6#readme",
   "dependencies": {
-    "peako": "^0.0.1",
-    "platform": "^1.3.5"
+    "peako": "^0.0.1"
   },
   "devDependencies": {
     "browserify": "^16.2.2",
-    "browserify-optional": "^1.0.1"
+    "browserify-optional": "^1.0.1",
+    "uglify-js": "^3.4.5"
   },
   "browserify": {
     "transform": [
       "browserify-optional"
     ]
+  },
+  "browser": {
+    "platform": "./platform.js"
   }
 }

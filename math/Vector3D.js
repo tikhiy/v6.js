@@ -1,10 +1,8 @@
 'use strict';
 
-var forEachRight = require( 'peako/for-each-right' );
+var Vector2D = require( './Vector2D' );
 
 var options = require( '../options' );
-
-var Vector2D = require( './Vector2D' );
 
 function Vector3D ( x, y, z ) {
   this.set( x, y, z );
@@ -155,7 +153,7 @@ Vector3D.prototype = {
   constructor: Vector3D
 };
 
-forEachRight( [
+[
   'normalize',
   'setMag',
   'rotate',
@@ -166,7 +164,7 @@ forEachRight( [
   'add',
   'sub',
   'set'
-], function ( method ) {
+].forEach( function ( method ) {
   Vector3D[ method ] = Vector2D[ method ];
 } );
 

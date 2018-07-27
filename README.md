@@ -6,43 +6,19 @@ The main feature of the v6 is the use of one-code for the 2D and WebGL contexts 
 
 ##### [Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/)
 
-Install the library `$ npm install v6`. Install an optional dependency `$ npm install platform`.
+Install the library `$ npm install --save v6.js`. Install an optional dependency `$ npm install --save platform`.
 
 ```javascript
 // require whole the library.
-var v6   = require( 'v6' );
+var v6   = require( 'v6.js' );
 // require a sub-module of the library.
-var hsla = require( 'v6/hsla' );
+var hsla = require( 'v6.js/colors/hsla' );
 
-// Not working in Node.js because there is no Browser/DOM API.
 var renderer = v6.renderer( {
-  mode: v6.constants.RENDERER_MODE_AUTO
+  mode: v6.constants.MODE_AUTO
 } );
 
 var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
-```
-
-##### Browser
-
-```html
-<script src="https://rawgit.com/silent-tempest/peako/dev/build/peako.js"></script>
-<script src="https://rawgit.com/silent-tempest/v6/dev/build/v6.js"></script>
-<!-- optional script -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
-```
-
-```javascript
-var ticker = v6.ticker( update, render );
-
-function update ( elapsedTime ) {
-  console.log( elapsedTime );
-}
-
-function render ( elapsedTime ) {
-  renderer
-    .backgroundColor( 'lightskyblue' )
-    .polygon( x, y, r, 3 );
-}
 ```
 
 ### Dependencies
@@ -51,7 +27,7 @@ The library has a hard-dependency on [peako](https://github.com/silent-tempest/p
 
 ### Hello World
 
-A ~~simple~~ example of use:
+An example of use:
 
 ```javascript
 var constants = require( 'v6/constants' ),
@@ -63,14 +39,14 @@ var options = {
     colorMode: constants.HSLA
   },
 
-  mode: constants.RENDERER_MODE_AUTO
+  mode: constants.MODE_AUTO
 };
 
 var renderer = Renderer( options );
 
 function render () {
-  var w = renderer.width,
-      h = renderer.height;
+  var w = renderer.w,
+      h = renderer.h;
 
   // r is from min( w, h ) / 10 through 250
   var r = Math.min( 250, Math.min( w, h ) / 10 );
@@ -90,7 +66,7 @@ ticker.tick()
 
 ### Build
 
-Use `$ make` to build the project.
+Use `$ make` to build v6.js.
 
 ### License
 

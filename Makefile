@@ -1,2 +1,5 @@
+NAME := v6
+
 all:
-	browserify -o build/v6.js src/v6.js
+	node_modules/browserify/bin/cmd.js -o build/$(NAME).js $(NAME).js
+	node_modules/uglify-js/bin/uglifyjs build/$(NAME).js -o build/$(NAME).min.js -cm

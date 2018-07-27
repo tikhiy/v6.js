@@ -4,8 +4,6 @@ var once = require( 'peako/once' );
 
 var _getContextNameGL = require( './_getContextNameGL' );
 
-var defaultOptions = require( './options' );
-
 var RendererGL = require( './RendererGL' );
 
 var Renderer2D = require( './Renderer2D' );
@@ -15,6 +13,8 @@ var constants = require( './constants' );
 var platform = require( './platform' );
 
 var report = require( './report' );
+
+var o = require( './rendererOptions' );
 
 var getRendererMode = once( function () {
   var touchable, safari;
@@ -39,7 +39,7 @@ var getRendererMode = once( function () {
 } );
 
 module.exports = function renderer ( options ) {
-  var mode = options && options.mode || defaultOptions.renderer.mode;
+  var mode = options && options.mode || o.mode;
 
   if ( mode === constants.MODE_AUTO ) {
     mode = getRendererMode();

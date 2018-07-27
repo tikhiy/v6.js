@@ -1,12 +1,8 @@
 'use strict';
 
-// export before call recursive require
+// there is a circular recursion
 
-module.exports = RGBA;
-
-var _parseColor = require( './_parseColor' );
-
-var HSLA = require( './HSLA' );
+var _parseColor, HSLA;
 
 var undefined; // jshint ignore: line
 
@@ -213,3 +209,13 @@ RGBA.prototype = {
   constructor: RGBA,
   type: 'rgba'
 };
+
+// export
+
+module.exports = RGBA;
+
+// then require modules that requires this module
+
+_parseColor = require( './_parseColor' );
+
+HSLA = require( './HSLA' );

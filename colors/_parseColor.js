@@ -1,18 +1,14 @@
 'use strict';
 
-// export before call recursive require
-
-module.exports = _parseColor;
-
 var create = require( 'peako/create' );
 
 var trim = require( 'peako/trim' );
 
-var RGBA = require( './RGBA' );
-
-var HSLA = require( './HSLA' );
-
 var colors = require( './colors' );
+
+// there is a circular recursion
+
+var RGBA, HSLA;
 
 var parsed = create( null );
 
@@ -116,3 +112,13 @@ function ColorData ( match, color ) {
   this[ 3 ] = match[ 3 ];
   this.color = color;
 }
+
+// export
+
+module.exports = _parseColor;
+
+// then require modules that requires this module
+
+RGBA = require( './RGBA' );
+
+HSLA = require( './HSLA' );

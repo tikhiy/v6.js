@@ -25,7 +25,7 @@ function Camera ( options, renderer ) {
 
   if ( renderer ) {
     if ( ! this.offset ) {
-      this.offset = new Vector2D( renderer.width * 0.5, renderer.height * 0.5 );
+      this.offset = new Vector2D( renderer.w * 0.5, renderer.h * 0.5 );
     }
 
     this.renderer = renderer;
@@ -85,9 +85,9 @@ Camera.prototype = {
     }
 
     return x + w > at.x - off.x / this.zoom &&
-           x     < at.x + ( renderer.width - off.x ) / this.zoom &&
+           x     < at.x + ( renderer.w - off.x ) / this.zoom &&
            y + h > at.y - off.y / this.zoom &&
-           y     < at.y + ( renderer.height - off.y ) / this.zoom;
+           y     < at.y + ( renderer.h - off.y ) / this.zoom;
   },
 
   zoomIn: function zoomIn () {

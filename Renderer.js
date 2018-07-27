@@ -45,8 +45,6 @@ function Renderer ( options, mode ) {
     }
   }
 
-  _setDefaultDrawingSettings( this, this );
-
   this.settings    = options.settings;
 
   this.mode        = mode;
@@ -65,8 +63,10 @@ function Renderer ( options, mode ) {
    */
   this._vertices   = [];
 
-  if ( 'width' in options || 'height' in options ) {
-    this.resize( options.width, options.height );
+  _setDefaultDrawingSettings( this, this );
+
+  if ( 'w' in options || 'h' in options ) {
+    this.resize( options.w, options.h );
   } else {
     this.resizeTo( window );
   }
@@ -171,4 +171,4 @@ Renderer.prototype = {
 
 };
 
-module.exports = null;
+module.exports = Renderer;

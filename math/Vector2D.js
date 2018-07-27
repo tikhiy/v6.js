@@ -1,7 +1,5 @@
 'use strict';
 
-var forEachRight = require( 'peako/for-each-right' );
-
 var options = require( '../options' );
 
 function Vector2D ( x, y ) {
@@ -201,7 +199,7 @@ Vector2D.prototype = {
   constructor: Vector2D
 };
 
-forEachRight( [
+[
   'normalize',
   'setMag',
   'rotate',
@@ -212,7 +210,7 @@ forEachRight( [
   'add',
   'sub',
   'set'
-], function ( method ) {
+].forEach( function ( method ) {
   /* jshint evil: true */
   Vector2D[ method ] = Function( 'vector, x, y, z, value', 'return vector.copy().' + method + '( x, y, z, value );' );
   /* jshint evil: false */

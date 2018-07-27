@@ -1,7 +1,5 @@
 'use strict';
 
-var bind = require( 'peako/bind' );
-
 var CompoundedImage = require( './CompoundedImage' );
 
 var report = require( './report' );
@@ -16,14 +14,12 @@ function Image ( url ) {
   this.x = 0;
   this.y = 0;
 
-  if ( typeof window !== 'undefined' && url instanceof window.HTMLImageElement ) {
+  if ( typeof HTMLImageElement !== 'undefined' && url instanceof HTMLImageElement ) {
     if ( url.src ) {
       if ( url.complete ) {
         this._onload();
-      } else if ( url.onload === null ) {
-        url.onload = bind( this._onload, this );
       } else {
-        report( 'In new v6.Image: you should manually set "loaded" property if you are using "new v6.Image( image )" with "onload" listener' );
+        report( 'new v6.Image: you should manually set the "loaded" property if you are using "new v6.Image( image )"' );
       }
 
       this.url = url.src;
@@ -37,7 +33,7 @@ function Image ( url ) {
     this.url = url;
     this.load();
   } else {
-    throw TypeError( 'In new v6.Image: first argument must be a string or a HTMLImageElement object' );
+    throw TypeError( 'new v6.Image: first argument must be a string or a HTMLImageElement object' );
   }
 
 }
@@ -49,37 +45,35 @@ Image.prototype = {
       this.image.onload = null;
     }
 
-    this.loaded = true;
-
     this.w = this.image.width;
     this.h = this.image.height;
+
+    this.loaded = true;
 
   },
 
   /*
    * @returns {v6.Image}
    */
-  load: function load () {
+  load: function load ( url ) {
+    if ( ! this.loaded ) {
 
-    if ( this.loaded ) {
-      return this;
+      this.image.onload = this._onload;
+
+      this.image.src = this.url = ( this.url || url || '' );
+
     }
 
-    this.image.onload = this._onload;
-
-    this.image.src = this.url;
-
     return this;
-
   },
 
   /**
-   * tl;dr: Just the exit-function from v6.CompoundedImage#get() recursion.
+   * tl;dr: Just the exit-function from v6.CompoundedImage::get() recursion.
    *
    * Since v6.Image functions (static) can work with both v6.Image and
    * v6.CompoundedImage, a source object (v6.Image) can be required in them.
-   * Thus, there is v6.CompoundedImage#get(), which starts a recursion through
-   * intermediate objects (v6.CompoundedImage) and v6.Image#get(), which stop it
+   * Thus, there is v6.CompoundedImage::get(), which starts a recursion through
+   * intermediate objects (v6.CompoundedImage) and v6.Image::get(), which stop it
    * as the source object (v6.Image).
    *
    * @returns {v6.Image}
@@ -130,13 +124,13 @@ Image.cut = function cut ( image, x, y, w, h ) {
   x += image.x;
 
   if ( x + w > image.x + image.w ) {
-    throw Error( 'In v6.Image.cut: cannot cut the image because the new image W is out of bounds' );
+    throw Error( 'v6.Image.cut: cannot cut the image because the new image X or W is out of bounds' );
   }
 
   y += image.y;
 
   if ( y + h > image.y + image.h ) {
-    throw Error( 'In v6.Image.cut: cannot cut the image because the new image H is out of bounds' );
+    throw Error( 'v6.Image.cut: cannot cut the image because the new image Y or H is out of bounds' );
   }
 
   return new CompoundedImage( image.get(), x, y, w, h );

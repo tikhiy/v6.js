@@ -978,7 +978,7 @@ Camera.prototype = {
     constructor: Camera
 };
 module.exports = Camera;
-},{"./math/Vector2D":90,"peako/default-to":24}],63:[function(require,module,exports){
+},{"./math/Vector2D":91,"peako/default-to":24}],63:[function(require,module,exports){
 'use strict';
 function CompoundedImage(image, x, y, w, h) {
     this.image = image;
@@ -1146,7 +1146,7 @@ Image.cut = function cut(image, x, y, w, h) {
     return new CompoundedImage(image.get(), x, y, w, h);
 };
 module.exports = Image;
-},{"./CompoundedImage":63,"./report":98}],66:[function(require,module,exports){
+},{"./CompoundedImage":63,"./report":99}],66:[function(require,module,exports){
 'use strict';
 var getElementW = require('peako/get-element-w'), getElementH = require('peako/get-element-h');
 var _setDefaultDrawingSettings = require('./_setDefaultDrawingSettings'), _copyDrawingSettings = require('./_copyDrawingSettings'), _getContextNameGL = require('./_getContextNameGL'), _createPolygon = require('./_createPolygon'), _polygons = require('./_polygons'), CompoundedImage = require('./CompoundedImage'), constants = require('./constants'), options = require('./options'), Image = require('./Image');
@@ -1261,7 +1261,7 @@ Renderer.prototype = {
     constructor: Renderer
 };
 module.exports = Renderer;
-},{"./CompoundedImage":63,"./Image":65,"./_copyDrawingSettings":72,"./_createPolygon":73,"./_getContextNameGL":76,"./_polygons":77,"./_setDefaultDrawingSettings":78,"./constants":87,"./options":94,"peako/get-element-h":28,"peako/get-element-w":29}],67:[function(require,module,exports){
+},{"./CompoundedImage":63,"./Image":65,"./_copyDrawingSettings":72,"./_createPolygon":73,"./_getContextNameGL":76,"./_polygons":77,"./_setDefaultDrawingSettings":78,"./constants":87,"./options":95,"peako/get-element-h":28,"peako/get-element-w":29}],67:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults'), constants = require('./constants'), Renderer = require('./Renderer'), o = require('./rendererOptions');
 function Renderer2D(options) {
@@ -1347,7 +1347,7 @@ Renderer2D.prototype.vertices = function vertices(verts, count, _mode, _sx, _sy)
 };
 Renderer2D.prototype.constructor = Renderer2D;
 module.exports = Renderer2D;
-},{"./Renderer":66,"./constants":87,"./rendererOptions":97,"peako/defaults":25}],68:[function(require,module,exports){
+},{"./Renderer":66,"./constants":87,"./rendererOptions":98,"peako/defaults":25}],68:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults'), ShaderProgram = require('./ShaderProgram'), Transform = require('./Transform'), constants = require('./constants'), Renderer = require('./Renderer'), shaders = require('./defaultShaders'), o = require('./rendererOptions');
 function RendererGL(options) {
@@ -1419,7 +1419,7 @@ RendererGL.prototype.vertices = function vertices(verts, count, mode, _sx, _sy) 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, count);
     }
     if (this._doStroke && this._lineWidth > 0) {
-        program.uniform('u_color', this._strokeColor.rgba());
+        program.uniform('ucolor', this._strokeColor.rgba());
         gl.lineWidth(this._lineWidth);
         gl.drawArrays(gl.LINE_LOOP, 0, count);
     }
@@ -1427,7 +1427,7 @@ RendererGL.prototype.vertices = function vertices(verts, count, mode, _sx, _sy) 
 };
 RendererGL.prototype.constructor = RendererGL;
 module.exports = RendererGL;
-},{"./Renderer":66,"./ShaderProgram":69,"./Transform":71,"./constants":87,"./defaultShaders":88,"./rendererOptions":97,"peako/defaults":25}],69:[function(require,module,exports){
+},{"./Renderer":66,"./ShaderProgram":69,"./Transform":71,"./constants":87,"./defaultShaders":88,"./rendererOptions":98,"peako/defaults":25}],69:[function(require,module,exports){
 'use strict';
 var _createProgram = require('./_createProgram'), _createShader = require('./_createShader');
 function ShaderProgram(vert, frag, gl) {
@@ -1622,11 +1622,46 @@ Ticker.prototype = {
 module.exports = Ticker;
 },{"./constants":87,"peako/noop":48,"peako/timer":55,"peako/timestamp":56}],71:[function(require,module,exports){
 'use strict';
+var mat3 = require('./mat3');
 function Transform() {
+    this.matrix = mat3.identity();
+    this._index = -1;
+    this._stack = [];
 }
-Transform.prototype = { constructor: Transform };
+Transform.prototype = {
+    save: function save() {
+        if (++this._index < this._stack.length) {
+            mat3.copy(this._stack[this._index], this.matrix);
+        } else {
+            this._stack.push(mat3.clone(this.matrix));
+        }
+    },
+    restore: function restore() {
+        if (this._index >= 0) {
+            mat3.copy(this.matrix, this._stack[this._index--]);
+        } else {
+            mat3.setIdentity(this.matrix);
+        }
+    },
+    setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
+        mat3.setTransform(this.matrix, m11, m12, m21, m22, dx, dy);
+    },
+    translate: function translate(x, y) {
+        mat3.translate(this.matrix, x, y);
+    },
+    rotate: function rotate(angle) {
+        mat3.rotate(this.matrix, angle);
+    },
+    scale: function scale(x, y) {
+        mat3.scale(this.matrix, x, y);
+    },
+    transform: function transform(m11, m12, m21, m22, dx, dy) {
+        mat3.transform(this.matrix, m11, m12, m21, m22, dx, dy);
+    },
+    constructor: Transform
+};
 module.exports = Transform;
-},{}],72:[function(require,module,exports){
+},{"./mat3":90}],72:[function(require,module,exports){
 'use strict';
 module.exports = function _copyDrawingSettings(obj, src, deep) {
     if (deep) {
@@ -1717,7 +1752,6 @@ var _getContextNameGL = once(function () {
 module.exports = _getContextNameGL;
 },{"peako/once":50}],77:[function(require,module,exports){
 'use strict';
-console.log(exports);
 },{}],78:[function(require,module,exports){
 'use strict';
 var _copyDrawingSettings = require('./_copyDrawingSettings');
@@ -2293,6 +2327,90 @@ module.exports = function image(url) {
 };
 },{"./Image":65}],90:[function(require,module,exports){
 'use strict';
+exports.identity = function identity() {
+    return [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+    ];
+};
+exports.setIdentity = function setIdentity(m1) {
+    m1[0] = m1[4] = m1[8] = 1;
+    m1[1] = m1[2] = m1[3] = m1[5] = m1[6] = m1[7] = 0;
+};
+exports.copy = function copy(m1, m2) {
+    m1[0] = m2[0];
+    m1[1] = m2[1];
+    m1[2] = m2[2];
+    m1[3] = m2[3];
+    m1[4] = m2[4];
+    m1[5] = m2[5];
+    m1[6] = m2[6];
+    m1[7] = m2[7];
+    m1[8] = m2[8];
+};
+exports.clone = function clone(m1) {
+    return [
+        m1[0],
+        m1[1],
+        m1[2],
+        m1[3],
+        m1[4],
+        m1[5],
+        m1[6],
+        m1[7],
+        m1[8]
+    ];
+};
+exports.translate = function translate(m1, x, y) {
+    m1[6] = x * m1[0] + y * m1[3] + m1[6];
+    m1[7] = x * m1[1] + y * m1[4] + m1[7];
+    m1[8] = x * m1[2] + y * m1[5] + m1[8];
+};
+exports.rotate = function rotate(m1, angle) {
+    var m10 = m1[0], m11 = m1[1], m12 = m1[2], m13 = m1[3], m14 = m1[4], m15 = m1[5];
+    var x = Math.cos(angle), y = Math.sin(angle);
+    m1[0] = x * m10 + y * m13;
+    m1[1] = x * m11 + y * m14;
+    m1[2] = x * m12 + y * m15;
+    m1[3] = x * m13 - y * m10;
+    m1[4] = x * m14 - y * m11;
+    m1[5] = x * m15 - y * m12;
+};
+exports.scale = function scale(m1, x, y) {
+    m1[0] *= x;
+    m1[1] *= x;
+    m1[2] *= x;
+    m1[3] *= y;
+    m1[4] *= y;
+    m1[5] *= y;
+};
+exports.transform = function transform(m1, m11, m12, m21, m22, dx, dy) {
+    m1[0] *= m11;
+    m1[1] *= m21;
+    m1[2] *= dx;
+    m1[3] *= m12;
+    m1[4] *= m22;
+    m1[5] *= dy;
+    m1[6] = 0;
+    m1[7] = 0;
+};
+exports.setTransform = function setTransform(m1, m11, m12, m21, m22, dx, dy) {
+    m1[0] = m11;
+    m1[1] = m12;
+    m1[3] = m21;
+    m1[4] = m22;
+    m1[6] = dx;
+    m1[7] = dy;
+};
+},{}],91:[function(require,module,exports){
+'use strict';
 var options = require('../options');
 function Vector2D(x, y) {
     this.set(x, y);
@@ -2454,7 +2572,7 @@ Vector2D.cross = function cross(a, b) {
     return a.x * b.y - a.y * b.x;
 };
 module.exports = Vector2D;
-},{"../options":94}],91:[function(require,module,exports){
+},{"../options":95}],92:[function(require,module,exports){
 'use strict';
 var Vector2D = require('./Vector2D');
 var options = require('../options');
@@ -2577,22 +2695,22 @@ Vector3D.fromAngle = function fromAngle(angle) {
     return new Vector3D(Math.cos(angle), Math.sin(angle));
 };
 module.exports = Vector3D;
-},{"../options":94,"./Vector2D":90}],92:[function(require,module,exports){
+},{"../options":95,"./Vector2D":91}],93:[function(require,module,exports){
 'use strict';
 var Vector2D = require('./Vector2D');
 module.exports = function vec2(x, y) {
     return new Vector2D(x, y);
 };
-},{"./Vector2D":90}],93:[function(require,module,exports){
+},{"./Vector2D":91}],94:[function(require,module,exports){
 'use strict';
 var Vector3D = require('./Vector3D');
 module.exports = function vec3(x, y, z) {
     return new Vector3D(x, y, z);
 };
-},{"./Vector3D":91}],94:[function(require,module,exports){
+},{"./Vector3D":92}],95:[function(require,module,exports){
 'use strict';
 module.exports = { degress: false };
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 'use strict';
 if (typeof platform === 'undefined') {
     var platform;
@@ -2604,7 +2722,7 @@ if (typeof platform === 'undefined') {
     }
 }
 module.exports = platform;
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 'use strict';
 var once = require('peako/once'), platform = require('./platform'), _getContextNameGL = require('./_getContextNameGL'), RendererGL = require('./RendererGL'), Renderer2D = require('./Renderer2D'), constants = require('./constants'), report = require('./report'), o = require('./rendererOptions');
 var getRendererMode = once(function () {
@@ -2635,7 +2753,7 @@ module.exports = function renderer(options) {
         return new Renderer2D(options);
     }
 };
-},{"./Renderer2D":67,"./RendererGL":68,"./_getContextNameGL":76,"./constants":87,"./platform":95,"./rendererOptions":97,"./report":98,"peako/once":50}],97:[function(require,module,exports){
+},{"./Renderer2D":67,"./RendererGL":68,"./_getContextNameGL":76,"./constants":87,"./platform":96,"./rendererOptions":98,"./report":99,"peako/once":50}],98:[function(require,module,exports){
 'use strict';
 module.exports = {
     settings: {
@@ -2650,7 +2768,7 @@ module.exports = {
     alpha: true,
     mode: '2d'
 };
-},{"./colors/RGBA":81}],98:[function(require,module,exports){
+},{"./colors/RGBA":81}],99:[function(require,module,exports){
 'use strict';
 var report, reported;
 if (typeof console !== 'undefined' && console.warn) {
@@ -2666,13 +2784,13 @@ if (typeof console !== 'undefined' && console.warn) {
     report = require('peako/noop');
 }
 module.exports = report;
-},{"peako/noop":48}],99:[function(require,module,exports){
+},{"peako/noop":48}],100:[function(require,module,exports){
 'use strict';
 var Ticker = require('./Ticker');
 module.exports = function ticker(update, render, context) {
     return new Ticker(update, render, context);
 };
-},{"./Ticker":70}],100:[function(require,module,exports){
+},{"./Ticker":70}],101:[function(require,module,exports){
 'use strict';
 var v6 = {
         Camera: require('./Camera'),
@@ -2706,4 +2824,4 @@ if (typeof self !== 'undefined') {
     self.v6 = v6;
 }
 module.exports = v6;
-},{"./Camera":62,"./CompoundedImage":63,"./Image":65,"./Renderer2D":67,"./RendererGL":68,"./ShaderProgram":69,"./Ticker":70,"./Transform":71,"./camera":79,"./colors/HSLA":80,"./colors/RGBA":81,"./colors/color":83,"./colors/hsla":85,"./colors/rgba":86,"./constants":87,"./defaultShaders":88,"./image":89,"./math/Vector2D":90,"./math/Vector3D":91,"./math/vec2":92,"./math/vec3":93,"./options":94,"./platform":95,"./renderer":96,"./rendererOptions":97,"./ticker":99}]},{},[100]);
+},{"./Camera":62,"./CompoundedImage":63,"./Image":65,"./Renderer2D":67,"./RendererGL":68,"./ShaderProgram":69,"./Ticker":70,"./Transform":71,"./camera":79,"./colors/HSLA":80,"./colors/RGBA":81,"./colors/color":83,"./colors/hsla":85,"./colors/rgba":86,"./constants":87,"./defaultShaders":88,"./image":89,"./math/Vector2D":91,"./math/Vector3D":92,"./math/vec2":93,"./math/vec3":94,"./options":95,"./platform":96,"./renderer":97,"./rendererOptions":98,"./ticker":100}]},{},[101]);

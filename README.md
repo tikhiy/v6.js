@@ -59,9 +59,7 @@ function render () {
     .polygon( w / 2, h / 2, r, n );
 }
 
-var ticker = Ticker( render );
-
-ticker.tick()
+var ticker = Ticker( render ).tick()
 ```
 
 ### Build

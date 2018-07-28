@@ -110,7 +110,7 @@ RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy
   }
 
   if ( this._doStroke && this._lineWidth > 0 ) {
-    program.uniform( 'u_color', this._strokeColor.rgba() );
+    program.uniform( 'ucolor', this._strokeColor.rgba() );
     gl.lineWidth( this._lineWidth );
     gl.drawArrays( gl.LINE_LOOP, 0, count );
   }

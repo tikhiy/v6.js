@@ -141,6 +141,27 @@ Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _s
   return this;
 };
 
+Renderer2D.prototype._fill = function _fill () {
+  this.context.fillStyle = this._fillColor;
+  this.context.fill();
+};
+
+Renderer2D.prototype._stroke = function ( close ) {
+  var context = this.context;
+
+  if ( close ) {
+    context.closePath();
+  }
+
+  context.strokeStyle = this._strokeColor;
+
+  if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
+    context.stroke();
+  }
+
+  context.stroke();
+};
+
 Renderer2D.prototype.constructor = Renderer2D;
 
 module.exports = Renderer2D;

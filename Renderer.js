@@ -1,7 +1,8 @@
 'use strict';
 
 var getElementW = require( 'peako/get-element-w' ),
-    getElementH = require( 'peako/get-element-h' );
+    getElementH = require( 'peako/get-element-h' ),
+    baseForIn   = require( 'peako/base/base-for-in' );
 
 var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
     _copyDrawingSettings       = require( './_copyDrawingSettings' ),
@@ -12,6 +13,8 @@ var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
     constants                  = require( './constants' ),
     options                    = require( './options' ),
     Image                      = require( './Image' );
+
+var undefined; // jshint ignore: line
 
 var rendererIndex = 0;
 
@@ -201,8 +204,51 @@ Renderer.prototype = {
     return this;
   },
 
+  noStroke: function noStroke () {
+    this._doStroke = false;
+    return this;
+  },
+
+  noFill: function noFill () {
+    this._doFill = false;
+    return this;
+  },
+
   constructor: Renderer
 
 };
+
+baseForIn( { stroke: 'Stroke', fill: 'Fill' }, function ( Name, name ) {
+  var _nameColor = '_' + name + 'Color',
+      _doName = '_do' + Name,
+      _name = '_' + name;
+
+  Renderer.prototype[ name ] = function ( r, g, b, a ) {
+
+    // renderer.fill()
+
+    if ( typeof r === 'undefined' ) {
+      this[ _name ]();
+
+    // renderer.fill( 'magenta' )
+
+    } else if ( typeof r !== 'boolean' ) {
+      if ( typeof r === 'string' || this[ _nameColor ].type !== this.settings.color.prototype.type ) {
+        this[ _nameColor ] = new this.settings.color( r, g, b, a );
+      } else {
+        this[ _nameColor ].set( r, g, b, a );
+      }
+
+      this[ _doName ] = true;
+
+    // renderer.fill( true )
+
+    } else {
+      this[ _doName ] = r;
+    }
+
+    return this;
+  };
+}, undefined, true, [ 'stroke', 'fill' ] );
 
 module.exports = Renderer;

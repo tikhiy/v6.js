@@ -1148,8 +1148,9 @@ Image.cut = function cut(image, x, y, w, h) {
 module.exports = Image;
 },{"./CompoundedImage":63,"./report":99}],66:[function(require,module,exports){
 'use strict';
-var getElementW = require('peako/get-element-w'), getElementH = require('peako/get-element-h');
+var getElementW = require('peako/get-element-w'), getElementH = require('peako/get-element-h'), baseForIn = require('peako/base/base-for-in');
 var _setDefaultDrawingSettings = require('./_setDefaultDrawingSettings'), _copyDrawingSettings = require('./_copyDrawingSettings'), _getContextNameGL = require('./_getContextNameGL'), _createPolygon = require('./_createPolygon'), _polygons = require('./_polygons'), CompoundedImage = require('./CompoundedImage'), constants = require('./constants'), options = require('./options'), Image = require('./Image');
+var undefined;
 var rendererIndex = 0;
 function Renderer(options, mode) {
     var getContextOptions = { alpha: options.alpha };
@@ -1258,10 +1259,42 @@ Renderer.prototype = {
         }
         return this;
     },
+    noStroke: function noStroke() {
+        this._doStroke = false;
+        return this;
+    },
+    noFill: function noFill() {
+        this._doFill = false;
+        return this;
+    },
     constructor: Renderer
 };
+baseForIn({
+    stroke: 'Stroke',
+    fill: 'Fill'
+}, function (Name, name) {
+    var _nameColor = '_' + name + 'Color', _doName = '_do' + Name, _name = '_' + name;
+    Renderer.prototype[name] = function (r, g, b, a) {
+        if (typeof r === 'undefined') {
+            this[_name]();
+        } else if (typeof r !== 'boolean') {
+            if (typeof r === 'string' || this[_nameColor].type !== this.settings.color.prototype.type) {
+                this[_nameColor] = new this.settings.color(r, g, b, a);
+            } else {
+                this[_nameColor].set(r, g, b, a);
+            }
+            this[_doName] = true;
+        } else {
+            this[_doName] = r;
+        }
+        return this;
+    };
+}, undefined, true, [
+    'stroke',
+    'fill'
+]);
 module.exports = Renderer;
-},{"./CompoundedImage":63,"./Image":65,"./_copyDrawingSettings":72,"./_createPolygon":73,"./_getContextNameGL":76,"./_polygons":77,"./_setDefaultDrawingSettings":78,"./constants":87,"./options":95,"peako/get-element-h":28,"peako/get-element-w":29}],67:[function(require,module,exports){
+},{"./CompoundedImage":63,"./Image":65,"./_copyDrawingSettings":72,"./_createPolygon":73,"./_getContextNameGL":76,"./_polygons":77,"./_setDefaultDrawingSettings":78,"./constants":87,"./options":95,"peako/base/base-for-in":5,"peako/get-element-h":28,"peako/get-element-w":29}],67:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults'), constants = require('./constants'), Renderer = require('./Renderer'), o = require('./rendererOptions');
 function Renderer2D(options) {
@@ -1344,6 +1377,21 @@ Renderer2D.prototype.vertices = function vertices(verts, count, _mode, _sx, _sy)
         this._stroke(true);
     }
     return this;
+};
+Renderer2D.prototype._fill = function _fill() {
+    this.context.fillStyle = this._fillColor;
+    this.context.fill();
+};
+Renderer2D.prototype._stroke = function (close) {
+    var context = this.context;
+    if (close) {
+        context.closePath();
+    }
+    context.strokeStyle = this._strokeColor;
+    if ((context.lineWidth = this._lineWidth) <= 1) {
+        context.stroke();
+    }
+    context.stroke();
 };
 Renderer2D.prototype.constructor = Renderer2D;
 module.exports = Renderer2D;

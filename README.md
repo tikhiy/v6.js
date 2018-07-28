@@ -30,6 +30,8 @@ The library has a hard-dependency on [peako](https://github.com/silent-tempest/p
 An example of use:
 
 ```javascript
+'use strict';
+
 var constants = require( 'v6.js/constants' ),
     Renderer  = require( 'v6.js/renderer' ),
     Ticker    = require( 'v6.js/ticker' );
@@ -42,24 +44,24 @@ var options = {
   mode: constants.MODE_AUTO
 };
 
-var renderer = Renderer( options );
+var renderer = Renderer( options ).fill( 'white' );
 
 function render () {
   var w = renderer.w,
       h = renderer.h;
 
-  // r is from min( w, h ) / 10 through 250
-  var r = Math.min( 250, Math.min( w, h ) / 10 );
+  // r is from min( w, h ) / 5 through 400
+  var r = Math.min( Math.min( w, h ) / 5, 400 );
 
-  // n is from 3 through totalTime in seconds
-  var n = Math.max( 3, this.totalTime );
+  // n is from 3 through 9
+  var n = 3 + ( Math.sin( this.totalTime ) + 1 ) * 3;
 
   renderer
-    .background( this.totalTime, 80, 80 )
+    .background( this.totalTime * 25, 80, 80 )
     .polygon( w / 2, h / 2, r, n );
 }
 
-var ticker = Ticker( render ).tick()
+var ticker = Ticker( render ).tick();
 ```
 
 ### Build

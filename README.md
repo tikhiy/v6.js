@@ -26,8 +26,8 @@ var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
 ```html
 <!-- The optional dependency. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
-<script src="https://rawgit.com/silent-tempest/peako/dev/dist/peako.js"></script>
-<script src="https://rawgit.com/silent-tempest/v6/dev/dist/v6.js"></script>
+<script src="https://rawgit.com/silent-tempest/peako/dev/dist/peako.min.js"></script>
+<script src="https://rawgit.com/silent-tempest/v6/dev/dist/v6.min.js"></script>
 ```
 
 ```javascript

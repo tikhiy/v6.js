@@ -6,7 +6,7 @@ if ( typeof platform === 'undefined' ) {
   var platform;
 
   try {
-    platform = optional( 'platform' )
+    platform = optional( 'platform' );
   } catch ( e ) {}
 }
 

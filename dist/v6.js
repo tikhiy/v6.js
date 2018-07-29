@@ -2242,7 +2242,7 @@ Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _s
     this._fill();
   }
 
-  if ( this._doStroke && this._lineWidth > 0 ) {
+  if ( this._doStroke && this._lineW > 0 ) {
     this._stroke( true );
   }
 
@@ -2263,7 +2263,7 @@ Renderer2D.prototype._stroke = function ( close ) {
 
   context.strokeStyle = this._strokeColor;
 
-  if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
+  if ( ( context.lineWidth = this._lineW ) <= 1 ) {
     context.stroke();
   }
 
@@ -2387,9 +2387,9 @@ RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy
     gl.drawArrays( gl.TRIANGLE_FAN, 0, count );
   }
 
-  if ( this._doStroke && this._lineWidth > 0 ) {
+  if ( this._doStroke && this._lineW > 0 ) {
     program.uniform( 'ucolor', this._strokeColor.rgba() );
-    gl.lineWidth( this._lineWidth );
+    gl.lineWidth( this._lineW );
     gl.drawArrays( gl.LINE_LOOP, 0, count );
   }
 
@@ -2752,33 +2752,33 @@ module.exports = function align ( value, dimension, align ) {
 },{"./constants":88}],73:[function(require,module,exports){
 'use strict';
 
-module.exports = function _copyDrawingSettings ( obj, src, deep ) {
+module.exports = function _copyDrawingSettings ( target, source, deep ) {
   if ( deep ) {
-    obj._fillColor[ 0 ]   = src._fillColor[ 0 ];
-    obj._fillColor[ 1 ]   = src._fillColor[ 1 ];
-    obj._fillColor[ 2 ]   = src._fillColor[ 2 ];
-    obj._fillColor[ 3 ]   = src._fillColor[ 3 ];
-    obj._font.style       = src._font.style;
-    obj._font.variant     = src._font.variant;
-    obj._font.weight      = src._font.weight;
-    obj._font.size        = src._font.size;
-    obj._font.family      = src._font.family;
-    obj._strokeColor[ 0 ] = src._strokeColor[ 0 ];
-    obj._strokeColor[ 1 ] = src._strokeColor[ 1 ];
-    obj._strokeColor[ 2 ] = src._strokeColor[ 2 ];
-    obj._strokeColor[ 3 ] = src._strokeColor[ 3 ];
+    target._fillColor[ 0 ]   = source._fillColor[ 0 ];
+    target._fillColor[ 1 ]   = source._fillColor[ 1 ];
+    target._fillColor[ 2 ]   = source._fillColor[ 2 ];
+    target._fillColor[ 3 ]   = source._fillColor[ 3 ];
+    target._font.style       = source._font.style;
+    target._font.variant     = source._font.variant;
+    target._font.weight      = source._font.weight;
+    target._font.size        = source._font.size;
+    target._font.family      = source._font.family;
+    target._strokeColor[ 0 ] = source._strokeColor[ 0 ];
+    target._strokeColor[ 1 ] = source._strokeColor[ 1 ];
+    target._strokeColor[ 2 ] = source._strokeColor[ 2 ];
+    target._strokeColor[ 3 ] = source._strokeColor[ 3 ];
   }
 
-  obj._rectAlignX   = src._rectAlignX;
-  obj._rectAlignY   = src._rectAlignY;
-  obj._doFill       = src._doFill;
-  obj._doStroke     = src._doStroke;
-  obj._lineHeight   = src._lineHeight;
-  obj._lineWidth    = src._lineWidth;
-  obj._textAlign    = src._textAlign;
-  obj._textBaseline = src._textBaseline;
+  target._rectAlignX = source._rectAlignX;
+  target._rectAlignY = source._rectAlignY;
+  target._textAlignX = source._textAlignX;
+  target._textAlignY = source._textAlignY;
+  target._doStroke   = source._doStroke;
+  target._doFill     = source._doFill;
+  target._lineH      = source._lineH;
+  target._lineW      = source._lineW;
 
-  return obj;
+  return target;
 };
 
 },{}],74:[function(require,module,exports){
@@ -4191,8 +4191,15 @@ module.exports = {
 
 var optional = require;
 
-var once     = require( 'peako/once' ),
+if ( typeof platform === 'undefined' ) {
+  var platform;
+
+  try {
     platform = optional( 'platform' );
+  } catch ( e ) {}
+}
+
+var once = require( 'peako/once' );
 
 var _getContextNameGL = require( './_getContextNameGL' ),
     rendererOptions   = require( './rendererOptions' ),

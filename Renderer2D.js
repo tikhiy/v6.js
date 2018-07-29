@@ -136,7 +136,7 @@ Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _s
     this._fill();
   }
 
-  if ( this._doStroke && this._lineWidth > 0 ) {
+  if ( this._doStroke && this._lineW > 0 ) {
     this._stroke( true );
   }
 
@@ -157,7 +157,7 @@ Renderer2D.prototype._stroke = function ( close ) {
 
   context.strokeStyle = this._strokeColor;
 
-  if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
+  if ( ( context.lineWidth = this._lineW ) <= 1 ) {
     context.stroke();
   }
 

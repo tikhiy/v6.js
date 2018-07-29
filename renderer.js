@@ -2,8 +2,15 @@
 
 var optional = require;
 
-var once     = require( 'peako/once' ),
-    platform = optional( 'platform' );
+if ( typeof platform === 'undefined' ) {
+  var platform;
+
+  try {
+    platform = optional( 'platform' )
+  } catch ( e ) {}
+}
+
+var once = require( 'peako/once' );
 
 var _getContextNameGL = require( './_getContextNameGL' ),
     rendererOptions   = require( './rendererOptions' ),

@@ -1,28 +1,28 @@
 'use strict';
 
-var _copyDrawingSettings = require( './_copyDrawingSettings' );
-
-var Font = require( './Font' );
+var _copyDrawingSettings = require( './_copyDrawingSettings' ),
+    constants            = require( './constants' ),
+    Font                 = require( './Font' );
 
 var defaultDrawingSettings = {
-  _rectAlignX:   'left',
-  _rectAlignY:   'top',
-  _textAlign:    'left',
-  _textBaseline: 'top',
-  _doFill:       true,
-  _doStroke:     true,
-  _lineHeight:   14,
-  _lineWidth:    2
+  _rectAlignX: constants.LEFT,
+  _rectAlignY: constants.TOP,
+  _textAlignX: constants.LEFT,
+  _textAlineY: constants.TOP,
+  _doStroke:   true,
+  _doFill:     true,
+  _lineH:      14,
+  _lineW:      2
 };
 
-module.exports = function _setDefaultDrawingSettings ( obj, renderer ) {
+module.exports = function _setDefaultDrawingSettings ( target, source ) {
 
-  _copyDrawingSettings( obj, defaultDrawingSettings );
+  _copyDrawingSettings( target, defaultDrawingSettings );
 
-  obj._strokeColor = new renderer.settings.color();
-  obj._fillColor   = new renderer.settings.color();
-  obj._font        = new Font();
+  target._strokeColor = new source.settings.color();
+  target._fillColor   = new source.settings.color();
+  target._font        = new Font();
 
-  return obj;
+  return target;
 
 };

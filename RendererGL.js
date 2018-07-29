@@ -1,16 +1,16 @@
 'use strict';
 
-var defaults      = require( 'peako/defaults' ),
-    ShaderProgram = require( './ShaderProgram' ),
-    Transform     = require( './Transform' ),
-    constants     = require( './constants' ),
-    Renderer      = require( './Renderer' ),
-    shaders       = require( './defaultShaders' ),
-    o             = require( './rendererOptions' );
+var defaults        = require( './_optional' )( 'peako/defaults', [ 'peako', 'defaults' ] ),
+    ShaderProgram   = require( './ShaderProgram' ),
+    Transform       = require( './Transform' ),
+    constants       = require( './constants' ),
+    Renderer        = require( './Renderer' ),
+    shaders         = require( './defaultShaders' ),
+    rendererOptions = require( './rendererOptions' );
 
 function RendererGL ( options ) {
 
-  options = defaults( o, options );
+  options = defaults( rendererOptions, options );
 
   Renderer.call( this, options, constants.MODE_GL );
 

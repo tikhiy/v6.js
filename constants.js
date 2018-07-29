@@ -2,19 +2,23 @@
 
 module.exports = {
 
-  // Use in v6.renderer( options ):
+  // 'v6.renderer( options )'
 
   MODE_AUTO: 1,
   MODE_GL:   2,
   MODE_2D:   3,
 
-  // Use in renderer.colorMode( mode ) and v6.renderer( options.settings ):
+  // 'v6.ticker( update, render, context )'
 
-  RGBA: 4,
-  HSLA: 5,
+  SELF_CONTEXT: 6,
 
-  // Use in v6.ticker( update, render, context );
+  // Align constants
 
-  SELF_CONTEXT: 6
+  BOTTOM: 7,
+  RIGHT:  8,
+  LEFT:   9,
+  TOP:    10,
+  CENTER: 11,
+  MIDDLE: 12
 
 };

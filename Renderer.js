@@ -1,18 +1,19 @@
 'use strict';
 
-var getElementW = require( 'peako/get-element-w' ),
-    getElementH = require( 'peako/get-element-h' ),
-    baseForIn   = require( 'peako/base/base-for-in' );
-
 var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
     _copyDrawingSettings       = require( './_copyDrawingSettings' ),
     _getContextNameGL          = require( './_getContextNameGL' ),
     _createPolygon             = require( './_createPolygon' ),
     _polygons                  = require( './_polygons' ),
+    _optional                  = require( './_optional' ),
     CompoundedImage            = require( './CompoundedImage' ),
     constants                  = require( './constants' ),
     options                    = require( './options' ),
     Image                      = require( './Image' );
+
+var getElementW = _optional( 'peako/get-element-w', [ 'peako', 'prototype', 'width' ] ),
+    getElementH = _optional( 'peako/get-element-h', [ 'peako', 'prototype', 'height' ] ),
+    baseForIn   = _optional( 'peako/base/base-for-in', [ 'peako', 'forOwnRight' ] );
 
 var undefined; // jshint ignore: line
 
@@ -146,7 +147,17 @@ Renderer.prototype = {
    * @param {Element} element
    */
   resizeTo: function resizeTo ( element ) {
-    return this.resize( getElementW( element ), getElementH( element ) );
+    var w, h;
+
+    try {
+      w = getElementW( element );
+      h = getElementH( element );
+    } catch ( e ) {
+      w = getElementW.call( [ element ] );
+      h = getElementH.call( [ element ] );
+    }
+
+    return this.resize( w, h );
   },
 
   rescale: function rescale () {
@@ -217,6 +228,41 @@ Renderer.prototype = {
   constructor: Renderer
 
 };
+
+// for ( var o = { stroke: 'Stroke', fill: 'Fill' }, k = [ 'stroke', 'fill' ], i = k.length - 1; i >= 0; --i ) {
+//   ( function ( k ) {
+//     var _nameColor = '_' + k + 'Color',
+//         _doName = '_do' + o[ k ],
+//         _name = '_' + k;
+
+//     Renderer.prototype[ k ] = function ( r, g, b, a ) {
+
+//       // renderer.fill()
+
+//       if ( typeof r === 'undefined' ) {
+//         this[ _name ]();
+
+//       // renderer.fill( 'magenta' )
+
+//       } else if ( typeof r !== 'boolean' ) {
+//         if ( typeof r === 'string' || this[ _nameColor ].type !== this.settings.color.prototype.type ) {
+//           this[ _nameColor ] = new this.settings.color( r, g, b, a );
+//         } else {
+//           this[ _nameColor ].set( r, g, b, a );
+//         }
+
+//         this[ _doName ] = true;
+
+//       // renderer.fill( true )
+
+//       } else {
+//         this[ _doName ] = r;
+//       }
+
+//       return this;
+//     };
+//   } )( k[ i ] );
+// }
 
 baseForIn( { stroke: 'Stroke', fill: 'Fill' }, function ( Name, name ) {
   var _nameColor = '_' + name + 'Color',

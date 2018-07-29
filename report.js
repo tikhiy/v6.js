@@ -15,7 +15,7 @@ if ( typeof console !== 'undefined' && console.warn ) {
     reported[ message ] = true;
   };
 } else {
-  report = require( 'peako/noop' );
+  report = require( './_optional' )( 'peako/noop', [ 'peako', 'noop' ] );
 }
 
 module.exports = report;

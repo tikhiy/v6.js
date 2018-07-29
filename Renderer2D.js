@@ -1,13 +1,14 @@
 'use strict';
 
-var defaults  = require( 'peako/defaults' ),
-    constants = require( './constants' ),
-    Renderer  = require( './Renderer' ),
-    o         = require( './rendererOptions' );
+var defaults        = require( './_optional' )( 'peako/defaults', [ 'peako', 'defaults' ] ),
+    rendererOptions = require( './rendererOptions' ),
+    constants       = require( './constants' ),
+    Renderer        = require( './Renderer' ),
+    _align          = require( './_align' );
 
 function Renderer2D ( options ) {
 
-  options = defaults( o, options );
+  options = defaults( rendererOptions, options );
 
   Renderer.call( this, options, constants.MODE_2D );
 
@@ -101,8 +102,8 @@ Renderer2D.prototype.clear = function clear ( x, y, w, h ) {
     w = this.w;
     h = this.h;
   } else {
-    x = Math.floor( align( x, w, this._rectAlignX ) );
-    y = Math.floor( align( y, h, this._rectAlignY ) );
+    x = Math.floor( _align( x, w, this._rectAlignX ) );
+    y = Math.floor( _align( y, h, this._rectAlignY ) );
   }
 
   this.context.clearRect( x, y, w, h );

@@ -1,13 +1,15 @@
 'use strict';
 
-var once              = require( 'peako/once' ),
-    platform          = require( './platform' ),
-    _getContextNameGL = require( './_getContextNameGL' ),
+var _getContextNameGL = require( './_getContextNameGL' ),
+    _optional         = require( './_optional' ),
+    rendererOptions   = require( './rendererOptions' ),
     RendererGL        = require( './RendererGL' ),
     Renderer2D        = require( './Renderer2D' ),
     constants         = require( './constants' ),
-    report            = require( './report' ),
-    o                 = require( './rendererOptions' );
+    report            = require( './report' );
+
+var once              = _optional( 'peako/once', [ 'peako', 'once' ] ),
+    platform          = _optional( 'platform', [ 'platform' ] );
 
 var getRendererMode = once( function () {
   var touchable, safari;
@@ -32,7 +34,7 @@ var getRendererMode = once( function () {
 } );
 
 module.exports = function renderer ( options ) {
-  var mode = options && options.mode || o.mode;
+  var mode = options && options.mode || rendererOptions.mode;
 
   if ( mode === constants.MODE_AUTO ) {
     mode = getRendererMode();

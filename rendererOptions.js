@@ -55,8 +55,8 @@ module.exports = {
   alpha: true,
 
   /**
-   * A type of a renderer's context, ('2d', 'webgl', 'auto'). When the mode is
-   * 'auto' for mobile platforms 'webgl' instead of '2d' to be used.
+   * A mode of a renderer's context, (MODE_2D, MODE_GL, MODE_AUTO). When the
+   * mode is MODE_AUTO for mobile platforms 'webgl' instead of '2d' to be used.
    */
-  mode: '2d'
+  mode: require( './constants' ).MODE_2D
 };

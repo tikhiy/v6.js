@@ -9,16 +9,35 @@ The main feature of the v6 is the use of one-code for the 2D and WebGL contexts 
 Install the library `$ npm install --save v6.js`. Install an optional dependency `$ npm install --save platform`.
 
 ```javascript
-// require whole the library.
-var v6   = require( 'v6.js' );
 // require a sub-module of the library.
 var hsla = require( 'v6.js/colors/hsla' );
+// require whole the library.
+var v6   = require( 'v6.js' );
 
 var renderer = v6.renderer( {
   mode: v6.constants.MODE_AUTO
 } );
 
 var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
+```
+
+##### Browser
+
+```html
+<!-- The optional dependency. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
+<script src="https://rawgit.com/silent-tempest/peako/dev/dist/peako.js"></script>
+<script src="https://rawgit.com/silent-tempest/v6/dev/dist/v6.js"></script>
+```
+
+```javascript
+var renderer = v6.renderer( {
+  settings: {
+    scale: self.devicePixelRatio || 1
+  },
+
+  mode: v6.constants.MODE_AUTO
+} );
 ```
 
 ### Dependencies

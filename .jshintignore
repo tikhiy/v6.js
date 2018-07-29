@@ -1,4 +1,4 @@
-build
+dist
 node_modules
 v6-old.js
 Font.js

@@ -26,7 +26,6 @@ var v6 = {
   hsla:            require( './colors/hsla' ),
   image:           require( './image' ),
   options:         require( './options' ),
-  platform:        require( './platform' ),
   renderer:        require( './renderer' ),
   rendererOptions: require( './rendererOptions' ),
   rgba:            require( './colors/rgba' ),

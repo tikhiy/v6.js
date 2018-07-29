@@ -1,6 +1,6 @@
 'use strict';
 
-var once = require( 'peako/once' );
+var once = require( './_optional' )( 'peako/once', [ 'peako', 'once' ] );
 
 var _getContextNameGL = once( function () {
   var canvas = document.createElement( 'canvas' );

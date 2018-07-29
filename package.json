@@ -1,6 +1,6 @@
 {
   "name": "v6.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A rendering library: write the same code for both 2D and WebGL contexts.",
   "main": "v6.js",
   "scripts": {},

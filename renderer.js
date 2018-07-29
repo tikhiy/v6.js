@@ -1,15 +1,16 @@
 'use strict';
 
+var optional = require;
+
+var once     = require( 'peako/once' ),
+    platform = optional( 'platform' );
+
 var _getContextNameGL = require( './_getContextNameGL' ),
-    _optional         = require( './_optional' ),
     rendererOptions   = require( './rendererOptions' ),
     RendererGL        = require( './RendererGL' ),
     Renderer2D        = require( './Renderer2D' ),
     constants         = require( './constants' ),
     report            = require( './report' );
-
-var once              = _optional( 'peako/once', [ 'peako', 'once' ] ),
-    platform          = _optional( 'platform', [ 'platform' ] );
 
 var getRendererMode = once( function () {
   var touchable, safari;

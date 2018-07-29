@@ -1,10 +1,8 @@
 'use strict';
 
-var _optional = require( '../_optional' ),
-    colors    = require( './colors' );
-
-var create = _optional( 'peako/create', [ 'peako', 'create' ] ),
-    trim   = _optional( 'peako/trim', [ 'peako', 'trim' ] );
+var create = require( 'peako/create' ),
+    trim   = require( 'peako/trim' ),
+    colors = require( './colors' );
 
 // there is a circular recursion
 

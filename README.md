@@ -2,9 +2,7 @@
 
 The main feature of the v6 is the use of one-code for the 2D and WebGL contexts (**only** 2D).
 
-### Install
-
-##### [Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/)
+### Install ([Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/))
 
 Install the library `$ npm install --save v6.js`. Install an optional dependency `$ npm install --save platform`.
 
@@ -19,25 +17,6 @@ var renderer = v6.renderer( {
 } );
 
 var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
-```
-
-##### Browser
-
-```html
-<!-- The optional dependency. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
-<script src="https://rawgit.com/silent-tempest/peako/dev/dist/peako.min.js"></script>
-<script src="https://rawgit.com/silent-tempest/v6/dev/dist/v6.min.js"></script>
-```
-
-```javascript
-var renderer = v6.renderer( {
-  settings: {
-    scale: self.devicePixelRatio || 1
-  },
-
-  mode: v6.constants.MODE_AUTO
-} );
 ```
 
 ### Dependencies

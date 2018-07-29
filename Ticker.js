@@ -1,11 +1,10 @@
 'use strict';
 
-var _optional = require( './_optional' ),
-    constants = require( './constants' );
+var timestamp = require( 'peako/timestamp' ),
+    timer     = require( 'peako/timer' ),
+    noop      = require( 'peako/noop' );
 
-var timestamp = _optional( 'peako/timestamp', [ 'peako', 'timestamp' ] ),
-    timer     = _optional( 'peako/timer', [ 'peako', 'timer' ] ),
-    noop      = _optional( 'peako/noop', [ 'peako', 'noop' ] );
+var constants = require( './constants' );
 
 function Ticker ( update, render, context ) {
   var self = this;

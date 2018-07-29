@@ -1,19 +1,18 @@
 'use strict';
 
+var getElementW = require( 'peako/get-element-w' ),
+    getElementH = require( 'peako/get-element-h' ),
+    baseForIn   = require( 'peako/base/base-for-in' );
+
 var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
     _copyDrawingSettings       = require( './_copyDrawingSettings' ),
     _getContextNameGL          = require( './_getContextNameGL' ),
     _createPolygon             = require( './_createPolygon' ),
     _polygons                  = require( './_polygons' ),
-    _optional                  = require( './_optional' ),
     CompoundedImage            = require( './CompoundedImage' ),
     constants                  = require( './constants' ),
     options                    = require( './options' ),
     Image                      = require( './Image' );
-
-var getElementW = _optional( 'peako/get-element-w', [ 'peako', 'prototype', 'width' ] ),
-    getElementH = _optional( 'peako/get-element-h', [ 'peako', 'prototype', 'height' ] ),
-    baseForIn   = _optional( 'peako/base/base-for-in', [ 'peako', 'forOwnRight' ] );
 
 var undefined; // jshint ignore: line
 
@@ -147,17 +146,7 @@ Renderer.prototype = {
    * @param {Element} element
    */
   resizeTo: function resizeTo ( element ) {
-    var w, h;
-
-    try {
-      w = getElementW( element );
-      h = getElementH( element );
-    } catch ( e ) {
-      w = getElementW.call( [ element ] );
-      h = getElementH.call( [ element ] );
-    }
-
-    return this.resize( w, h );
+    return this.resize( getElementW( element ), getElementH( element ) );
   },
 
   rescale: function rescale () {

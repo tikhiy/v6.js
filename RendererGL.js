@@ -1,7 +1,8 @@
 'use strict';
 
-var defaults        = require( './_optional' )( 'peako/defaults', [ 'peako', 'defaults' ] ),
-    ShaderProgram   = require( './ShaderProgram' ),
+var defaults        = require( 'peako/defaults' );
+
+var ShaderProgram   = require( './ShaderProgram' ),
     Transform       = require( './Transform' ),
     constants       = require( './constants' ),
     Renderer        = require( './Renderer' ),

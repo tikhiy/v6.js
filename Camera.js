@@ -1,6 +1,6 @@
 'use strict';
 
-var defaultTo = require( './_optional' )( 'peako/default-to', [ 'peako', 'defaultTo' ] );
+var defaultTo = require( 'peako/default-to' );
 
 var Vector2D = require( './math/Vector2D' );
 

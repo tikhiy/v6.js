@@ -1,6 +1,6 @@
 'use strict';
 
-var clamp = require( '../_optional' )( 'peako/clamp', [ 'peako', 'clamp' ] );
+var clamp = require( 'peako/clamp' );
 
 // there is a circular recursion
 

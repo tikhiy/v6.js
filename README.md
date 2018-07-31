@@ -1,6 +1,6 @@
-# v6
+# v6.js
 
-The main feature of the v6 is the use of one-code for the 2D and WebGL contexts (**only** 2D), see an [example](https://github.com/silent-tempest/v6.js-example/).
+The main feature of the v6.js is the use of one-code for the 2D and WebGL contexts (**only** 2D), see an [example](https://github.com/silent-tempest/v6.js-example/).
 
 ### Install ([Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/))
 
@@ -61,10 +61,6 @@ function render () {
 
 var ticker = Ticker( render ).tick();
 ```
-
-### Build
-
-Use `$ make` to build v6.js.
 
 ### License
 

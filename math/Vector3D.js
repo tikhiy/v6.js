@@ -1,8 +1,7 @@
 'use strict';
 
 var Vector2D = require( './Vector2D' );
-
-var options = require( '../options' );
+var settings = require( '../settings' );
 
 function Vector3D ( x, y, z ) {
   this.set( x, y, z );
@@ -178,7 +177,7 @@ Vector3D.random = function random () {
 };
 
 Vector3D.fromAngle = function fromAngle ( angle ) {
-  if ( options.degrees ) {
+  if ( settings.degrees ) {
     angle *= Math.PI / 180;
   }
 

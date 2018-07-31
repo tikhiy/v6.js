@@ -206,6 +206,6 @@ module.exports = HSLA;
 
 // then require modules that requires this module
 
-_parseColor = require( './_parseColor' );
+_parseColor = require( './_parse-color' );
 
 RGBA = require( './RGBA' );

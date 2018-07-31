@@ -2,16 +2,16 @@
 
 var defaults        = require( 'peako/defaults' );
 
-var ShaderProgram   = require( './ShaderProgram' ),
-    Transform       = require( './Transform' ),
-    constants       = require( './constants' ),
-    Renderer        = require( './Renderer' ),
-    shaders         = require( './defaultShaders' ),
-    rendererOptions = require( './rendererOptions' );
+var ShaderProgram = require( './ShaderProgram' ),
+    Transform     = require( './Transform' ),
+    constants     = require( './constants' ),
+    Renderer      = require( './Renderer' ),
+    shaders       = require( './shaders' ),
+    _options      = require( './options' );
 
 function RendererGL ( options ) {
 
-  options = defaults( rendererOptions, options );
+  options = defaults( _options, options );
 
   Renderer.call( this, options, constants.MODE_GL );
 

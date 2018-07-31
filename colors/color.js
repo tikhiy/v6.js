@@ -1,6 +1,6 @@
 'use strict';
 
-var _parseColor = require( './_parseColor' );
+var _parseColor = require( './_parse-color' );
 
 var RGBA = require( './RGBA' );
 

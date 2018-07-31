@@ -1,6 +1,6 @@
 'use strict';
 
-var options = require( '../options' );
+var settings = require( '../settings' );
 
 function Vector2D ( x, y ) {
   this.set( x, y );
@@ -101,7 +101,7 @@ Vector2D.prototype = {
   },
 
   angle: function angle () {
-    if ( options.degrees ) {
+    if ( settings.degrees ) {
       return Math.atan2( this.y, this.x ) * 180 / Math.PI;
     }
 
@@ -170,7 +170,7 @@ Vector2D.prototype = {
 
     var c, s;
 
-    if ( options.degrees ) {
+    if ( settings.degrees ) {
       angle *= Math.PI / 180;
     }
 
@@ -186,7 +186,7 @@ Vector2D.prototype = {
   setAngle: function setAngle ( angle ) {
     var mag = this.mag();
 
-    if ( options.degrees ) {
+    if ( settings.degrees ) {
       angle *= Math.PI / 180;
     }
 
@@ -219,7 +219,7 @@ Vector2D.prototype = {
 Vector2D.random = function random () {
   var x;
 
-  if ( options.degrees ) {
+  if ( settings.degrees ) {
     x = 360;
   } else {
     x = Math.PI * 2;
@@ -229,7 +229,7 @@ Vector2D.random = function random () {
 };
 
 Vector2D.fromAngle = function fromAngle ( angle ) {
-  if ( options.degrees ) {
+  if ( settings.degrees ) {
     angle *= Math.PI / 180;
   }
 

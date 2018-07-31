@@ -2,14 +2,14 @@
 
 var defaults = require( 'peako/defaults' );
 
-var rendererOptions = require( './rendererOptions' ),
-    constants       = require( './constants' ),
-    Renderer        = require( './Renderer' ),
-    _align          = require( './_align' );
+var _options  = require( './options' ),
+    constants = require( './constants' ),
+    Renderer  = require( './Renderer' ),
+    _align    = require( './_align' );
 
 function Renderer2D ( options ) {
 
-  options = defaults( rendererOptions, options );
+  options = defaults( _options, options );
 
   Renderer.call( this, options, constants.MODE_2D );
 

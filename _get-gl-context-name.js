@@ -2,7 +2,7 @@
 
 var once = require( 'peako/once' );
 
-var _getContextNameGL = once( function () {
+var _getGLContextName = once( function () {
   var canvas = document.createElement( 'canvas' );
 
   var types, i;
@@ -25,4 +25,4 @@ var _getContextNameGL = once( function () {
   }
 } );
 
-module.exports = _getContextNameGL;
+module.exports = _getGLContextName;

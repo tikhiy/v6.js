@@ -1,7 +1,7 @@
 'use strict';
 
-var _createProgram = require( './_createProgram' ),
-    _createShader  = require( './_createShader' );
+var _createProgram = require( './_create-program' ),
+    _createShader  = require( './_create-shader' );
 
 function ShaderProgram ( vert, frag, gl ) {
   if ( typeof vert === 'string' ) {

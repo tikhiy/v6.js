@@ -4,10 +4,10 @@ var getElementW = require( 'peako/get-element-w' ),
     getElementH = require( 'peako/get-element-h' ),
     baseForIn   = require( 'peako/base/base-for-in' );
 
-var _setDefaultDrawingSettings = require( './_setDefaultDrawingSettings' ),
-    _copyDrawingSettings       = require( './_copyDrawingSettings' ),
-    _getContextNameGL          = require( './_getContextNameGL' ),
-    _createPolygon             = require( './_createPolygon' ),
+var _setDefaultDrawingSettings = require( './_set-default-drawing-settings' ),
+    _copyDrawingSettings       = require( './_copy-drawing-settings' ),
+    _getGLContextName          = require( './_get-gl-context-name' ),
+    _createPolygon             = require( './_create-polygon' ),
     _polygons                  = require( './_polygons' ),
     CompoundedImage            = require( './CompoundedImage' ),
     constants                  = require( './constants' ),
@@ -38,7 +38,7 @@ function Renderer ( options, mode ) {
   if ( mode === constants.MODE_2D ) {
     this.context = this.canvas.getContext( '2d', getContextOptions );
   } else if ( mode === constants.MODE_GL ) {
-    if ( ( mode = _getContextNameGL() ) ) {
+    if ( ( mode = _getGLContextName() ) ) {
       this.context = this.canvas.getContext( mode, getContextOptions );
     } else {
       throw Error( 'Cannot get WebGL context. Try to use v6.constants.MODE_GL as the renderer mode or v6.Renderer2D instead of v6.RendererGL' );
@@ -217,41 +217,6 @@ Renderer.prototype = {
   constructor: Renderer
 
 };
-
-// for ( var o = { stroke: 'Stroke', fill: 'Fill' }, k = [ 'stroke', 'fill' ], i = k.length - 1; i >= 0; --i ) {
-//   ( function ( k ) {
-//     var _nameColor = '_' + k + 'Color',
-//         _doName = '_do' + o[ k ],
-//         _name = '_' + k;
-
-//     Renderer.prototype[ k ] = function ( r, g, b, a ) {
-
-//       // renderer.fill()
-
-//       if ( typeof r === 'undefined' ) {
-//         this[ _name ]();
-
-//       // renderer.fill( 'magenta' )
-
-//       } else if ( typeof r !== 'boolean' ) {
-//         if ( typeof r === 'string' || this[ _nameColor ].type !== this.settings.color.prototype.type ) {
-//           this[ _nameColor ] = new this.settings.color( r, g, b, a );
-//         } else {
-//           this[ _nameColor ].set( r, g, b, a );
-//         }
-
-//         this[ _doName ] = true;
-
-//       // renderer.fill( true )
-
-//       } else {
-//         this[ _doName ] = r;
-//       }
-
-//       return this;
-//     };
-//   } )( k[ i ] );
-// }
 
 baseForIn( { stroke: 'Stroke', fill: 'Fill' }, function ( Name, name ) {
   var _nameColor = '_' + name + 'Color',

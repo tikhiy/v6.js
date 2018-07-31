@@ -1,6 +1,6 @@
 'use strict';
 
-var _copyDrawingSettings = require( './_copyDrawingSettings' ),
+var _copyDrawingSettings = require( './_copy-drawing-settings' ),
     constants            = require( './constants' ),
     Font                 = require( './Font' );
 

@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/silent-tempest/v6.js#readme",
   "dependencies": {
-    "peako": "^0.0.7"
+    "peako": "^0.0.5"
   },
   "devDependencies": {
     "browserify": "^16.2.2",

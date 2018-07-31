@@ -2,7 +2,7 @@
 
 The main feature of the v6.js is the use of one-code for the 2D and WebGL contexts (**only** 2D), see an [example](https://github.com/silent-tempest/v6.js-example/).
 
-### Install ([Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/))
+### Installation ([Node.js](https://nodejs.org/en/about/) / [Browserify](http://browserify.org/))
 
 Install the library `$ npm install --save v6.js`. Install an optional dependency `$ npm install --save platform`.
 
@@ -22,45 +22,6 @@ var DARK_MAGENTA = hsla( 'magenta' ).shade( -25 );
 ### Dependencies
 
 The library has a hard-dependency on [peako](https://github.com/silent-tempest/peako), and an optional on [platform.js](https://github.com/bestiejs/platform.js).
-
-### Hello World
-
-An example of use:
-
-```javascript
-'use strict';
-
-var constants = require( 'v6.js/constants' ),
-    Renderer  = require( 'v6.js/renderer' ),
-    Ticker    = require( 'v6.js/ticker' );
-
-var options = {
-  settings: {
-    color: require( 'v6.js/colors/HSLA' )
-  },
-
-  mode: constants.MODE_AUTO
-};
-
-var renderer = Renderer( options ).fill( 'white' );
-
-function render () {
-  var w = renderer.w,
-      h = renderer.h;
-
-  // r is from min( w, h ) / 5 through 400
-  var r = Math.min( Math.min( w, h ) / 5, 400 );
-
-  // n is from 3 through 9
-  var n = 3 + ( Math.sin( this.totalTime ) + 1 ) * 3;
-
-  renderer
-    .background( this.totalTime * 25, 80, 80 )
-    .polygon( w / 2, h / 2, r, n );
-}
-
-var ticker = Ticker( render ).tick();
-```
 
 ### License
 

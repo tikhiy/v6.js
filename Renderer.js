@@ -14,8 +14,6 @@ var _setDefaultDrawingSettings = require( './_set-default-drawing-settings' ),
     options                    = require( './options' ),
     Image                      = require( './Image' );
 
-var undefined; // jshint ignore: line
-
 var rendererIndex = 0;
 
 function Renderer ( options, mode ) {
@@ -249,6 +247,6 @@ baseForIn( { stroke: 'Stroke', fill: 'Fill' }, function ( Name, name ) {
 
     return this;
   };
-}, undefined, true, [ 'stroke', 'fill' ] );
+}, void 0, true, [ 'stroke', 'fill' ] );
 
 module.exports = Renderer;

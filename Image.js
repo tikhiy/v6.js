@@ -45,8 +45,8 @@ Image.prototype = {
       this.image.onload = null;
     }
 
-    this.w = this.image.width;
-    this.h = this.image.height;
+    this.w = this.dw = this.image.width;
+    this.h = this.dh = this.image.height;
 
     this.loaded = true;
 
@@ -58,7 +58,7 @@ Image.prototype = {
   load: function load ( url ) {
     if ( ! this.loaded ) {
 
-      this.image.onload = this._onload;
+      this.image.onload = this._onload.bind( this );
 
       this.image.src = this.url = ( this.url || url || '' );
 
@@ -107,7 +107,7 @@ Image.stretch = function stretch ( image, w, h ) {
     w = x;
   }
 
-  return new CompoundedImage( image.get(), image.x, image.y, w, h );
+  return new CompoundedImage( image.get(), image.x, image.y, image.w, image.h, w, h );
 
 };
 
@@ -119,7 +119,10 @@ Image.stretch = function stretch ( image, w, h ) {
  * @param {number} h
  * @returns {v6.CompoundedImage}
  */
-Image.cut = function cut ( image, x, y, w, h ) {
+Image.cut = function cut ( image, x, y, dw, dh ) {
+
+  var w = image.w / image.dw * dw;
+  var h = image.h / image.dh * dh;
 
   x += image.x;
 
@@ -133,7 +136,7 @@ Image.cut = function cut ( image, x, y, w, h ) {
     throw Error( 'v6.Image.cut: cannot cut the image because the new image Y or H is out of bounds' );
   }
 
-  return new CompoundedImage( image.get(), x, y, w, h );
+  return new CompoundedImage( image.get(), x, y, w, h, dw, dh );
 
 };
 

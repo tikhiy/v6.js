@@ -7,7 +7,7 @@
  * @param {number} w
  * @param {number} h
  */
-function CompoundedImage ( image, x, y, w, h ) {
+function CompoundedImage ( image, x, y, w, h, dw, dh ) {
 
   this.image = image;
 
@@ -16,6 +16,9 @@ function CompoundedImage ( image, x, y, w, h ) {
 
   this.w = w;
   this.h = h;
+
+  this.dw = dw;
+  this.dh = dh;
 
 }
 

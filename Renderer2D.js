@@ -1,11 +1,11 @@
 'use strict';
 
-var defaults = require( 'peako/defaults' );
-
-var _options  = require( './options' ),
-    constants = require( './constants' ),
-    Renderer  = require( './Renderer' ),
-    _align    = require( './_align' );
+var defaults  = require( 'peako/defaults' );
+var constants = require( './constants' );
+var Renderer  = require( './Renderer' );
+var _options  = require( './options' );
+var _align    = require( './_align' );
+var Image     = require( './Image' );
 
 function Renderer2D ( options ) {
 
@@ -84,13 +84,36 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
   var _rectAlignX = this._rectAlignX,
       _rectAlignY = this._rectAlignY;
 
-  this._rectAlignX = 'left';
-  this._rectAlignY = 'top';
+  this._rectAlignX = constants.CENTER;
+  this._rectAlignY = constants.MIDDLE;
 
-  this.image( Image.stretch( image, this.w, this.h ), 0, 0 );
+  this.image( Image.stretch( image, this.w, this.h ), this.w * 0.5, this.h * 0.5 );
 
   this._rectAlignX = _rectAlignX;
   this._rectAlignY = _rectAlignY;
+
+  return this;
+
+};
+
+Renderer2D.prototype.image = function image ( image, x, y, w, h ) {
+
+  if ( image.get().loaded ) {
+
+    if ( typeof w === 'undefined' ) {
+      w = image.dw;
+    }
+
+    if ( typeof h === 'undefined' ) {
+      h = image.dh;
+    }
+
+    x = Math.floor( _align( x, w, this._rectAlignX ) );
+    y = Math.floor( _align( y, h, this._rectAlignY ) );
+
+    this.context.drawImage( image.get().image, image.x, image.y, image.w, image.h, x, y, w, h );
+
+  }
 
   return this;
 
@@ -108,6 +131,30 @@ Renderer2D.prototype.clear = function clear ( x, y, w, h ) {
   }
 
   this.context.clearRect( x, y, w, h );
+
+  return this;
+
+};
+
+Renderer2D.prototype.rect = function rect ( x, y, w, h ) {
+
+  x = Math.floor( _align( x, w, this._rectAlignX ) );
+  y = Math.floor( _align( y, h, this._rectAlignY ) );
+
+  if ( this._beginPath ) {
+    this.context.rect( x, y, w, h );
+  } else {
+    this.context.beginPath();
+    this.context.rect( x, y, w, h );
+
+    if ( this._doFill ) {
+      this._fill();
+    }
+
+    if ( this._doStroke ) {
+      this._stroke();
+    }
+  }
 
   return this;
 

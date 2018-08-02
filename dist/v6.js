@@ -980,12 +980,14 @@ Camera.prototype = {
 module.exports = Camera;
 },{"./math/Vector2D":91,"peako/default-to":24}],63:[function(require,module,exports){
 'use strict';
-function CompoundedImage(image, x, y, w, h) {
+function CompoundedImage(image, x, y, w, h, dw, dh) {
     this.image = image;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.dw = dw;
+    this.dh = dh;
 }
 CompoundedImage.prototype = {
     get: function get() {
@@ -1109,13 +1111,13 @@ Image.prototype = {
         if (e) {
             this.image.onload = null;
         }
-        this.w = this.image.width;
-        this.h = this.image.height;
+        this.w = this.dw = this.image.width;
+        this.h = this.dh = this.image.height;
         this.loaded = true;
     },
     load: function load(url) {
         if (!this.loaded) {
-            this.image.onload = this._onload;
+            this.image.onload = this._onload.bind(this);
             this.image.src = this.url = this.url || url || '';
         }
         return this;
@@ -1132,9 +1134,11 @@ Image.stretch = function stretch(image, w, h) {
     } else {
         w = x;
     }
-    return new CompoundedImage(image.get(), image.x, image.y, w, h);
+    return new CompoundedImage(image.get(), image.x, image.y, image.w, image.h, w, h);
 };
-Image.cut = function cut(image, x, y, w, h) {
+Image.cut = function cut(image, x, y, dw, dh) {
+    var w = image.w / image.dw * dw;
+    var h = image.h / image.dh * dh;
     x += image.x;
     if (x + w > image.x + image.w) {
         throw Error('v6.Image.cut: cannot cut the image because the new image X or W is out of bounds');
@@ -1143,14 +1147,13 @@ Image.cut = function cut(image, x, y, w, h) {
     if (y + h > image.y + image.h) {
         throw Error('v6.Image.cut: cannot cut the image because the new image Y or H is out of bounds');
     }
-    return new CompoundedImage(image.get(), x, y, w, h);
+    return new CompoundedImage(image.get(), x, y, w, h, dw, dh);
 };
 module.exports = Image;
 },{"./CompoundedImage":63,"./report":97}],66:[function(require,module,exports){
 'use strict';
 var getElementW = require('peako/get-element-w'), getElementH = require('peako/get-element-h'), baseForIn = require('peako/base/base-for-in');
 var _setDefaultDrawingSettings = require('./_set-default-drawing-settings'), _copyDrawingSettings = require('./_copy-drawing-settings'), _getGLContextName = require('./_get-gl-context-name'), _createPolygon = require('./_create-polygon'), _polygons = require('./_polygons'), CompoundedImage = require('./CompoundedImage'), constants = require('./constants'), options = require('./options'), Image = require('./Image');
-var undefined;
 var rendererIndex = 0;
 function Renderer(options, mode) {
     var getContextOptions = { alpha: options.alpha };
@@ -1289,7 +1292,7 @@ baseForIn({
         }
         return this;
     };
-}, undefined, true, [
+}, void 0, true, [
     'stroke',
     'fill'
 ]);
@@ -1297,7 +1300,11 @@ module.exports = Renderer;
 },{"./CompoundedImage":63,"./Image":65,"./_copy-drawing-settings":73,"./_create-polygon":74,"./_get-gl-context-name":77,"./_polygons":78,"./_set-default-drawing-settings":79,"./constants":88,"./options":95,"peako/base/base-for-in":5,"peako/get-element-h":28,"peako/get-element-w":29}],67:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
-var _options = require('./options'), constants = require('./constants'), Renderer = require('./Renderer'), _align = require('./_align');
+var constants = require('./constants');
+var Renderer = require('./Renderer');
+var _options = require('./options');
+var _align = require('./_align');
+var Image = require('./Image');
 function Renderer2D(options) {
     options = defaults(_options, options);
     Renderer.call(this, options, constants.MODE_2D);
@@ -1339,11 +1346,25 @@ Renderer2D.prototype.backgroundColor = function backgroundColor(r, g, b, a) {
 };
 Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
     var _rectAlignX = this._rectAlignX, _rectAlignY = this._rectAlignY;
-    this._rectAlignX = 'left';
-    this._rectAlignY = 'top';
-    this.image(Image.stretch(image, this.w, this.h), 0, 0);
+    this._rectAlignX = constants.CENTER;
+    this._rectAlignY = constants.MIDDLE;
+    this.image(Image.stretch(image, this.w, this.h), this.w * 0.5, this.h * 0.5);
     this._rectAlignX = _rectAlignX;
     this._rectAlignY = _rectAlignY;
+    return this;
+};
+Renderer2D.prototype.image = function image(image, x, y, w, h) {
+    if (image.get().loaded) {
+        if (typeof w === 'undefined') {
+            w = image.dw;
+        }
+        if (typeof h === 'undefined') {
+            h = image.dh;
+        }
+        x = Math.floor(_align(x, w, this._rectAlignX));
+        y = Math.floor(_align(y, h, this._rectAlignY));
+        this.context.drawImage(image.get().image, image.x, image.y, image.w, image.h, x, y, w, h);
+    }
     return this;
 };
 Renderer2D.prototype.clear = function clear(x, y, w, h) {
@@ -1356,6 +1377,23 @@ Renderer2D.prototype.clear = function clear(x, y, w, h) {
         y = Math.floor(_align(y, h, this._rectAlignY));
     }
     this.context.clearRect(x, y, w, h);
+    return this;
+};
+Renderer2D.prototype.rect = function rect(x, y, w, h) {
+    x = Math.floor(_align(x, w, this._rectAlignX));
+    y = Math.floor(_align(y, h, this._rectAlignY));
+    if (this._beginPath) {
+        this.context.rect(x, y, w, h);
+    } else {
+        this.context.beginPath();
+        this.context.rect(x, y, w, h);
+        if (this._doFill) {
+            this._fill();
+        }
+        if (this._doStroke) {
+            this._stroke();
+        }
+    }
     return this;
 };
 Renderer2D.prototype.vertices = function vertices(verts, count, _mode, _sx, _sy) {
@@ -1396,7 +1434,7 @@ Renderer2D.prototype._stroke = function (close) {
 };
 Renderer2D.prototype.constructor = Renderer2D;
 module.exports = Renderer2D;
-},{"./Renderer":66,"./_align":72,"./constants":88,"./options":95,"peako/defaults":25}],68:[function(require,module,exports){
+},{"./Image":65,"./Renderer":66,"./_align":72,"./constants":88,"./options":95,"peako/defaults":25}],68:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var ShaderProgram = require('./ShaderProgram'), Transform = require('./Transform'), constants = require('./constants'), Renderer = require('./Renderer'), shaders = require('./shaders'), _options = require('./options');

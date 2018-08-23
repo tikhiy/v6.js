@@ -31,7 +31,9 @@ var v6 = {
   shaders:         require( './shaders' ),
   ticker:          require( './ticker' ),
   vec2:            require( './math/vec2' ),
-  vec3:            require( './math/vec3' )
+  vec3:            require( './math/vec3' ),
+  dist:            require( './utils/dist' ),
+  map:             require( './utils/map' )
 };
 
 if ( typeof self !== 'undefined' ) {

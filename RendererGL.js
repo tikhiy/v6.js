@@ -1,6 +1,6 @@
 'use strict';
 
-var defaults        = require( 'peako/defaults' );
+var defaults = require( 'peako/defaults' );
 
 var ShaderProgram = require( './ShaderProgram' ),
     Transform     = require( './Transform' ),
@@ -8,6 +8,8 @@ var ShaderProgram = require( './ShaderProgram' ),
     Renderer      = require( './Renderer' ),
     shaders       = require( './shaders' ),
     _options      = require( './options' );
+
+var _align = require( './_align' );
 
 function RendererGL ( options ) {
 
@@ -21,6 +23,15 @@ function RendererGL ( options ) {
     default: this.context.createBuffer(),
     rect:    this.context.createBuffer()
   };
+
+  this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
+
+  this.context.bufferData( this.context.ARRAY_BUFFER, new Float32Array( [
+    0, 0,
+    1, 0,
+    1, 1,
+    0, 1
+  ] ), this.context.STATIC_DRAW );
 
   this.shaders = {
     basic: new ShaderProgram( shaders.basicVert, shaders.basicFrag, this.context )
@@ -117,6 +128,26 @@ RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy
   }
 
   return this;
+};
+
+RendererGL.prototype.arc = function arc ( x, y, r ) {
+  return this._polygon( x, y, r, r, 24, 0 );
+};
+
+RendererGL.prototype.rect = function rect ( x, y, w, h ) {
+
+  x = _align( x, w, this._rectAlignX );
+  y = _align( y, h, this._rectAlignY );
+
+  this.matrix.save();
+  this.matrix.translate( x, y );
+  this.matrix.scale( w, h );
+  this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
+  this.vertices( null, 4 );
+  this.matrix.restore();
+
+  return this;
+
 };
 
 RendererGL.prototype.constructor = RendererGL;

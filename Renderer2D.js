@@ -160,6 +160,27 @@ Renderer2D.prototype.rect = function rect ( x, y, w, h ) {
 
 };
 
+Renderer2D.prototype.arc = function arc ( x, y, r ) {
+
+  if ( this._beginPath ) {
+    this.context.arc( x, y, r, 0, Math.PI * 2, false );
+  } else {
+    this.context.beginPath();
+    this.context.arc( x, y, r, 0, Math.PI * 2, false );
+
+    if ( this._doFill ) {
+      this._fill();
+    }
+
+    if ( this._doStroke ) {
+      this._stroke( true );
+    }
+  }
+
+  return this;
+
+};
+
 Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _sy ) {
   var context = this.context,
       i;

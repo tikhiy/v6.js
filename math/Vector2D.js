@@ -117,7 +117,7 @@ Vector2D.prototype = {
   },
 
   setMag: function setMag ( value ) {
-    return this.normalize().mult( value );
+    return this.normalize().mul( value );
   },
 
   normalize: function normalize () {
@@ -150,7 +150,7 @@ Vector2D.prototype = {
     var mag = this.magSquare();
 
     if ( mag > value * value ) {
-      this.div( Math.sqrt( mag ) ).mult( value );
+      this.div( Math.sqrt( mag ) ).mul( value );
     }
 
     return this;

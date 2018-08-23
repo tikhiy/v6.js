@@ -1,18 +1,17 @@
 'use strict';
 
-var getElementW = require( 'peako/get-element-w' ),
-    getElementH = require( 'peako/get-element-h' ),
-    baseForIn   = require( 'peako/base/base-for-in' );
+var isObjectLike = require( 'peako/is-object-like' );
+var getElementW  = require( 'peako/get-element-w' );
+var getElementH  = require( 'peako/get-element-h' );
+var baseForIn    = require( 'peako/base/base-for-in' );
 
-var _setDefaultDrawingSettings = require( './_set-default-drawing-settings' ),
-    _copyDrawingSettings       = require( './_copy-drawing-settings' ),
-    _getGLContextName          = require( './_get-gl-context-name' ),
-    _createPolygon             = require( './_create-polygon' ),
-    _polygons                  = require( './_polygons' ),
-    CompoundedImage            = require( './CompoundedImage' ),
-    constants                  = require( './constants' ),
-    options                    = require( './options' ),
-    Image                      = require( './Image' );
+var _setDefaultDrawingSettings = require( './_set-default-drawing-settings' );
+var _copyDrawingSettings       = require( './_copy-drawing-settings' );
+var _getGLContextName          = require( './_get-gl-context-name' );
+var _createPolygon             = require( './_create-polygon' );
+var _polygons                  = require( './_polygons' );
+var constants                  = require( './constants' );
+var options                    = require( './options' );
 
 var rendererIndex = 0;
 
@@ -158,7 +157,7 @@ Renderer.prototype = {
    * @param {number} a A value (RGBA or HSLA).
    */
   background: function background ( r, g, b, a ) {
-    if ( r instanceof Image || r instanceof CompoundedImage ) {
+    if ( isObjectLike( r ) ) {
       return this.backgroundImage( r );
     }
 
@@ -166,9 +165,7 @@ Renderer.prototype = {
   },
 
   _polygon: function _polygon ( x, y, rx, ry, n, a, degrees ) {
-
     var polygon = _polygons[ n ];
-
     var matrix = this.matrix;
 
     if ( ! polygon ) {
@@ -212,6 +209,22 @@ Renderer.prototype = {
     return this;
   },
 
+  setTransformFromCamera: function setTransformFromCamera ( camera ) {
+
+    var position = camera.position;
+    var zoom     = camera.zoom;
+
+    this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
+
+    return this;
+
+  },
+
+  lineWidth: function lineWidth ( number ) {
+    this._lineW = number;
+    return this;
+  },
+
   constructor: Renderer
 
 };
@@ -248,5 +261,16 @@ baseForIn( { stroke: 'Stroke', fill: 'Fill' }, function ( Name, name ) {
     return this;
   };
 }, void 0, true, [ 'stroke', 'fill' ] );
+
+[
+  'setTransform',
+  'transform',
+  'translate',
+  'restore',
+  'scale',
+  'save'
+].forEach( function ( name ) {
+  Renderer.prototype[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' ); // jshint ignore: line
+} );
 
 module.exports = Renderer;

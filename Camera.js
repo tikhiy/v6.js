@@ -1,10 +1,9 @@
 'use strict';
 
 var defaultTo = require( 'peako/default-to' );
+var Vector2D  = require( './math/Vector2D' );
 
-var Vector2D = require( './math/Vector2D' );
-
-function Camera ( options, renderer ) {
+function Camera ( renderer, options ) {
   if ( ! options ) {
     options = {};
   }
@@ -70,15 +69,18 @@ Camera.prototype = {
   },
 
   looksAt: function looksAt () {
-    var x = ( this.offset.x - this.position[ 0 ] * this.zoom ) / this.zoom,
-        y = ( this.offset.y - this.position[ 1 ] * this.zoom ) / this.zoom;
+
+    var x = ( this.offset.x - this.position[ 0 ] * this.zoom ) / this.zoom;
+    var y = ( this.offset.y - this.position[ 1 ] * this.zoom ) / this.zoom;
 
     return new Vector2D( x, y );
+
   },
 
   sees: function sees ( x, y, w, h, renderer ) {
-    var off = this.offset,
-        at  = this.looksAt();
+
+    var off = this.offset;
+    var at  = this.looksAt();
 
     if ( ! renderer ) {
       renderer = this.renderer;
@@ -88,6 +90,7 @@ Camera.prototype = {
            x     < at.x + ( renderer.w - off.x ) / this.zoom &&
            y + h > at.y - off.y / this.zoom &&
            y     < at.y + ( renderer.h - off.y ) / this.zoom;
+
   },
 
   zoomIn: function zoomIn () {

@@ -35,9 +35,6 @@ function Ticker ( update, render, context ) {
     var elapsedTime;
 
     if ( ! self.running ) {
-
-      // if it is just `ticker.tick();` (not `self.lastRequestAnimationFrameID = timer.request( tick );`).
-
       if ( ! now ) {
         self.lastRequestAnimationFrameID = timer.request( tick );
         self.lastRequestTime = timestamp();
@@ -46,8 +43,6 @@ function Ticker ( update, render, context ) {
 
       return this; // jshint ignore: line
     }
-
-    // see the comment above
 
     if ( ! now ) {
       now = timestamp();

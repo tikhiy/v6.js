@@ -2,9 +2,8 @@
 
 var once = require( 'peako/once' );
 
-var _getGLContextName = once( function () {
+function _getGLContextName () {
   var canvas = document.createElement( 'canvas' );
-
   var types, i;
 
   if ( typeof canvas.getContext !== 'function' ) {
@@ -23,6 +22,6 @@ var _getGLContextName = once( function () {
       return types[ i ];
     }
   }
-} );
+}
 
-module.exports = _getGLContextName;
+module.exports = once( _getGLContextName );

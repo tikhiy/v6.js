@@ -1,8 +1,7 @@
 'use strict';
 
 var _copyDrawingSettings = require( './_copy-drawing-settings' ),
-    constants            = require( './constants' ),
-    Font                 = require( './Font' );
+    constants            = require( '../constants' );
 
 var defaultDrawingSettings = {
   _rectAlignX: constants.LEFT,
@@ -21,7 +20,7 @@ module.exports = function _setDefaultDrawingSettings ( target, source ) {
 
   target._strokeColor = new source.settings.color();
   target._fillColor   = new source.settings.color();
-  target._font        = new Font();
+  target._font        = null;
 
   return target;
 

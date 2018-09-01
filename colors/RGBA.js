@@ -1,10 +1,9 @@
 'use strict';
 
-// there is a circular recursion
+module.exports = RGBA;
 
-var _parseColor, HSLA;
-
-var undefined; // jshint ignore: line
+var HSLA  = require( './HSLA' );
+var parse = require( './internal/parse' );
 
 function RGBA ( r, g, b, a ) {
   this.set( r, g, b, a );
@@ -62,7 +61,7 @@ RGBA.prototype = {
   set: function set ( r, g, b, a ) {
     switch ( true ) {
       case typeof r === 'string':
-        r = _parseColor( r );
+        r = parse( r );
         /* falls through */
       case typeof r === 'object' && r != null:
         if ( r.type !== this.type ) {
@@ -73,10 +72,9 @@ RGBA.prototype = {
         this[ 1 ] = r[ 1 ];
         this[ 2 ] = r[ 2 ];
         this[ 3 ] = r[ 3 ];
-
         break;
       default:
-        switch ( undefined ) {
+        switch ( void 0 ) {
           case r:
             a = 1;
             b = g = r = 0;
@@ -188,7 +186,7 @@ RGBA.prototype = {
     var r, g, b;
 
     if ( typeof color !== 'object' ) {
-      color = _parseColor( color );
+      color = parse( color );
     }
 
     if ( color.type !== 'rgba' ) {
@@ -209,13 +207,3 @@ RGBA.prototype = {
   constructor: RGBA,
   type: 'rgba'
 };
-
-// export
-
-module.exports = RGBA;
-
-// then require modules that requires this module
-
-_parseColor = require( './_parse-color' );
-
-HSLA = require( './HSLA' );

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function _copyDrawingSettings ( target, source, deep ) {
+function _copyDrawingSettings ( target, source, deep ) {
   if ( deep ) {
     target._fillColor[ 0 ]   = source._fillColor[ 0 ];
     target._fillColor[ 1 ]   = source._fillColor[ 1 ];
@@ -27,4 +27,6 @@ module.exports = function _copyDrawingSettings ( target, source, deep ) {
   target._lineW      = source._lineW;
 
   return target;
-};
+}
+
+module.exports = _copyDrawingSettings;

@@ -1,14 +1,12 @@
 'use strict';
 
-var create = require( 'peako/create' ),
-    trim   = require( 'peako/trim' ),
-    colors = require( './colors' );
+module.exports = parse;
 
-// there is a circular recursion
+var RGBA   = require( '../RGBA' );
+var HSLA   = require( '../HSLA' );
+var colors = require( './colors' );
 
-var RGBA, HSLA;
-
-var parsed = create( null );
+var parsed = Object.create( null );
 
 var TRANSPARENT = [
   0, 0, 0, 0
@@ -21,15 +19,25 @@ var regexps = {
   hsl:  /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/
 };
 
-// _parseColor( '#f0f0' );                     // -> new RGBA( 255, 0, 255, 0 )
-// _parseColor( '#000000ff' );                 // -> new RGBA( 0, 0, 0, 1 )
-// _parseColor( 'magenta' );                   // -> new RGBA( 255, 0, 255, 1 )
-// _parseColor( 'transparent' );               // -> new RGBA( 0, 0, 0, 0 )
-// _parseColor( 'hsl( 0, 100%, 50% )' );       // -> new HSLA( 0, 100, 50, 1 )
-// _parseColor( 'hsla( 0, 100%, 50%, 0.5 )' ); // -> new HSLA( 0, 100, 50, 0.5 )
+/**
+ * @module "v6.js"
+ */
 
-function _parseColor ( string ) {
-  var cache = parsed[ string ] || parsed[ string = trim( string ).toLowerCase() ];
+/**
+ * @private
+ * @method parse
+ * @param  {string}                                  string
+ * @return {module:"v6.js".RGBA|module:"v6.js".HSLA}
+ * @example
+ * parse( '#f0f0' );                     // -> new RGBA( 255, 0, 255, 0 )
+ * parse( '#000000ff' );                 // -> new RGBA( 0, 0, 0, 1 )
+ * parse( 'magenta' );                   // -> new RGBA( 255, 0, 255, 1 )
+ * parse( 'transparent' );               // -> new RGBA( 0, 0, 0, 0 )
+ * parse( 'hsl( 0, 100%, 50% )' );       // -> new HSLA( 0, 100, 50, 1 )
+ * parse( 'hsla( 0, 100%, 50%, 0.5 )' ); // -> new HSLA( 0, 100, 50, 0.5 )
+ */
+function parse ( string ) {
+  var cache = parsed[ string ] || parsed[ string = string.trim().toLowerCase() ];
 
   if ( ! cache ) {
     if ( ( cache = colors[ string ] ) ) {
@@ -52,10 +60,17 @@ function _parseColor ( string ) {
   return new cache.color( cache[ 0 ], cache[ 1 ], cache[ 2 ], cache[ 3 ] );
 }
 
-// formatHex( [ '#000000ff', '000000', 'ff' ] );       // -> '000000ff'
-// formatHex( [ '#0007', '0', '0', '0', '7' ], true ); // -> '00000077'
-// formatHex( [ '#000', '0', '0', '0', null ], true ); // -> '000000ff'
-
+/**
+ * @private
+ * @method formatHex
+ * @param  {array<string?>} match
+ * @param  {boolean}        shortSyntax
+ * @return {string}
+ * @example
+ * formatHex( [ '#000000ff', '000000', 'ff' ] );       // -> '000000ff'
+ * formatHex( [ '#0007', '0', '0', '0', '7' ], true ); // -> '00000077'
+ * formatHex( [ '#000', '0', '0', '0', null ], true ); // -> '000000ff'
+ */
 function formatHex ( match, shortSyntax ) {
   var r, g, b, a;
 
@@ -71,14 +86,17 @@ function formatHex ( match, shortSyntax ) {
   return r + r + g + g + b + b + a + a;
 }
 
-// parseHex( '00000000' ); // -> [ 0, 0, 0, 0 ]
-// parseHex( 'ff00ffff' ); // -> [ 255, 0, 255, 1 ]
-
+/**
+ * @private
+ * @method parseHex
+ * @param  {string}        hex
+ * @return {array<number>}
+ * @example
+ * parseHex( '00000000' ); // -> [ 0, 0, 0, 0 ]
+ * parseHex( 'ff00ffff' ); // -> [ 255, 0, 255, 1 ]
+ */
 function parseHex ( hex ) {
-  // use js type coercion ('00000000' == 0)
-  // jshint -W116
-  if ( hex == 0 ) {
-  // jshint +W116
+  if ( hex == 0 ) { // jshint ignore: line
     return TRANSPARENT;
   }
 
@@ -92,9 +110,15 @@ function parseHex ( hex ) {
   ];
 }
 
-// compactMatch( [ 'hsl( 0, 0%, 0% )', '0', '0', '0', null, null, null, null ] );  // -> [ '0', '0', '0' ]
-// compactMatch( [ 'rgba( 0, 0, 0, 0 )', null, null, null, '0', '0', '0', '0' ] ); // -> [ '0', '0', '0', '0' ]
-
+/**
+ * @private
+ * @method compactMatch
+ * @param  {array<string?>} match
+ * @return {array<number>}
+ * @example
+ * compactMatch( [ 'hsl( 0, 0%, 0% )', '0', '0', '0', null, null, null, null ] );  // -> [ '0', '0', '0' ]
+ * compactMatch( [ 'rgba( 0, 0, 0, 0 )', null, null, null, '0', '0', '0', '0' ] ); // -> [ '0', '0', '0', '0' ]
+ */
 function compactMatch ( match ) {
   if ( match[ 7 ] ) {
     return [ +match[ 4 ], +match[ 5 ], +match[ 6 ], +match[ 7 ] ];
@@ -103,6 +127,12 @@ function compactMatch ( match ) {
   return [ +match[ 1 ], +match[ 2 ], +match[ 3 ] ];
 }
 
+/**
+ * @private
+ * @constructor ColorData
+ * @param {array<number>} match
+ * @param {function}      color
+ */
 function ColorData ( match, color ) {
   this[ 0 ] = match[ 0 ];
   this[ 1 ] = match[ 1 ];
@@ -110,13 +140,3 @@ function ColorData ( match, color ) {
   this[ 3 ] = match[ 3 ];
   this.color = color;
 }
-
-// export
-
-module.exports = _parseColor;
-
-// then require modules that requires this module
-
-RGBA = require( './RGBA' );
-
-HSLA = require( './HSLA' );

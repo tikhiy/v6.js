@@ -1,13 +1,14 @@
 'use strict';
 
-var _parseColor = require( './_parse-color' );
+var RGBA  = require( './RGBA' );
+var parse = require( './internal/parse' );
 
-var RGBA = require( './RGBA' );
-
-module.exports = function color ( a, b, c, d ) {
-  if ( typeof a !== 'string' ) {
-    return new RGBA( a, b, c, d );
+function color ( r, g, b, a ) {
+  if ( typeof r !== 'string' ) {
+    return new RGBA( r, g, b, a );
   }
 
-  return _parseColor( a );
-};
+  return parse( r );
+}
+
+module.exports = color;

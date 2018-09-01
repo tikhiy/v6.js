@@ -9,7 +9,7 @@ var ShaderProgram = require( './ShaderProgram' ),
     shaders       = require( './shaders' ),
     _options      = require( './options' );
 
-var _align = require( './_align' );
+var align = require( './internal/align' );
 
 function RendererGL ( options ) {
 
@@ -136,8 +136,8 @@ RendererGL.prototype.arc = function arc ( x, y, r ) {
 
 RendererGL.prototype.rect = function rect ( x, y, w, h ) {
 
-  x = _align( x, w, this._rectAlignX );
-  y = _align( y, h, this._rectAlignY );
+  x = align( x, w, this._rectAlignX );
+  y = align( y, h, this._rectAlignY );
 
   this.matrix.save();
   this.matrix.translate( x, y );

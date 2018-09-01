@@ -1,12 +1,10 @@
 'use strict';
 
+module.exports = HSLA;
+
 var clamp = require( 'peako/clamp' );
-
-// there is a circular recursion
-
-var _parseColor, RGBA;
-
-var undefined; // jshint ignore: line
+var RGBA  = require( './RGBA' );
+var parse = require( './internal/parse' );
 
 function HSLA ( h, s, l, a ) {
   this.set( h, s, l, a );
@@ -32,7 +30,7 @@ HSLA.prototype = {
     return this.rgba().brightness();
   },
 
-  // '' + new HSLA( 'red' ); // -> "hsla(0, 100, 50, 1)"
+  // '' + new HSLA( 'red' ); // -> "hsla(0, 100%, 50%, 1)"
 
   toString: function toString () {
     return 'hsla(' + this[ 0 ] + ', ' + this[ 1 ] + '\u0025, ' + this[ 2 ] + '\u0025, ' + this[ 3 ] + ')';
@@ -45,7 +43,7 @@ HSLA.prototype = {
   set: function set ( h, s, l, a ) {
     switch ( true ) {
       case typeof h === 'string':
-        h = _parseColor( h );
+        h = parse( h );
         /* falls through */
       case typeof h === 'object' && h != null:
         if ( h.type !== this.type ) {
@@ -56,10 +54,9 @@ HSLA.prototype = {
         this[ 1 ] = h[ 1 ];
         this[ 2 ] = h[ 2 ];
         this[ 3 ] = h[ 3 ];
-
         break;
       default:
-        switch ( undefined ) {
+        switch ( void 0 ) {
           case h:
             a = 1;
             l = s = h = 0;
@@ -149,8 +146,6 @@ HSLA.prototype = {
 
   lerp: function lerp ( h, s, l, value ) {
 
-    // HAHA LOL NICE OPTIMIZATION LOVE ME!
-
     var color = new HSLA();
 
     color[ 0 ] = h;
@@ -199,13 +194,3 @@ function foo ( t, p, q ) {
 
   return Math.round( p * 255 );
 }
-
-// export
-
-module.exports = HSLA;
-
-// then require modules that requires this module
-
-_parseColor = require( './_parse-color' );
-
-RGBA = require( './RGBA' );

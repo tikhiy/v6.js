@@ -4,7 +4,7 @@ var defaults  = require( 'peako/defaults' );
 var constants = require( './constants' );
 var Renderer  = require( './Renderer' );
 var _options  = require( './options' );
-var _align    = require( './_align' );
+var align     = require( './internal/align' );
 var Image     = require( './Image' );
 
 function Renderer2D ( options ) {
@@ -108,8 +108,8 @@ Renderer2D.prototype.image = function image ( image, x, y, w, h ) {
       h = image.dh;
     }
 
-    x = Math.floor( _align( x, w, this._rectAlignX ) );
-    y = Math.floor( _align( y, h, this._rectAlignY ) );
+    x = Math.floor( align( x, w, this._rectAlignX ) );
+    y = Math.floor( align( y, h, this._rectAlignY ) );
 
     this.context.drawImage( image.get().image, image.x, image.y, image.w, image.h, x, y, w, h );
 
@@ -126,8 +126,8 @@ Renderer2D.prototype.clear = function clear ( x, y, w, h ) {
     w = this.w;
     h = this.h;
   } else {
-    x = Math.floor( _align( x, w, this._rectAlignX ) );
-    y = Math.floor( _align( y, h, this._rectAlignY ) );
+    x = Math.floor( align( x, w, this._rectAlignX ) );
+    y = Math.floor( align( y, h, this._rectAlignY ) );
   }
 
   this.context.clearRect( x, y, w, h );
@@ -138,8 +138,8 @@ Renderer2D.prototype.clear = function clear ( x, y, w, h ) {
 
 Renderer2D.prototype.rect = function rect ( x, y, w, h ) {
 
-  x = Math.floor( _align( x, w, this._rectAlignX ) );
-  y = Math.floor( _align( y, h, this._rectAlignY ) );
+  x = Math.floor( align( x, w, this._rectAlignX ) );
+  y = Math.floor( align( y, h, this._rectAlignY ) );
 
   if ( this._beginPath ) {
     this.context.rect( x, y, w, h );

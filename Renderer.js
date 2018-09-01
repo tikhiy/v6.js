@@ -5,11 +5,11 @@ var getElementW  = require( 'peako/get-element-w' );
 var getElementH  = require( 'peako/get-element-h' );
 var baseForIn    = require( 'peako/base/base-for-in' );
 
-var _setDefaultDrawingSettings = require( './_set-default-drawing-settings' );
-var _copyDrawingSettings       = require( './_copy-drawing-settings' );
-var _getGLContextName          = require( './_get-gl-context-name' );
-var _createPolygon             = require( './_create-polygon' );
-var _polygons                  = require( './_polygons' );
+var _setDefaultDrawingSettings = require( './internal/_set-default-drawing-settings' );
+var _copyDrawingSettings       = require( './internal/_copy-drawing-settings' );
+var _getGLContextName          = require( './internal/_get-gl-context-name' );
+var _createPolygon             = require( './internal/_create-polygon' );
+var _polygons                  = require( './internal/_polygons' );
 var constants                  = require( './constants' );
 var options                    = require( './options' );
 

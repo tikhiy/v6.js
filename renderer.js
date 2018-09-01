@@ -10,7 +10,7 @@ if ( typeof platform === 'undefined' ) {
 
 var once = require( 'peako/once' );
 
-var _getGLContextName = require( './_get-gl-context-name' ),
+var _getGLContextName = require( './internal/_get-gl-context-name' ),
     _options          = require( './options' ),
     RendererGL        = require( './RendererGL' ),
     Renderer2D        = require( './Renderer2D' ),

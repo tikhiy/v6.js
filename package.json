@@ -15,7 +15,10 @@
   },
   "homepage": "https://github.com/silent-tempest/v6.js#readme",
   "dependencies": {
-    "peako": "^0.0.5"
+    "light-emitter": "github:silent-tempest/light-emitter#master",
+    "peako": "github:silent-tempest/peako#dev",
+    "super-extend": "github:silent-tempest/super-extend#master",
+    "platform": "^1.3.5"
   },
   "devDependencies": {
     "browserify": "^16.2.2",

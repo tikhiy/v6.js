@@ -1,13 +1,15 @@
 'use strict';
 
 var CompoundedImage = require( './CompoundedImage' );
-
-var report = require( './report' );
+var report          = require( './report' );
 
 /**
+ * @constructor module:"v6.js".Image
  * @param {string|HTMLImageElement} url
  */
 function Image ( url ) {
+
+  var self = this;
 
   this.loaded = false;
 
@@ -17,9 +19,14 @@ function Image ( url ) {
   if ( typeof HTMLImageElement !== 'undefined' && url instanceof HTMLImageElement ) {
     if ( url.src ) {
       if ( url.complete ) {
-        this._onload();
+        this.onload();
+      } else if ( url.addEventListener ) {
+        url.addEventListener( 'load', function onload () {
+          url.removeEventListener( 'load', onload );
+          self.onload();
+        } );
       } else {
-        report( 'new v6.Image: you should manually set the "loaded" property if you are using "new v6.Image( image )"' );
+        report( '`new v6.Image(image: HTMLImageElement)`: do `image.onload()` in your "load" event listener' );
       }
 
       this.url = url.src;
@@ -30,18 +37,22 @@ function Image ( url ) {
     this.image = url;
   } else if ( typeof url === 'string' ) {
     this.image = document.createElement( 'img' );
-    this.url = url;
+    this.url   = url;
     this.load();
   } else {
-    throw TypeError( 'new v6.Image: first argument must be a string or a HTMLImageElement object' );
+    throw TypeError( '`new v6.Image()`: first argument must be a string or HTMLImageElement object' );
   }
 
 }
 
 Image.prototype = {
-  _onload: function _onload ( e ) {
+  /**
+   * @method module:"v6.js".Image#onload
+   * @return {void}
+   */
+  onload: function onload ( _e ) {
 
-    if ( e ) {
+    if ( _e ) {
       this.image.onload = null;
     }
 
@@ -52,14 +63,18 @@ Image.prototype = {
 
   },
 
-  /*
-   * @returns {v6.Image}
+  /**
+   * @method module:"v6.js".Image#load
+   * @param {string} [url]
+   * @chainable
+   * @example
+   * var image = new Image( document.createElement( 'img' ) )
+   *   .load( './assets/whatrudoing.png' );
    */
   load: function load ( url ) {
     if ( ! this.loaded ) {
 
-      this.image.onload = this._onload.bind( this );
-
+      this.image.onload = this.onload.bind( this );
       this.image.src = this.url = ( this.url || url || '' );
 
     }
@@ -68,16 +83,9 @@ Image.prototype = {
   },
 
   /**
-   * tl;dr: Just the exit-function from v6.CompoundedImage::get() recursion.
-   *
-   * Since v6.Image functions (static) can work with both v6.Image and
-   * v6.CompoundedImage, a source object (v6.Image) can be required in them.
-   * Thus, there is v6.CompoundedImage::get(), which starts a recursion through
-   * intermediate objects (v6.CompoundedImage) and v6.Image::get(), which stop it
-   * as the source object (v6.Image).
-   *
-   * @returns {v6.Image}
-   * @see v6.CompoundedImage#get()
+   * @method module:"v6.js".Image#get
+   * @chainable
+   * @see module:"v6.js".CompoundedImage#get
    */
   get: function get () {
     return this;
@@ -87,10 +95,11 @@ Image.prototype = {
 };
 
 /**
- * @param {v6.Image|v6.CompoundedImage} image
- * @param {number} w
- * @param {number} h
- * @returns {v6.CompoundedImage}
+ * @method module:"v6.js".Image.stretch
+ * @param  {module:"v6.js".Image|module:"v6.js".CompoundedImage} image
+ * @param  {number}                                              w
+ * @param  {number}                                              h
+ * @return {module:"v6.js".CompoundedImage}
  */
 Image.stretch = function stretch ( image, w, h ) {
 
@@ -112,12 +121,13 @@ Image.stretch = function stretch ( image, w, h ) {
 };
 
 /**
- * @param {v6.Image|v6.CompoundedImage} image
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @returns {v6.CompoundedImage}
+ * @method module:"v6.js".Image.cut
+ * @param  {module:"v6.js".Image|module:"v6.js".CompoundedImage} image
+ * @param  {number}                                              x
+ * @param  {number}                                              y
+ * @param  {number}                                              dw
+ * @param  {number}                                              dh
+ * @return {module:"v6.js".CompoundedImage}
  */
 Image.cut = function cut ( image, x, y, dw, dh ) {
 

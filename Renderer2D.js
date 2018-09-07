@@ -5,7 +5,6 @@ var constants = require( './constants' );
 var Renderer  = require( './Renderer' );
 var _options  = require( './options' );
 var align     = require( './internal/align' );
-var Image     = require( './Image' );
 
 function Renderer2D ( options ) {
 
@@ -78,6 +77,10 @@ Renderer2D.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
 
 /**
  * @param {v6.Image|v6.CompoundedImage} image
+ * @example
+ * var Image = require( 'v6.js/Image' );
+ * var image = new Image( './assets/background.jpg' );
+ * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
  */
 Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
 
@@ -87,7 +90,7 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
   this._rectAlignX = constants.CENTER;
   this._rectAlignY = constants.MIDDLE;
 
-  this.image( Image.stretch( image, this.w, this.h ), this.w * 0.5, this.h * 0.5 );
+  this.image( image, this.w * 0.5, this.h * 0.5 );
 
   this._rectAlignX = _rectAlignX;
   this._rectAlignY = _rectAlignY;

@@ -184,4 +184,8 @@ Vector3D.fromAngle = function fromAngle ( angle ) {
   return new Vector3D( Math.cos( angle ), Math.sin( angle ) );
 };
 
+Vector3D.clone = function clone ( vector ) {
+  return new Vector3D( vector.x, vector.y, vector.z );
+};
+
 module.exports = Vector3D;

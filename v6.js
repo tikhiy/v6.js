@@ -1,7 +1,7 @@
 /*!
  * Copyright (c) 2017-2018 SILENT
  * Released under the MIT License.
- * https://github.com/silent-tempest/v6
+ * https://github.com/silent-tempest/v6.js/
  */
 
 'use strict';

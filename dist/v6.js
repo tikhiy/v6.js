@@ -114,15 +114,21 @@ module.exports = CompoundedImage;
 var CompoundedImage = require('./CompoundedImage');
 var report = require('./report');
 function Image(url) {
+    var self = this;
     this.loaded = false;
     this.x = 0;
     this.y = 0;
     if (typeof HTMLImageElement !== 'undefined' && url instanceof HTMLImageElement) {
         if (url.src) {
             if (url.complete) {
-                this._onload();
+                this.onload();
+            } else if (url.addEventListener) {
+                url.addEventListener('load', function onload() {
+                    url.removeEventListener('load', onload);
+                    self.onload();
+                });
             } else {
-                report('new v6.Image: you should manually set the "loaded" property if you are using "new v6.Image( image )"');
+                report('`new v6.Image(image: HTMLImageElement)`: do `image.onload()` in your "load" event listener');
             }
             this.url = url.src;
         } else {
@@ -134,12 +140,12 @@ function Image(url) {
         this.url = url;
         this.load();
     } else {
-        throw TypeError('new v6.Image: first argument must be a string or a HTMLImageElement object');
+        throw TypeError('`new v6.Image()`: first argument must be a string or HTMLImageElement object');
     }
 }
 Image.prototype = {
-    _onload: function _onload(e) {
-        if (e) {
+    onload: function onload(_e) {
+        if (_e) {
             this.image.onload = null;
         }
         this.w = this.dw = this.image.width;
@@ -148,7 +154,7 @@ Image.prototype = {
     },
     load: function load(url) {
         if (!this.loaded) {
-            this.image.onload = this._onload.bind(this);
+            this.image.onload = this.onload.bind(this);
             this.image.src = this.url = this.url || url || '';
         }
         return this;
@@ -364,7 +370,6 @@ var constants = require('./constants');
 var Renderer = require('./Renderer');
 var _options = require('./options');
 var align = require('./internal/align');
-var Image = require('./Image');
 function Renderer2D(options) {
     options = defaults(_options, options);
     Renderer.call(this, options, constants.MODE_2D);
@@ -408,7 +413,7 @@ Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
     var _rectAlignX = this._rectAlignX, _rectAlignY = this._rectAlignY;
     this._rectAlignX = constants.CENTER;
     this._rectAlignY = constants.MIDDLE;
-    this.image(Image.stretch(image, this.w, this.h), this.w * 0.5, this.h * 0.5);
+    this.image(image, this.w * 0.5, this.h * 0.5);
     this._rectAlignX = _rectAlignX;
     this._rectAlignY = _rectAlignY;
     return this;
@@ -509,7 +514,7 @@ Renderer2D.prototype._stroke = function (close) {
 };
 Renderer2D.prototype.constructor = Renderer2D;
 module.exports = Renderer2D;
-},{"./Image":3,"./Renderer":4,"./constants":15,"./internal/align":23,"./options":88,"peako/defaults":53}],6:[function(require,module,exports){
+},{"./Renderer":4,"./constants":15,"./internal/align":23,"./options":88,"peako/defaults":53}],6:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var ShaderProgram = require('./ShaderProgram'), Transform = require('./Transform'), constants = require('./constants'), Renderer = require('./Renderer'), shaders = require('./shaders'), _options = require('./options');
@@ -1723,6 +1728,9 @@ Vector2D.fromAngle = function fromAngle(angle) {
 Vector2D.cross = function cross(a, b) {
     return a.x * b.y - a.y * b.x;
 };
+Vector2D.clone = function clone(vector) {
+    return new Vector2D(vector.x, vector.y);
+};
 module.exports = Vector2D;
 },{"../settings":91}],26:[function(require,module,exports){
 'use strict';
@@ -1845,6 +1853,9 @@ Vector3D.fromAngle = function fromAngle(angle) {
         angle *= Math.PI / 180;
     }
     return new Vector3D(Math.cos(angle), Math.sin(angle));
+};
+Vector3D.clone = function clone(vector) {
+    return new Vector3D(vector.x, vector.y, vector.z);
 };
 module.exports = Vector3D;
 },{"../settings":91,"./Vector2D":25}],27:[function(require,module,exports){
@@ -2326,7 +2337,8 @@ module.exports = {
     MAX_SAFE_INT: 9007199254740991,
     MIN_SAFE_INT: -9007199254740991,
     DEEP: 1,
-    DEEP_KEEP_FN: 2
+    DEEP_KEEP_FN: 2,
+    PLACEHOLDER: {}
 };
 },{}],48:[function(require,module,exports){
 'use strict';
@@ -2771,17 +2783,18 @@ if (noRequestAnimationFrame) {
 }
 },{"./timestamp":83}],83:[function(require,module,exports){
 'use strict';
-var getTime = require('./now');
-var timestamp, navigatorStart;
+var now = require('./now');
+var navigatorStart;
 if (typeof performance === 'undefined' || !performance.now) {
-    navigatorStart = getTime();
-    timestamp = function timestamp() {
-        return getTime() - navigatorStart;
+    navigatorStart = now();
+    module.exports = function timestamp() {
+        return now() - navigatorStart;
     };
 } else {
-    timestamp = performance.now;
+    module.exports = function timestamp() {
+        return performance.now();
+    };
 }
-module.exports = timestamp;
 },{"./now":76}],84:[function(require,module,exports){
 'use strict';
 var _unescape = require('./_unescape'), isSymbol = require('./is-symbol');

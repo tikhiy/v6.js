@@ -240,4 +240,8 @@ Vector2D.cross = function cross ( a, b ) {
   return a.x * b.y - a.y * b.x;
 };
 
+Vector2D.clone = function clone ( vector ) {
+  return new Vector2D( vector.x, vector.y );
+};
+
 module.exports = Vector2D;

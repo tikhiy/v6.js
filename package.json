@@ -1,7 +1,7 @@
 {
   "name": "v6.js",
   "version": "0.0.10",
-  "description": "A rendering library: write the same code for both 2D and WebGL contexts.",
+  "description": "A rendering library; write the same code for both 2D and WebGL contexts.",
   "main": "v6.js",
   "scripts": {},
   "repository": {
@@ -15,10 +15,10 @@
   },
   "homepage": "https://github.com/silent-tempest/v6.js#readme",
   "dependencies": {
-    "light-emitter": "github:silent-tempest/light-emitter#master",
+    "extend": "github:silent-tempest/extend#master",
+    "light_emitter": "github:silent-tempest/light-emitter#master",
     "peako": "github:silent-tempest/peako#dev",
-    "platform": "^1.3.5",
-    "super-extend": "github:silent-tempest/super-extend#master"
+    "platform": "^1.3.5"
   },
   "devDependencies": {
     "browserify": "^16.2.2",

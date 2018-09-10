@@ -1,7 +1,7 @@
 'use strict';
 
-var LightEmitter = require( 'light-emitter' );
-var extend       = require( 'super-extend' );
+var LightEmitter = require( 'light_emitter' );
+var extend       = require( 'extend' );
 var timestamp    = require( 'peako/timestamp' );
 var timer        = require( 'peako/timer' );
 

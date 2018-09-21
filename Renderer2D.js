@@ -12,8 +12,6 @@ function Renderer2D ( options ) {
 
   AbstractRenderer.call( this, options, constants.RENDERER_2D );
 
-  this.smooth( this.settings.smooth );
-
   this.matrix = this.context;
 
   this._beginPath = false;
@@ -22,39 +20,6 @@ function Renderer2D ( options ) {
 
 Renderer2D.prototype = Object.create( AbstractRenderer.prototype );
 Renderer2D.prototype.constructor = Renderer2D;
-
-Renderer2D.prototype.smooth = ( function () {
-  var names = [
-    'webkitImageSmoothingEnabled',
-    'mozImageSmoothingEnabled',
-    'msImageSmoothingEnabled',
-    'oImageSmoothingEnabled',
-    'imageSmoothingEnabled'
-  ];
-
-  /**
-   * @param {boolean} bool
-   */
-  return function smooth ( bool ) {
-
-    var i;
-
-    if ( typeof bool !== 'boolean' ) {
-      throw TypeError( 'First argument in smooth( bool ) must be a boolean' );
-    }
-
-    for ( i = names.length - 1; i >= 0; --i ) {
-      if ( names[ i ] in this.context ) {
-        this.context[ names[ i ] ] = bool;
-      }
-    }
-
-    this.settings.smooth = bool;
-
-    return this;
-
-  };
-} )();
 
 /**
  * @param {number|string|v6.RGBA|v6.HSLA} r

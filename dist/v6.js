@@ -164,7 +164,7 @@ function create$1(_$var, _$varcolor, _do$var) {
     AbstractRenderer.prototype[name] = Function('a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;');
 });
 module.exports = AbstractRenderer;
-},{"./constants":15,"./internal/copy_drawing_settings":18,"./internal/create_polygon":19,"./internal/get_webgl":23,"./internal/polygons":24,"./internal/set_default_drawing_settings":25,"./options":87,"peako/get-element-h":56,"peako/get-element-w":57,"peako/is-object-like":64}],2:[function(require,module,exports){
+},{"./constants":15,"./internal/copy_drawing_settings":18,"./internal/create_polygon":19,"./internal/get_webgl":23,"./internal/polygons":24,"./internal/set_default_drawing_settings":25,"./options":88,"peako/get-element-h":57,"peako/get-element-w":58,"peako/is-object-like":65}],2:[function(require,module,exports){
 'use strict';
 var defaultTo = require('peako/default-to');
 var Vector2D = require('./math/Vector2D');
@@ -257,7 +257,7 @@ Camera.prototype = {
     constructor: Camera
 };
 module.exports = Camera;
-},{"./math/Vector2D":27,"peako/default-to":52}],3:[function(require,module,exports){
+},{"./math/Vector2D":28,"peako/default-to":53}],3:[function(require,module,exports){
 'use strict';
 function CompoundedImage(image, x, y, w, h, dw, dh) {
     this.image = image;
@@ -353,7 +353,7 @@ Image.cut = function cut(image, x, y, dw, dh) {
     return new CompoundedImage(image.get(), x, y, w, h, dw, dh);
 };
 module.exports = Image;
-},{"./CompoundedImage":3,"./report":88}],5:[function(require,module,exports){
+},{"./CompoundedImage":3,"./report":89}],5:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var constants = require('./constants');
@@ -363,34 +363,11 @@ var align = require('./internal/align');
 function Renderer2D(options) {
     options = defaults(_options, options);
     AbstractRenderer.call(this, options, constants.RENDERER_2D);
-    this.smooth(this.settings.smooth);
     this.matrix = this.context;
     this._beginPath = false;
 }
 Renderer2D.prototype = Object.create(AbstractRenderer.prototype);
 Renderer2D.prototype.constructor = Renderer2D;
-Renderer2D.prototype.smooth = function () {
-    var names = [
-            'webkitImageSmoothingEnabled',
-            'mozImageSmoothingEnabled',
-            'msImageSmoothingEnabled',
-            'oImageSmoothingEnabled',
-            'imageSmoothingEnabled'
-        ];
-    return function smooth(bool) {
-        var i;
-        if (typeof bool !== 'boolean') {
-            throw TypeError('First argument in smooth( bool ) must be a boolean');
-        }
-        for (i = names.length - 1; i >= 0; --i) {
-            if (names[i] in this.context) {
-                this.context[names[i]] = bool;
-            }
-        }
-        this.settings.smooth = bool;
-        return this;
-    };
-}();
 Renderer2D.prototype.backgroundColor = function backgroundColor(r, g, b, a) {
     var context = this.context;
     context.save();
@@ -504,7 +481,7 @@ Renderer2D.prototype._stroke = function (close) {
     context.stroke();
 };
 module.exports = Renderer2D;
-},{"./AbstractRenderer":1,"./constants":15,"./internal/align":17,"./options":87,"peako/defaults":53}],6:[function(require,module,exports){
+},{"./AbstractRenderer":1,"./constants":15,"./internal/align":17,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var align = require('./internal/align');
@@ -617,7 +594,7 @@ RendererGL.prototype.rect = function rect(x, y, w, h) {
     return this;
 };
 module.exports = RendererGL;
-},{"./AbstractRenderer":1,"./ShaderProgram":7,"./Transform":9,"./constants":15,"./internal/align":17,"./options":87,"./shaders":90,"peako/defaults":53}],7:[function(require,module,exports){
+},{"./AbstractRenderer":1,"./ShaderProgram":7,"./Transform":9,"./constants":15,"./internal/align":17,"./options":88,"./shaders":91,"peako/defaults":54}],7:[function(require,module,exports){
 'use strict';
 var createProgram = require('./internal/create_program');
 var createShader = require('./internal/create_shader');
@@ -795,7 +772,7 @@ Ticker.prototype.stop = function stop() {
     return this;
 };
 module.exports = Ticker;
-},{"light_emitter":29,"peako/timer":82,"peako/timestamp":83}],9:[function(require,module,exports){
+},{"light_emitter":30,"peako/timer":83,"peako/timestamp":84}],9:[function(require,module,exports){
 'use strict';
 var mat3 = require('./mat3');
 function Transform() {
@@ -969,7 +946,7 @@ function foo(t, p, q) {
     }
     return Math.round(p * 255);
 }
-},{"./RGBA":11,"./internal/parse":14,"peako/clamp":45}],11:[function(require,module,exports){
+},{"./RGBA":11,"./internal/parse":14,"peako/clamp":46}],11:[function(require,module,exports){
 'use strict';
 module.exports = RGBA;
 var HSLA = require('./HSLA');
@@ -1377,7 +1354,7 @@ function createRenderer(options) {
     throw Error('Got unknown renderer type. The known are: `v6.constants.RENDERER_2D` and `v6.constants.RENDERER_GL`');
 }
 module.exports = createRenderer;
-},{"./Renderer2D":5,"./RendererGL":6,"./constants":15,"./internal/get_renderer_type":22,"./internal/get_webgl":23,"./options":87,"./report":88}],17:[function(require,module,exports){
+},{"./Renderer2D":5,"./RendererGL":6,"./constants":15,"./internal/get_renderer_type":22,"./internal/get_webgl":23,"./options":88,"./report":89}],17:[function(require,module,exports){
 'use strict';
 var constants = require('../constants');
 function align(value, width, align) {
@@ -1483,7 +1460,7 @@ function getRendererType() {
     return constants.RENDERER_2D;
 }
 module.exports = once(getRendererType);
-},{"../constants":15,"peako/once":77,"platform":"platform"}],23:[function(require,module,exports){
+},{"../constants":15,"peako/once":78,"platform":"platform"}],23:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 function getWebGL() {
@@ -1498,7 +1475,7 @@ function getWebGL() {
     return name;
 }
 module.exports = once(getWebGL);
-},{"peako/once":77}],24:[function(require,module,exports){
+},{"peako/once":78}],24:[function(require,module,exports){
 'use strict';
 },{}],25:[function(require,module,exports){
 'use strict';
@@ -1605,78 +1582,9 @@ exports.setTransform = function setTransform(m1, m11, m12, m21, m22, dx, dy) {
 },{}],27:[function(require,module,exports){
 'use strict';
 var settings = require('../settings');
-function Vector2D(x, y) {
-    this.set(x, y);
+function AbstractVector() {
 }
-Vector2D.prototype = {
-    set: function set(x, y) {
-        this.x = x || 0;
-        this.y = y || 0;
-        return this;
-    },
-    setVector: function setVector(vector) {
-        return this.set(vector.x, vector.y);
-    },
-    lerp: function (x, y, value) {
-        this.x += (x - this.x) * value || 0;
-        this.y += (y - this.y) * value || 0;
-        return this;
-    },
-    lerpVector: function lerpVector(vector, value) {
-        var x = vector.x || 0, y = vector.y || 0;
-        return this.lerp(x, y, value);
-    },
-    add: function add(x, y) {
-        this.x += x || 0;
-        this.y += y || 0;
-        return this;
-    },
-    addVector: function addVector(vector) {
-        return this.add(vector.x, vector.y);
-    },
-    sub: function sub(x, y) {
-        this.x -= x || 0;
-        this.y -= y || 0;
-        return this;
-    },
-    subVector: function subVector(vector) {
-        return this.sub(vector.x, vector.y);
-    },
-    mul: function mul(value) {
-        this.x *= value || 0;
-        this.y *= value || 0;
-        return this;
-    },
-    mulVector: function mulVector(vector) {
-        this.x *= vector.x || 0;
-        this.y *= vector.y || 0;
-        return this;
-    },
-    div: function div(value) {
-        this.x /= value || 0;
-        this.y /= value || 0;
-        return this;
-    },
-    divVector: function divVector(vector) {
-        this.x /= vector.x || 0;
-        this.y /= vector.y || 0;
-        return this;
-    },
-    angle: function angle() {
-        if (settings.degrees) {
-            return Math.atan2(this.y, this.x) * 180 / Math.PI;
-        }
-        return Math.atan2(this.y, this.x);
-    },
-    mag: function mag() {
-        return Math.sqrt(this.magSquare());
-    },
-    magSquare: function magSquare() {
-        return this.x * this.x + this.y * this.y;
-    },
-    setMag: function setMag(value) {
-        return this.normalize().mul(value);
-    },
+AbstractVector.prototype = {
     normalize: function normalize() {
         var mag = this.mag();
         if (mag && mag !== 1) {
@@ -1684,30 +1592,17 @@ Vector2D.prototype = {
         }
         return this;
     },
-    dot: function dot(x, y) {
-        return this.x * (x || 0) + this.y * (y || 0);
-    },
-    dotVector: function dotVector(vector) {
-        return this.x * (vector.x || 0) + this.y * (vector.y || 0);
-    },
-    clone: function clone() {
-        return new Vector2D(this.x, this.y);
-    },
-    dist: function dist(vector) {
-        return dist(this.x, this.y, vector.x, vector.y);
-    },
-    limit: function limit(value) {
-        var mag = this.magSquare();
-        if (mag > value * value) {
-            this.div(Math.sqrt(mag)).mul(value);
+    setAngle: function setAngle(angle) {
+        var mag = this.mag();
+        if (settings.degrees) {
+            angle *= Math.PI / 180;
         }
+        this.x = mag * Math.cos(angle);
+        this.y = mag * Math.sin(angle);
         return this;
     },
-    cross: function cross(vector) {
-        return Vector2D.cross(this, vector);
-    },
-    toString: function toString() {
-        return 'vec2(' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ')';
+    setMag: function setMag(value) {
+        return this.normalize().mul(value);
     },
     rotate: function rotate(angle) {
         var x = this.x, y = this.y;
@@ -1721,16 +1616,102 @@ Vector2D.prototype = {
         this.y = x * s + y * c;
         return this;
     },
-    setAngle: function setAngle(angle) {
-        var mag = this.mag();
+    getAngle: function getAngle() {
         if (settings.degrees) {
-            angle *= Math.PI / 180;
+            return Math.atan2(this.y, this.x) * 180 / Math.PI;
         }
-        this.x = mag * Math.cos(angle);
-        this.y = mag * Math.sin(angle);
+        return Math.atan2(this.y, this.x);
+    },
+    limit: function limit(value) {
+        var mag = this.magSquare();
+        if (mag > value * value) {
+            this.div(Math.sqrt(mag)).mul(value);
+        }
         return this;
     },
-    constructor: Vector2D
+    mag: function mag() {
+        return Math.sqrt(this.magSquare());
+    },
+    constructor: AbstractVector
+};
+module.exports = AbstractVector;
+},{"../settings":90}],28:[function(require,module,exports){
+'use strict';
+var settings = require('../settings');
+var AbstractVector = require('./AbstractVector');
+function Vector2D(x, y) {
+    this.set(x, y);
+}
+Vector2D.prototype = Object.create(AbstractVector.prototype);
+Vector2D.prototype.constructor = Vector2D;
+Vector2D.prototype.set = function set(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+    return this;
+};
+Vector2D.prototype.add = function add(x, y) {
+    this.x += x || 0;
+    this.y += y || 0;
+    return this;
+};
+Vector2D.prototype.sub = function sub(x, y) {
+    this.x -= x || 0;
+    this.y -= y || 0;
+    return this;
+};
+Vector2D.prototype.mul = function mul(value) {
+    this.x *= value;
+    this.y *= value;
+    return this;
+};
+Vector2D.prototype.div = function div(value) {
+    this.x /= value;
+    this.y /= value;
+    return this;
+};
+Vector2D.prototype.dot = function dot(x, y) {
+    return this.x * (x || 0) + this.y * (y || 0);
+};
+Vector2D.prototype.lerp = function (x, y, value) {
+    this.x += (x - this.x) * value || 0;
+    this.y += (y - this.y) * value || 0;
+    return this;
+};
+Vector2D.prototype.setVector = function setVector(vector) {
+    return this.set(vector.x, vector.y);
+};
+Vector2D.prototype.addVector = function addVector(vector) {
+    return this.add(vector.x, vector.y);
+};
+Vector2D.prototype.subVector = function subVector(vector) {
+    return this.sub(vector.x, vector.y);
+};
+Vector2D.prototype.mulVector = function mulVector(vector) {
+    return this.mul(vector.x, vector.y);
+};
+Vector2D.prototype.divVector = function divVector(vector) {
+    return this.div(vector.x, vector.y);
+};
+Vector2D.prototype.dotVector = function dotVector(vector) {
+    return this.dot(vector.x, vector.y);
+};
+Vector2D.prototype.lerpVector = function lerpVector(vector, value) {
+    return this.lerp(vector.x, vector.y, value);
+};
+Vector2D.prototype.magSquare = function magSquare() {
+    return this.x * this.x + this.y * this.y;
+};
+Vector2D.prototype.clone = function clone() {
+    return new Vector2D(this.x, this.y);
+};
+Vector2D.prototype.dist = function dist(vector) {
+    return dist(this.x, this.y, vector.x, vector.y);
+};
+Vector2D.prototype.cross = function cross(vector) {
+    return Vector2D.cross(this, vector);
+};
+Vector2D.prototype.toString = function toString() {
+    return 'Vector2D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ' }';
 };
 [
     'normalize',
@@ -1768,7 +1749,7 @@ Vector2D.clone = function clone(vector) {
     return new Vector2D(vector.x, vector.y);
 };
 module.exports = Vector2D;
-},{"../settings":89}],28:[function(require,module,exports){
+},{"../settings":90,"./AbstractVector":27}],29:[function(require,module,exports){
 'use strict';
 var Vector2D = require('./Vector2D');
 var settings = require('../settings');
@@ -1894,7 +1875,7 @@ Vector3D.clone = function clone(vector) {
     return new Vector3D(vector.x, vector.y, vector.z);
 };
 module.exports = Vector3D;
-},{"../settings":89,"./Vector2D":27}],29:[function(require,module,exports){
+},{"../settings":90,"./Vector2D":28}],30:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2035,13 +2016,13 @@ function _getList ( self, type ) {
 
 module.exports = LightEmitter;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 module.exports = function _throwArgumentException(unexpected, expected) {
     throw Error('"' + toString.call(unexpected) + '" is not ' + expected);
 };
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 var type = require('./type');
 var lastRes = 'undefined';
@@ -2052,12 +2033,12 @@ module.exports = function _type(val) {
     }
     return lastRes = type(lastVal = val);
 };
-},{"./type":86}],32:[function(require,module,exports){
+},{"./type":87}],33:[function(require,module,exports){
 'use strict';
 module.exports = function _unescape(string) {
     return string.replace(/\\(\\)?/g, '$1');
 };
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 var isset = require('../isset');
 var undefined;
@@ -2092,7 +2073,7 @@ function baseDefineProperty(object, key, descriptor) {
     return object;
 }
 module.exports = baseDefineProperty;
-},{"../isset":70}],34:[function(require,module,exports){
+},{"../isset":71}],35:[function(require,module,exports){
 'use strict';
 module.exports = function baseExec(regexp, string) {
     var result = [], value;
@@ -2102,7 +2083,7 @@ module.exports = function baseExec(regexp, string) {
     }
     return result;
 };
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 var callIteratee = require('../call-iteratee'), isset = require('../isset');
 module.exports = function baseForEach(arr, fn, ctx, fromRight) {
@@ -2119,7 +2100,7 @@ module.exports = function baseForEach(arr, fn, ctx, fromRight) {
     }
     return arr;
 };
-},{"../call-iteratee":43,"../isset":70}],36:[function(require,module,exports){
+},{"../call-iteratee":44,"../isset":71}],37:[function(require,module,exports){
 'use strict';
 var callIteratee = require('../call-iteratee');
 module.exports = function baseForIn(obj, fn, ctx, fromRight, keys) {
@@ -2136,7 +2117,7 @@ module.exports = function baseForIn(obj, fn, ctx, fromRight, keys) {
     }
     return obj;
 };
-},{"../call-iteratee":43}],37:[function(require,module,exports){
+},{"../call-iteratee":44}],38:[function(require,module,exports){
 'use strict';
 var isset = require('../isset');
 module.exports = function baseGet(obj, path, off) {
@@ -2151,7 +2132,7 @@ module.exports = function baseGet(obj, path, off) {
     }
     return obj;
 };
-},{"../isset":70}],38:[function(require,module,exports){
+},{"../isset":71}],39:[function(require,module,exports){
 'use strict';
 var baseToIndex = require('./base-to-index');
 var indexOf = Array.prototype.indexOf, lastIndexOf = Array.prototype.lastIndexOf;
@@ -2190,7 +2171,7 @@ function baseIndexOf(arr, search, fromIndex, fromRight) {
     return -1;
 }
 module.exports = baseIndexOf;
-},{"./base-to-index":41}],39:[function(require,module,exports){
+},{"./base-to-index":42}],40:[function(require,module,exports){
 'use strict';
 var baseIndexOf = require('./base-index-of');
 var support = require('../support/support-keys');
@@ -2229,7 +2210,7 @@ module.exports = function baseKeys(object) {
     }
     return fixKeys(keys, object);
 };
-},{"../support/support-keys":81,"./base-index-of":38}],40:[function(require,module,exports){
+},{"../support/support-keys":82,"./base-index-of":39}],41:[function(require,module,exports){
 'use strict';
 var get = require('./base-get');
 module.exports = function baseProperty(object, path) {
@@ -2240,7 +2221,7 @@ module.exports = function baseProperty(object, path) {
         return object[path[0]];
     }
 };
-},{"./base-get":37}],41:[function(require,module,exports){
+},{"./base-get":38}],42:[function(require,module,exports){
 'use strict';
 module.exports = function baseToIndex(v, l) {
     if (!l || !v) {
@@ -2251,7 +2232,7 @@ module.exports = function baseToIndex(v, l) {
     }
     return v || 0;
 };
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 var _throwArgumentException = require('./_throw-argument-exception');
 var defaultTo = require('./default-to');
@@ -2268,7 +2249,7 @@ module.exports = function before(n, fn) {
         return value;
     };
 };
-},{"./_throw-argument-exception":30,"./default-to":52}],43:[function(require,module,exports){
+},{"./_throw-argument-exception":31,"./default-to":53}],44:[function(require,module,exports){
 'use strict';
 module.exports = function callIteratee(fn, ctx, val, key, obj) {
     if (typeof ctx === 'undefined') {
@@ -2276,7 +2257,7 @@ module.exports = function callIteratee(fn, ctx, val, key, obj) {
     }
     return fn.call(ctx, val, key, obj);
 };
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 var baseExec = require('./base/base-exec'), _unescape = require('./_unescape'), isKey = require('./is-key'), toKey = require('./to-key'), _type = require('./_type');
 var rProperty = /(^|\.)\s*([_a-z]\w*)\s*|\[\s*((?:-)?(?:\d+|\d*\.\d+)|("|')(([^\\]\\(\\\\)*|[^\4])*)\4)\s*\]/gi;
@@ -2310,7 +2291,7 @@ function castPath(val) {
     return path;
 }
 module.exports = castPath;
-},{"./_type":31,"./_unescape":32,"./base/base-exec":34,"./is-key":62,"./to-key":84}],45:[function(require,module,exports){
+},{"./_type":32,"./_unescape":33,"./base/base-exec":35,"./is-key":63,"./to-key":85}],46:[function(require,module,exports){
 'use strict';
 module.exports = function clamp(value, lower, upper) {
     if (value >= upper) {
@@ -2321,7 +2302,7 @@ module.exports = function clamp(value, lower, upper) {
     }
     return value;
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 var create = require('./create'), getPrototypeOf = require('./get-prototype-of'), toObject = require('./to-object'), each = require('./each'), isObjectLike = require('./is-object-like');
 module.exports = function clone(deep, target, guard) {
@@ -2342,7 +2323,7 @@ module.exports = function clone(deep, target, guard) {
     }, cln);
     return cln;
 };
-},{"./create":48,"./each":55,"./get-prototype-of":58,"./is-object-like":64,"./to-object":85}],47:[function(require,module,exports){
+},{"./create":49,"./each":56,"./get-prototype-of":59,"./is-object-like":65,"./to-object":86}],48:[function(require,module,exports){
 'use strict';
 module.exports = {
     ERR: {
@@ -2360,7 +2341,7 @@ module.exports = {
     DEEP_KEEP_FN: 2,
     PLACEHOLDER: {}
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 var defineProperties = require('./define-properties');
 var setPrototypeOf = require('./set-prototype-of');
@@ -2383,7 +2364,7 @@ module.exports = Object.create || function create(prototype, descriptors) {
     }
     return object;
 };
-},{"./define-properties":54,"./is-primitive":67,"./set-prototype-of":79}],49:[function(require,module,exports){
+},{"./define-properties":55,"./is-primitive":68,"./set-prototype-of":80}],50:[function(require,module,exports){
 'use strict';
 var baseForEach = require('../base/base-for-each'), baseForIn = require('../base/base-for-in'), isArrayLike = require('../is-array-like'), toObject = require('../to-object'), iteratee = require('../iteratee').iteratee, keys = require('../keys');
 module.exports = function createEach(fromRight) {
@@ -2396,7 +2377,7 @@ module.exports = function createEach(fromRight) {
         return baseForIn(obj, fn, ctx, fromRight, keys(obj));
     };
 };
-},{"../base/base-for-each":35,"../base/base-for-in":36,"../is-array-like":60,"../iteratee":71,"../keys":72,"../to-object":85}],50:[function(require,module,exports){
+},{"../base/base-for-each":36,"../base/base-for-in":37,"../is-array-like":61,"../iteratee":72,"../keys":73,"../to-object":86}],51:[function(require,module,exports){
 'use strict';
 module.exports = function createGetElementDimension(name) {
     return function (e) {
@@ -2413,7 +2394,7 @@ module.exports = function createGetElementDimension(name) {
         return v;
     };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 var castPath = require('../cast-path'), noop = require('../noop');
 module.exports = function createProperty(baseProperty, useArgs) {
@@ -2430,7 +2411,7 @@ module.exports = function createProperty(baseProperty, useArgs) {
         };
     };
 };
-},{"../cast-path":44,"../noop":75}],52:[function(require,module,exports){
+},{"../cast-path":45,"../noop":76}],53:[function(require,module,exports){
 'use strict';
 module.exports = function defaultTo(value, defaultValue) {
     if (value != null && value === value) {
@@ -2438,7 +2419,7 @@ module.exports = function defaultTo(value, defaultValue) {
     }
     return defaultValue;
 };
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 var mixin = require('./mixin'), clone = require('./clone');
 module.exports = function defaults(defaults, object) {
@@ -2447,7 +2428,7 @@ module.exports = function defaults(defaults, object) {
     }
     return mixin(true, clone(true, defaults), object);
 };
-},{"./clone":46,"./mixin":74}],54:[function(require,module,exports){
+},{"./clone":47,"./mixin":75}],55:[function(require,module,exports){
 'use strict';
 var support = require('./support/support-define-property');
 var defineProperties, baseDefineProperty, isPrimitive, each;
@@ -2480,16 +2461,16 @@ if (support !== 'full') {
     defineProperties = Object.defineProperties;
 }
 module.exports = defineProperties;
-},{"./base/base-define-property":33,"./each":55,"./is-primitive":67,"./support/support-define-property":80}],55:[function(require,module,exports){
+},{"./base/base-define-property":34,"./each":56,"./is-primitive":68,"./support/support-define-property":81}],56:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-each')();
-},{"./create/create-each":49}],56:[function(require,module,exports){
+},{"./create/create-each":50}],57:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-get-element-dimension')('Height');
-},{"./create/create-get-element-dimension":50}],57:[function(require,module,exports){
+},{"./create/create-get-element-dimension":51}],58:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-get-element-dimension')('Width');
-},{"./create/create-get-element-dimension":50}],58:[function(require,module,exports){
+},{"./create/create-get-element-dimension":51}],59:[function(require,module,exports){
 'use strict';
 var ERR = require('./constants').ERR;
 var toString = Object.prototype.toString;
@@ -2507,13 +2488,13 @@ module.exports = Object.getPrototypeOf || function getPrototypeOf(obj) {
     }
     return obj;
 };
-},{"./constants":47}],59:[function(require,module,exports){
+},{"./constants":48}],60:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like'), isLength = require('./is-length'), isWindowLike = require('./is-window-like');
 module.exports = function isArrayLikeObject(value) {
     return isObjectLike(value) && isLength(value.length) && !isWindowLike(value);
 };
-},{"./is-length":63,"./is-object-like":64,"./is-window-like":69}],60:[function(require,module,exports){
+},{"./is-length":64,"./is-object-like":65,"./is-window-like":70}],61:[function(require,module,exports){
 'use strict';
 var isLength = require('./is-length'), isWindowLike = require('./is-window-like');
 module.exports = function isArrayLike(value) {
@@ -2525,14 +2506,14 @@ module.exports = function isArrayLike(value) {
     }
     return typeof value === 'string';
 };
-},{"./is-length":63,"./is-window-like":69}],61:[function(require,module,exports){
+},{"./is-length":64,"./is-window-like":70}],62:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like'), isLength = require('./is-length');
 var toString = {}.toString;
 module.exports = Array.isArray || function isArray(value) {
     return isObjectLike(value) && isLength(value.length) && toString.call(value) === '[object Array]';
 };
-},{"./is-length":63,"./is-object-like":64}],62:[function(require,module,exports){
+},{"./is-length":64,"./is-object-like":65}],63:[function(require,module,exports){
 'use strict';
 var _type = require('./_type');
 var rDeepKey = /(^|[^\\])(\\\\)*(\.|\[)/;
@@ -2551,25 +2532,25 @@ function isKey(val) {
     return !rDeepKey.test(val);
 }
 module.exports = isKey;
-},{"./_type":31}],63:[function(require,module,exports){
+},{"./_type":32}],64:[function(require,module,exports){
 'use strict';
 var MAX_ARRAY_LENGTH = require('./constants').MAX_ARRAY_LENGTH;
 module.exports = function isLength(value) {
     return typeof value === 'number' && value >= 0 && value <= MAX_ARRAY_LENGTH && value % 1 === 0;
 };
-},{"./constants":47}],64:[function(require,module,exports){
+},{"./constants":48}],65:[function(require,module,exports){
 'use strict';
 module.exports = function isObjectLike(value) {
     return !!value && typeof value === 'object';
 };
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like');
 var toString = {}.toString;
 module.exports = function isObject(value) {
     return isObjectLike(value) && toString.call(value) === '[object Object]';
 };
-},{"./is-object-like":64}],66:[function(require,module,exports){
+},{"./is-object-like":65}],67:[function(require,module,exports){
 'use strict';
 var getPrototypeOf = require('./get-prototype-of');
 var isObject = require('./is-object');
@@ -2591,24 +2572,24 @@ module.exports = function isPlainObject(v) {
     c = p.constructor;
     return typeof c === 'function' && toString.call(c) === OBJECT;
 };
-},{"./get-prototype-of":58,"./is-object":65}],67:[function(require,module,exports){
+},{"./get-prototype-of":59,"./is-object":66}],68:[function(require,module,exports){
 'use strict';
 module.exports = function isPrimitive(value) {
     return !value || typeof value !== 'object' && typeof value !== 'function';
 };
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 'use strict';
 var type = require('./type');
 module.exports = function isSymbol(value) {
     return type(value) === 'symbol';
 };
-},{"./type":86}],69:[function(require,module,exports){
+},{"./type":87}],70:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like');
 module.exports = function isWindowLike(value) {
     return isObjectLike(value) && value.window === value;
 };
-},{"./is-object-like":64}],70:[function(require,module,exports){
+},{"./is-object-like":65}],71:[function(require,module,exports){
 'use strict';
 module.exports = function isset(key, obj) {
     if (obj == null) {
@@ -2616,7 +2597,7 @@ module.exports = function isset(key, obj) {
     }
     return typeof obj[key] !== 'undefined' || key in obj;
 };
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict';
 var isArrayLikeObject = require('./is-array-like-object'), matchesProperty = require('./matches-property'), property = require('./property');
 exports.iteratee = function iteratee(value) {
@@ -2628,7 +2609,7 @@ exports.iteratee = function iteratee(value) {
     }
     return property(value);
 };
-},{"./is-array-like-object":59,"./matches-property":73,"./property":78}],72:[function(require,module,exports){
+},{"./is-array-like-object":60,"./matches-property":74,"./property":79}],73:[function(require,module,exports){
 'use strict';
 var baseKeys = require('./base/base-keys');
 var toObject = require('./to-object');
@@ -2646,7 +2627,7 @@ if (support !== 'es2015') {
 } else {
     module.exports = Object.keys;
 }
-},{"./base/base-keys":39,"./support/support-keys":81,"./to-object":85}],73:[function(require,module,exports){
+},{"./base/base-keys":40,"./support/support-keys":82,"./to-object":86}],74:[function(require,module,exports){
 'use strict';
 var castPath = require('./cast-path'), get = require('./base/base-get'), ERR = require('./constants').ERR;
 module.exports = function matchesProperty(property) {
@@ -2664,7 +2645,7 @@ module.exports = function matchesProperty(property) {
         return object[path[0]] === value;
     };
 };
-},{"./base/base-get":37,"./cast-path":44,"./constants":47}],74:[function(require,module,exports){
+},{"./base/base-get":38,"./cast-path":45,"./constants":48}],75:[function(require,module,exports){
 'use strict';
 var isPlainObject = require('./is-plain-object');
 var toObject = require('./to-object');
@@ -2706,25 +2687,25 @@ module.exports = function mixin(deep, object) {
     }
     return object;
 };
-},{"./is-array":61,"./is-plain-object":66,"./keys":72,"./to-object":85}],75:[function(require,module,exports){
+},{"./is-array":62,"./is-plain-object":67,"./keys":73,"./to-object":86}],76:[function(require,module,exports){
 'use strict';
 module.exports = function noop() {
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 module.exports = Date.now || function now() {
     return new Date().getTime();
 };
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 'use strict';
 var before = require('./before');
 module.exports = function once(target) {
     return before(1, target);
 };
-},{"./before":42}],78:[function(require,module,exports){
+},{"./before":43}],79:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-property')(require('./base/base-property'));
-},{"./base/base-property":40,"./create/create-property":51}],79:[function(require,module,exports){
+},{"./base/base-property":41,"./create/create-property":52}],80:[function(require,module,exports){
 'use strict';
 var isPrimitive = require('./is-primitive'), ERR = require('./constants').ERR;
 module.exports = Object.setPrototypeOf || function setPrototypeOf(target, prototype) {
@@ -2739,7 +2720,7 @@ module.exports = Object.setPrototypeOf || function setPrototypeOf(target, protot
     }
     return target;
 };
-},{"./constants":47,"./is-primitive":67}],80:[function(require,module,exports){
+},{"./constants":48,"./is-primitive":68}],81:[function(require,module,exports){
 'use strict';
 var support;
 function test(target) {
@@ -2759,7 +2740,7 @@ if (test({})) {
     support = 'not-supported';
 }
 module.exports = support;
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 var support;
 if (Object.keys) {
@@ -2774,7 +2755,7 @@ if (Object.keys) {
     support = 'has-a-bug';
 }
 module.exports = support;
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 var timestamp = require('./timestamp');
 var requestAF, cancelAF;
@@ -2801,7 +2782,7 @@ if (noRequestAnimationFrame) {
         return cancelAF(id);
     };
 }
-},{"./timestamp":83}],83:[function(require,module,exports){
+},{"./timestamp":84}],84:[function(require,module,exports){
 'use strict';
 var now = require('./now');
 var navigatorStart;
@@ -2815,7 +2796,7 @@ if (typeof performance === 'undefined' || !performance.now) {
         return performance.now();
     };
 }
-},{"./now":76}],84:[function(require,module,exports){
+},{"./now":77}],85:[function(require,module,exports){
 'use strict';
 var _unescape = require('./_unescape'), isSymbol = require('./is-symbol');
 module.exports = function toKey(val) {
@@ -2832,7 +2813,7 @@ module.exports = function toKey(val) {
     }
     return _unescape(key);
 };
-},{"./_unescape":32,"./is-symbol":68}],85:[function(require,module,exports){
+},{"./_unescape":33,"./is-symbol":69}],86:[function(require,module,exports){
 'use strict';
 var ERR = require('./constants').ERR;
 module.exports = function toObject(value) {
@@ -2841,7 +2822,7 @@ module.exports = function toObject(value) {
     }
     return Object(value);
 };
-},{"./constants":47}],86:[function(require,module,exports){
+},{"./constants":48}],87:[function(require,module,exports){
 'use strict';
 var create = require('./create');
 var toString = {}.toString, types = create(null);
@@ -2860,7 +2841,7 @@ module.exports = function getType(value) {
     }
     return types[tag] = tag.slice(8, -1).toLowerCase();
 };
-},{"./create":48}],87:[function(require,module,exports){
+},{"./create":49}],88:[function(require,module,exports){
 'use strict';
 var color = require('./colors/RGBA');
 var type = require('./constants').RENDERER_2D;
@@ -2877,7 +2858,7 @@ var options = {
         type: type
     };
 module.exports = options;
-},{"./colors/RGBA":11,"./constants":15}],88:[function(require,module,exports){
+},{"./colors/RGBA":11,"./constants":15}],89:[function(require,module,exports){
 'use strict';
 var report, reported;
 if (typeof console !== 'undefined' && console.warn) {
@@ -2893,10 +2874,10 @@ if (typeof console !== 'undefined' && console.warn) {
     report = require('peako/noop');
 }
 module.exports = report;
-},{"peako/noop":75}],89:[function(require,module,exports){
+},{"peako/noop":76}],90:[function(require,module,exports){
 'use strict';
 module.exports = { degress: false };
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 'use strict';
 var shaders = {
         basic: {
@@ -2909,12 +2890,12 @@ var shaders = {
         }
     };
 module.exports = shaders;
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict';
 module.exports = function dist(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 };
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 'use strict';
 var clamp = require('peako/clamp');
 module.exports = function map(value, currentStart, currentStop, newStart, newStop, doLimit) {
@@ -2927,7 +2908,7 @@ module.exports = function map(value, currentStart, currentStop, newStart, newSto
     }
     return result;
 };
-},{"peako/clamp":45}],93:[function(require,module,exports){
+},{"peako/clamp":46}],94:[function(require,module,exports){
 'use strict';
 var v6 = {
         AbstractRenderer: require('./AbstractRenderer'),
@@ -2956,4 +2937,4 @@ if (typeof self !== 'undefined') {
     self.v6 = v6;
 }
 module.exports = v6;
-},{"./AbstractRenderer":1,"./Camera":2,"./CompoundedImage":3,"./Image":4,"./Renderer2D":5,"./RendererGL":6,"./ShaderProgram":7,"./Ticker":8,"./Transform":9,"./colors/HSLA":10,"./colors/RGBA":11,"./colors/color":12,"./constants":15,"./create_renderer":16,"./math/Vector2D":27,"./math/Vector3D":28,"./options":87,"./settings":89,"./shaders":90,"./utils/dist":91,"./utils/map":92}]},{},[93]);
+},{"./AbstractRenderer":1,"./Camera":2,"./CompoundedImage":3,"./Image":4,"./Renderer2D":5,"./RendererGL":6,"./ShaderProgram":7,"./Ticker":8,"./Transform":9,"./colors/HSLA":10,"./colors/RGBA":11,"./colors/color":12,"./constants":15,"./create_renderer":16,"./math/Vector2D":28,"./math/Vector3D":29,"./options":88,"./settings":90,"./shaders":91,"./utils/dist":92,"./utils/map":93}]},{},[94]);

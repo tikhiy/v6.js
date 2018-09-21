@@ -2,7 +2,7 @@
 
 var defaults  = require( 'peako/defaults' );
 var constants = require( './constants' );
-var Renderer  = require( './Renderer' );
+var AbstractRenderer  = require( './AbstractRenderer' );
 var _options  = require( './options' );
 var align     = require( './internal/align' );
 
@@ -10,7 +10,7 @@ function Renderer2D ( options ) {
 
   options = defaults( _options, options );
 
-  Renderer.call( this, options, constants.MODE_2D );
+  AbstractRenderer.call( this, options, constants.RENDERER_2D );
 
   this.smooth( this.settings.smooth );
 
@@ -20,7 +20,8 @@ function Renderer2D ( options ) {
 
 }
 
-Renderer2D.prototype = Object.create( Renderer.prototype );
+Renderer2D.prototype = Object.create( AbstractRenderer.prototype );
+Renderer2D.prototype.constructor = Renderer2D;
 
 Renderer2D.prototype.smooth = ( function () {
   var names = [
@@ -234,7 +235,5 @@ Renderer2D.prototype._stroke = function ( close ) {
 
   context.stroke();
 };
-
-Renderer2D.prototype.constructor = Renderer2D;
 
 module.exports = Renderer2D;

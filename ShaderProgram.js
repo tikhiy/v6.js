@@ -1,52 +1,170 @@
 'use strict';
 
-var _createProgram = require( './internal/_create-program' ),
-    _createShader  = require( './internal/_create-shader' );
+var createProgram = require( './internal/create_program' );
+var createShader  = require( './internal/create_shader' );
 
-function ShaderProgram ( vert, frag, gl ) {
-  if ( typeof vert === 'string' ) {
-    vert = _createShader( vert, gl.VERTEX_SHADER, gl );
-  }
+/**
+ * @interface IUniform
+ */
 
-  if ( typeof frag === 'string' ) {
-    frag = _createShader( frag, gl.FRAGMENT_SHADER, gl );
-  }
+/**
+ * @interface IAttribute
+ */
 
-  this._program   = _createProgram( vert, frag, gl );
-  this._gl        = gl;
-  this.attributes = attributes( gl, this._program );
-  this.uniforms   = uniforms( gl, this._program );
+/**
+ * Высоко-уровневый интерфейс для WebGLProgram.
+ * @constructor v6.ShaderProgram
+ * @param {IShaderSources}        sources Шейдеры для программы.
+ * @param {WebGLRenderingContext} gl      WebGL контекст.
+ * @example
+ * var ShaderProgram = require( 'v6.js/ShaderProgram' );
+ * var shaders       = require( 'v6.js/shaders' );
+ * var gl      = canvas.getContext( 'webgl' );
+ * var program = new ShaderProgram( shaders.basic, gl );
+ */
+function ShaderProgram ( sources, gl ) {
+  var vert = createShader( sources.vert, gl.VERTEX_SHADER, gl );
+  var frag = createShader( sources.frag, gl.FRAGMENT_SHADER, gl );
+
+  /**
+   * WebGL программа созданная с помощью {@link createProgram}.
+   * @private
+   * @member {WebGLProgram} v6.ShaderProgram#_program
+   */
+  this._program = createProgram( vert, frag, gl );
+
+  /**
+   * WebGL контекст.
+   * @private
+   * @member {WebGLRenderingContext} v6.ShaderProgram#_gl
+   */
+  this._gl = gl;
+
+  /**
+   * @private
+   * @member {object} v6.ShaderProgram#_uniforms
+   */
+  this._uniforms = {};
+
+  /**
+   * @private
+   * @member {object} v6.ShaderProgram#_attrs
+   */
+  this._attrs = {};
+
+  /**
+   * @private
+   * @member {number} v6.ShaderProgram#_uniformIndex
+   */
+  this._uniformIndex = gl.getProgramParameter( this._program, gl.ACTIVE_UNIFORMS );
+
+  /**
+   * @private
+   * @member {number} v6.ShaderProgram#_attrIndex
+   */
+  this._attrIndex = gl.getProgramParameter( this._program, gl.ACTIVE_ATTRIBUTES );
 }
 
 ShaderProgram.prototype = {
+  /**
+   * @method v6.ShaderProgram#use
+   * @chainable
+   * @example
+   * program.use();
+   */
   use: function use () {
-
     this._gl.useProgram( this._program );
-
     return this;
-
   },
 
   pointer: function pointer ( name, size, type, normalized, stride, offset ) {
-
-    var location = this.attributes[ name ].location;
-
-    var _gl = this._gl;
-
-    _gl.enableVertexAttribArray( location );
-    _gl.vertexAttribPointer( location, size, type, normalized, stride, offset );
-
+    var location = this.getAttr( name ).location;
+    this._gl.enableVertexAttribArray( location );
+    this._gl.vertexAttribPointer( location, size, type, normalized, stride, offset );
     return this;
+  },
 
+  /**
+   * @method v6.ShaderProgram#getUniform
+   * @param  {string}   name Название uniform.
+   * @return {IUniform}      Возвращает данные о uniform.
+   * @example
+   * var { location } = program.getUniform( 'ucolor' );
+   */
+  getUniform: function getUniform ( name ) {
+    var uniform = this._uniforms[ name ];
+    var info, index;
+
+    if ( uniform ) {
+      return uniform;
+    }
+
+    while ( --this._uniformIndex >= 0 ) {
+      info = this._gl.getActiveUniform( this._program, this._uniformIndex );
+
+      uniform = {
+        location: this._gl.getUniformLocation( this._program, info.name ),
+        size: info.size,
+        type: info.type
+      };
+
+      if ( info.size > 1 && ~ ( index = info.name.indexOf( '[' ) ) ) {
+        uniform.name = info.name.slice( 0, index );
+      } else {
+        uniform.name = info.name;
+      }
+
+      this._uniforms[ uniform.name ] = uniform;
+
+      if ( uniform.name === name ) {
+        return uniform;
+      }
+    }
+
+    throw ReferenceError( 'No "' + name + '" uniform found' );
+  },
+
+  /**
+   * @method v6.ShaderProgram#getAttr
+   * @param  {string}     name Название атрибута.
+   * @return {IAttribute}      Возвращает данные о атрибуте.
+   * @example
+   * var { location } = program.getAttr( 'apos' );
+   */
+  getAttr: function getAttr ( name ) {
+    var attr = this._attrs[ name ];
+
+    if ( attr ) {
+      return attr;
+    }
+
+    while ( --this._attrIndex >= 0 ) {
+      attr          = this._gl.getActiveAttrib( this._program, this._attrIndex );
+      attr.location = this._gl.getAttribLocation( this._program, name );
+      this._attrs[ name ] = attr;
+
+      if ( attr.name === name ) {
+        return attr;
+      }
+    }
+
+    throw ReferenceError( 'No "' + name + '" attribute found' );
   },
 
   constructor: ShaderProgram
 };
 
-ShaderProgram.prototype.uniform = function uniform ( name, value ) {
+/**
+ * @method v6.ShaderProgram#setUniform
+ * @param  {string} name  Name of the uniform.
+ * @param  {any}    value Value you want to set to the uniform.
+ * @chainable
+ * @example
+ * program.setUniform( 'ucolor', [ 255, 0, 0, 1 ] );
+ */
+ShaderProgram.prototype.setUniform = function setUniform ( name, value ) {
   var uniform = this.uniforms[ name ];
-
-  var _gl = this._gl;
+  var _gl     = this._gl;
 
   switch ( uniform.type ) {
     case _gl.BOOL:
@@ -56,7 +174,6 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
       } else {
         _gl.uniform1i( uniform.location, value );
       }
-
       break;
     case _gl.FLOAT:
       if ( uniform.size > 1 ) {
@@ -64,7 +181,6 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
       } else {
         _gl.uniform1f( uniform.location, value );
       }
-
       break;
     case _gl.FLOAT_MAT2:
       _gl.uniformMatrix2fv( uniform.location, false, value );
@@ -81,7 +197,6 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
       } else {
         _gl.uniform2f( uniform.location, value[ 0 ], value[ 1 ] );
       }
-
       break;
     case _gl.FLOAT_VEC3:
       if ( uniform.size > 1 ) {
@@ -89,7 +204,6 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
       } else {
         _gl.uniform3f( uniform.location, value[ 0 ], value[ 1 ], value[ 2 ] );
       }
-
       break;
     case _gl.FLOAT_VEC4:
       if ( uniform.size > 1 ) {
@@ -97,7 +211,6 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
       } else {
         _gl.uniform4f( uniform.location, value[ 0 ], value[ 1 ], value[ 2 ], value[ 3 ] );
       }
-
       break;
     default:
       throw TypeError( 'The uniform type is not supported' );
@@ -105,58 +218,5 @@ ShaderProgram.prototype.uniform = function uniform ( name, value ) {
 
   return this;
 };
-
-function attributes ( gl, program ) {
-
-  var i = gl.getProgramParameter( program, gl.ACTIVE_ATTRIBUTES ) - 1;
-
-  var attributes = {};
-
-  var attribute;
-
-  for ( ; i >= 0; --i ) {
-
-    attribute          = gl.getActiveAttrib( program, i );
-    attribute.location = gl.getAttribLocation( program, attribute.name );
-
-    attributes[ attribute.name ] = attribute;
-
-  }
-
-  return attributes;
-
-}
-
-function uniforms ( gl, program ) {
-
-  var i = gl.getProgramParameter( program, gl.ACTIVE_UNIFORMS ) - 1;
-
-  var uniforms = {};
-
-  var uniform, index, info;
-
-  for ( ; i >= 0; --i ) {
-
-    info = gl.getActiveUniform( program, i );
-
-    uniform = {
-      location: gl.getUniformLocation( program, info.name ),
-      size: info.size,
-      type: info.type
-    };
-
-    if ( info.size > 1 && ~ ( index = info.name.indexOf( '[0]' ) ) ) {
-      uniform.name = info.name.slice( 0, index );
-    } else {
-      uniform.name = info.name;
-    }
-
-    uniforms[ uniform.name ] = uniform;
-
-  }
-
-  return uniforms;
-
-}
 
 module.exports = ShaderProgram;

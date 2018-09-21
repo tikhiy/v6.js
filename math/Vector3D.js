@@ -3,6 +3,9 @@
 var Vector2D = require( './Vector2D' );
 var settings = require( '../settings' );
 
+/**
+ * @constructor v6.Vector3D
+ */
 function Vector3D ( x, y, z ) {
   this.set( x, y, z );
 }

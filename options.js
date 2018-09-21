@@ -1,62 +1,33 @@
 'use strict';
 
+var color = require( './colors/RGBA' );
+var type  = require( './constants' ).RENDERER_2D;
+
 /**
- * A default options to be used in the v6.renderer( options ) function.
+ * Опции по умолчанию для создания {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, или {@link v6.createRenderer}.
+ * @member {object} v6.options
+ * @property {object}   [settings]                      Настройки рендерера по умолчанию.
+ * @property {object}   [settings.color=v6.RGBA]        {@link v6.RGBA} или {@link v6.HSLA}.
+ * @property {number}   [settings.scale=1]              Плотность пикселей рендерера, например: `devicePixelRatio`.
+ * @property {boolean}  [antialias=true]                Пока не сделано.
+ * @property {boolean}  [blending=true]                 Пока не сделано.
+ * @property {boolean}  [degrees=false]                 Использовать градусы вместо радианов.
+ * @property {boolean}  [append=true]                   Автоматически добавить `canvas` в DOM.
+ * @property {boolean}  [alpha=true]                    Использовать прозрачный (вместо черного) контекст.
+ * @property {constant} [type=v6.constants.RENDERER_2D] Тип контекста (2D, GL, AUTO).
  */
-module.exports = {
-
-  /**
-   * A renderer's settings, all the values can be changed after creating the
-   * renderer.
-   */
+var options = {
   settings: {
-
-    /**
-     * A color mode of a renderer, use in renderer.fill( r, g, b, a ) or
-     * renderer.fill( h, s, l, a ).
-     */
-    color: require( './colors/RGBA' ),
-
-    /**
-     * The imageSmoothingEnabled property of a renderer's context.
-     */
-    smooth: false,
-
-    /**
-     * Pixel density of a renderer's context.
-     */
+    color: color,
     scale: 1
   },
 
-  /**
-   * Not implemented.
-   */
   antialias: true,
-
-  /**
-   * Not completed.
-   */
-  blending: true,
-
-  /**
-   * Do use degrees instead of radians in the Vectors.
-   */
-  degrees: false,
-
-  /**
-   * Do append a renderer's canvas to a page after.
-   */
-  append: true,
-
-  /**
-   * Use a transparent background for a renderer's context.
-   * https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
-   */
-  alpha: true,
-
-  /**
-   * A mode of a renderer's context, (MODE_2D, MODE_GL, MODE_AUTO). When the
-   * mode is MODE_AUTO for mobile platforms 'webgl' instead of '2d' to be used.
-   */
-  mode: require( './constants' ).MODE_2D
+  blending:  true,
+  degrees:   false,
+  append:    true,
+  alpha:     true,
+  type:      type
 };
+
+module.exports = options;

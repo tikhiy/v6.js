@@ -20,10 +20,6 @@ var regexps = {
 };
 
 /**
- * @module "v6.js"
- */
-
-/**
  * @private
  * @method parse
  * @param  {string}                                  string
@@ -42,14 +38,12 @@ function parse ( string ) {
   if ( ! cache ) {
     if ( ( cache = colors[ string ] ) ) {
       cache = new ColorData( parseHex( cache ), RGBA );
-    } else if ( ( cache = regexps.hex.exec( string ) ) ) {
+    } else if ( ( cache = regexps.hex.exec( string ) ) || ( cache = regexps.hex3.exec( string ) ) ) {
       cache = new ColorData( parseHex( formatHex( cache ) ), RGBA );
     } else if ( ( cache = regexps.rgb.exec( string ) ) ) {
       cache = new ColorData( compactMatch( cache ), RGBA );
     } else if ( ( cache = regexps.hsl.exec( string ) ) ) {
       cache = new ColorData( compactMatch( cache ), HSLA );
-    } else if ( ( cache = regexps.hex3.exec( string ) ) ) {
-      cache = new ColorData( parseHex( formatHex( cache, true ) ), RGBA );
     } else {
       throw SyntaxError( string + ' is not a valid syntax' );
     }
@@ -67,14 +61,14 @@ function parse ( string ) {
  * @param  {boolean}        shortSyntax
  * @return {string}
  * @example
- * formatHex( [ '#000000ff', '000000', 'ff' ] );       // -> '000000ff'
- * formatHex( [ '#0007', '0', '0', '0', '7' ], true ); // -> '00000077'
- * formatHex( [ '#000', '0', '0', '0', null ], true ); // -> '000000ff'
+ * formatHex( [ '#000000ff', '000000', 'ff' ] ); // -> '000000ff'
+ * formatHex( [ '#0007', '0', '0', '0', '7' ] ); // -> '00000077'
+ * formatHex( [ '#000', '0', '0', '0', null ] ); // -> '000000ff'
  */
-function formatHex ( match, shortSyntax ) {
+function formatHex ( match ) {
   var r, g, b, a;
 
-  if ( ! shortSyntax ) {
+  if ( match.length === 3 ) {
     return match[ 1 ] + ( match[ 2 ] || 'ff' );
   }
 
@@ -115,9 +109,6 @@ function parseHex ( hex ) {
  * @method compactMatch
  * @param  {array<string?>} match
  * @return {array<number>}
- * @example
- * compactMatch( [ 'hsl( 0, 0%, 0% )', '0', '0', '0', null, null, null, null ] );  // -> [ '0', '0', '0' ]
- * compactMatch( [ 'rgba( 0, 0, 0, 0 )', null, null, null, '0', '0', '0', '0' ] ); // -> [ '0', '0', '0', '0' ]
  */
 function compactMatch ( match ) {
   if ( match[ 7 ] ) {

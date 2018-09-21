@@ -1,5 +1,5 @@
 {
-  "predef": [ "self" ],
+  "predef": [ "self", "describe", "it" ],
   "browserify": true,
   "esversion": 5,
   "browser": true,

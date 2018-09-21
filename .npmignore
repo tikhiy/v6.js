@@ -1,7 +1,7 @@
-dist
 docs
+test
+.gitignore
 .jshintrc
 .jshintignore
-.gitignore
 .jsdoc.js
 Makefile

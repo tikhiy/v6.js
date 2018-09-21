@@ -1,202 +1,223 @@
 'use strict';
 
-var settings = require( '../settings' );
+var settings       = require( '../settings' );
+var AbstractVector = require( './AbstractVector' );
 
+/**
+ * 2D вектор.
+ * @constructor v6.Vector2D
+ * @extends v6.AbstractVector
+ * @param {number} [x=0] X координата вектора.
+ * @param {number} [y=0] Y координата вектора.
+ * @example
+ * var Vector2D = require( 'v6.js/math/Vector2D' );
+ * var position = new Vector2D( 4, 2 );
+ */
 function Vector2D ( x, y ) {
+  /**
+   * X координата вектора.
+   * @member {number} v6.Vector2D#x
+   * @example
+   * var x = new Vector2D( 4, 2 ).x; // -> 4
+   */
+
+  /**
+   * Y координата вектора.
+   * @member {number} v6.Vector2D#y
+   * @example
+   * var y = new Vector2D( 4, 2 ).y; // -> 2
+   */
+
   this.set( x, y );
 }
 
-Vector2D.prototype = {
-  set: function set ( x, y ) {
-
-    this.x = x || 0;
-    this.y = y || 0;
-
-    return this;
-
-  },
-
-  setVector: function setVector ( vector ) {
-    return this.set( vector.x, vector.y );
-  },
-
-  lerp: function ( x, y, value ) {
-
-    this.x += ( x - this.x ) * value || 0;
-    this.y += ( y - this.y ) * value || 0;
-
-    return this;
-
-  },
-
-  lerpVector: function lerpVector ( vector, value ) {
-
-    var x = vector.x || 0,
-        y = vector.y || 0;
-
-    return this.lerp( x, y, value );
-
-  },
-
-  add: function add ( x, y ) {
-
-    this.x += x || 0;
-    this.y += y || 0;
-
-    return this;
-
-  },
-
-  addVector: function addVector ( vector ) {
-    return this.add( vector.x, vector.y );
-  },
-
-  sub: function sub ( x, y ) {
-
-    this.x -= x || 0;
-    this.y -= y || 0;
-
-    return this;
-
-  },
-
-  subVector: function subVector ( vector ) {
-    return this.sub( vector.x, vector.y );
-  },
-
-  mul: function mul ( value ) {
-
-    this.x *= value || 0;
-    this.y *= value || 0;
-
-    return this;
-
-  },
-
-  mulVector: function mulVector ( vector ) {
-
-    this.x *= vector.x || 0;
-    this.y *= vector.y || 0;
-
-    return this;
-
-  },
-
-  div: function div ( value ) {
-
-    this.x /= value || 0;
-    this.y /= value || 0;
-
-    return this;
-
-  },
-
-  divVector: function divVector ( vector ) {
-
-    this.x /= vector.x || 0;
-    this.y /= vector.y || 0;
-
-    return this;
-
-  },
-
-  angle: function angle () {
-    if ( settings.degrees ) {
-      return Math.atan2( this.y, this.x ) * 180 / Math.PI;
-    }
-
-    return Math.atan2( this.y, this.x );
-  },
-
-  mag: function mag () {
-    return Math.sqrt( this.magSquare() );
-  },
-
-  magSquare: function magSquare () {
-    return this.x * this.x + this.y * this.y;
-  },
-
-  setMag: function setMag ( value ) {
-    return this.normalize().mul( value );
-  },
-
-  normalize: function normalize () {
-    var mag = this.mag();
-
-    if ( mag && mag !== 1 ) {
-      this.div( mag );
-    }
-
-    return this;
-  },
-
-  dot: function dot ( x, y ) {
-    return this.x * ( x || 0 ) + this.y * ( y || 0 );
-  },
-
-  dotVector: function dotVector ( vector ) {
-    return this.x * ( vector.x || 0 ) + this.y * ( vector.y || 0 );
-  },
-
-  clone: function clone () {
-    return new Vector2D( this.x, this.y );
-  },
-
-  dist: function dist ( vector ) {
-    return dist( this.x, this.y, vector.x, vector.y );
-  },
-
-  limit: function limit ( value ) {
-    var mag = this.magSquare();
-
-    if ( mag > value * value ) {
-      this.div( Math.sqrt( mag ) ).mul( value );
-    }
-
-    return this;
-  },
-
-  cross: function cross ( vector ) {
-    return Vector2D.cross( this, vector );
-  },
-
-  toString: function toString () {
-    return 'vec2(' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ')';
-  },
-
-  rotate: function rotate ( angle ) {
-    var x = this.x,
-        y = this.y;
-
-    var c, s;
-
-    if ( settings.degrees ) {
-      angle *= Math.PI / 180;
-    }
-
-    c = Math.cos( angle );
-    s = Math.sin( angle );
-
-    this.x = x * c - y * s;
-    this.y = x * s + y * c;
-
-    return this;
-  },
-
-  setAngle: function setAngle ( angle ) {
-    var mag = this.mag();
-
-    if ( settings.degrees ) {
-      angle *= Math.PI / 180;
-    }
-
-    this.x = mag * Math.cos( angle );
-    this.y = mag * Math.sin( angle );
-
-    return this;
-  },
-
-  constructor: Vector2D
+Vector2D.prototype = Object.create( AbstractVector.prototype );
+Vector2D.prototype.constructor = Vector2D;
+
+/**
+ * Устанавливает X и Y координаты.
+ * @method v6.Vector2D#set
+ * @param {number} [x=0] Новая X координата.
+ * @param {number} [y=0] Новая Y координата.
+ * @chainable
+ */
+Vector2D.prototype.set = function set ( x, y ) {
+  this.x = x || 0;
+  this.y = y || 0;
+  return this;
+};
+
+/**
+ * Добавляет к координатам X и Y соответствующие параметры.
+ * @method v6.Vector2D#add
+ * @param {number} [x=0] Число, которое должно быть добавлено.
+ * @param {number} [y=0] Число, которое должно быть добавлено.
+ * @chainable
+ */
+Vector2D.prototype.add = function add ( x, y ) {
+  this.x += x || 0;
+  this.y += y || 0;
+  return this;
+};
+
+/**
+ * Вычитает из координат X и Y соответствующие параметры.
+ * @method v6.Vector2D#sub
+ * @param {number} [x=0] Число, которое должно быть вычтено.
+ * @param {number} [y=0] Число, которое должно быть вычтено.
+ * @chainable
+ */
+Vector2D.prototype.sub = function sub ( x, y ) {
+  this.x -= x || 0;
+  this.y -= y || 0;
+  return this;
+};
+
+/**
+ * Умножает X и Y координаты на `value`.
+ * @method v6.Vector2D#mul
+ * @param {number} value Число, на которое надо умножить.
+ * @chainable
+ */
+Vector2D.prototype.mul = function mul ( value ) {
+  this.x *= value;
+  this.y *= value;
+  return this;
+};
+
+/**
+ * Делит X и Y координаты на `value`.
+ * @method v6.Vector2D#div
+ * @param {number} value Число, на которое надо разделить.
+ * @chainable
+ */
+Vector2D.prototype.div = function div ( value ) {
+  this.x /= value;
+  this.y /= value;
+  return this;
+};
+
+/**
+ * @method v6.Vector2D#dot
+ * @param  {number} [x=0]
+ * @param  {number} [y=0]
+ * @return {number}
+ */
+Vector2D.prototype.dot = function dot ( x, y ) {
+  return this.x * ( x || 0 ) + this.y * ( y || 0 );
+};
+
+/**
+ * Интерполирует X и Y координаты между соответствующими параметрами.
+ * @method v6.Vector2D#lerp
+ * @param {number} x
+ * @param {number} y
+ * @param {number} value
+ * @chainable
+ */
+Vector2D.prototype.lerp = function ( x, y, value ) {
+  this.x += ( x - this.x ) * value || 0;
+  this.y += ( y - this.y ) * value || 0;
+  return this;
+};
+
+/**
+ * Копирует другой вектор.
+ * @method v6.Vector2D#setVector
+ * @param {v6.AbstractVector} vector Вектор, который надо скопировать.
+ * @chainable
+ */
+Vector2D.prototype.setVector = function setVector ( vector ) {
+  return this.set( vector.x, vector.y );
+};
+
+/**
+ * Добавляет другой вектор.
+ * @method v6.Vector2D#addVector
+ * @param {v6.AbstractVector} vector Вектор, который надо добавить.
+ * @chainable
+ */
+Vector2D.prototype.addVector = function addVector ( vector ) {
+  return this.add( vector.x, vector.y );
+};
+
+/**
+ * Вычитает другой вектор.
+ * @method v6.Vector2D#subVector
+ * @param {v6.AbstractVector} vector Вектор, который надо вычесть.
+ * @chainable
+ */
+Vector2D.prototype.subVector = function subVector ( vector ) {
+  return this.sub( vector.x, vector.y );
+};
+
+/**
+ * Умножает X и Y координаты на X и Y другого вектора.
+ * @method v6.Vector2D#mulVector
+ * @param {v6.AbstractVector} vector Вектор для умножения.
+ * @chainable
+ */
+Vector2D.prototype.mulVector = function mulVector ( vector ) {
+  return this.mul( vector.x, vector.y );
+};
+
+/**
+ * Делит X и Y координаты на X и Y другого вектора.
+ * @method v6.Vector2D#divVector
+ * @param {v6.AbstractVector} vector Вектор, на который надо делить.
+ * @chainable
+ */
+Vector2D.prototype.divVector = function divVector ( vector ) {
+  return this.div( vector.x, vector.y );
+};
+
+/**
+ * @method v6.Vector2D#dotVector
+ * @param  {v6.AbstractVector} vector
+ * @return {number}
+ */
+Vector2D.prototype.dotVector = function dotVector ( vector ) {
+  return this.dot( vector.x, vector.y );
+};
+
+/**
+ * Интерполирует X и Y координаты между другим вектором.
+ * @method v6.Vector2D#lerpVector
+ * @param {v6.AbstractVector} vector
+ * @param {number}            value
+ * @chainable
+ */
+Vector2D.prototype.lerpVector = function lerpVector ( vector, value ) {
+  return this.lerp( vector.x, vector.y, value );
+};
+
+/**
+ * @method v6.Vector2D#magSquare
+ * @return {number}
+ */
+Vector2D.prototype.magSquare = function magSquare () {
+  return this.x * this.x + this.y * this.y;
+};
+
+/**
+ * Создает клон вектора.
+ * @method v6.Vector2D#clone
+ * @return {v6.Vector2D}
+ */
+Vector2D.prototype.clone = function clone () {
+  return new Vector2D( this.x, this.y );
+};
+
+Vector2D.prototype.dist = function dist ( vector ) {
+  return dist( this.x, this.y, vector.x, vector.y );
+};
+
+Vector2D.prototype.cross = function cross ( vector ) {
+  return Vector2D.cross( this, vector );
+};
+
+Vector2D.prototype.toString = function toString () {
+  return 'Vector2D { ' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ' }';
 };
 
 [

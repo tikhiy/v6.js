@@ -2,17 +2,13 @@
 
 module.exports = {
 
-  // 'v6.renderer( options )'
+  // Эти константы используются в `v6.renderer(options)` как `options.mode`.
 
-  MODE_AUTO: 1,
-  MODE_GL:   2,
-  MODE_2D:   3,
+  RENDERER_AUTO: 1,
+  RENDERER_GL:   2,
+  RENDERER_2D:   3,
 
-  // 'v6.ticker( update, render, context )'
-
-  SELF_CONTEXT: 6,
-
-  // Align constants
+  // Эти константы используются для выравнивания, например в `AbstractRenderer#rectAlign(align)` как `align`.
 
   BOTTOM: 7,
   RIGHT:  8,

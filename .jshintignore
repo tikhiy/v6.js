@@ -1,5 +1,6 @@
-dist
-docs
+jsdoc_template
 node_modules
+.temp
+docs
+dist
 v6-old.js
-Font.js

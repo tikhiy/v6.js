@@ -163,7 +163,7 @@ ShaderProgram.prototype = {
  * program.setUniform( 'ucolor', [ 255, 0, 0, 1 ] );
  */
 ShaderProgram.prototype.setUniform = function setUniform ( name, value ) {
-  var uniform = this.uniforms[ name ];
+  var uniform = this.getUniform( name );
   var _gl     = this._gl;
 
   switch ( uniform.type ) {

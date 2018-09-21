@@ -32,13 +32,9 @@ describe( "require('v6.js/internal/align')", function ()
 
   describe( 'bad use', function ()
   {
-    it( 'throws', function ( next )
+    it( 'throws', function ()
     {
-      try {
-        align();
-      } catch ( error ) {
-        next();
-      }
+      expect( align ).throw();
     } );
   } );
 } );

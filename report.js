@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals console */
+
 var report, reported;
 
 if ( typeof console !== 'undefined' && console.warn ) {

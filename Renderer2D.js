@@ -194,7 +194,7 @@ Renderer2D.prototype._stroke = function ( close ) {
 
   context.strokeStyle = this._strokeColor;
 
-  if ( ( context.lineWidth = this._lineW ) <= 1 ) {
+  if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
     context.stroke();
   }
 

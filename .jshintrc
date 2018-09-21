@@ -1,5 +1,5 @@
 {
-  "predef": [ "self", "describe", "it" ],
+  "predef": [ "self", "describe", "it", "expect", "should" ],
   "browserify": true,
   "esversion": 5,
   "browser": true,
@@ -12,6 +12,5 @@
   "nonew": true,
   "noarg": true,
   "curly": true,
-  "immed": true,
-  "node": true
+  "immed": true
 }

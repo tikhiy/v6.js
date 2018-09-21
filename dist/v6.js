@@ -1442,7 +1442,9 @@ var constants = require('../constants');
 if (typeof platform === 'undefined') {
     var platform;
     try {
-        platform = require('platform');
+        platform = function () {
+            throw new Error('Cannot find module \'platform\' from \'/home/silent/git/lib/v6.js/internal\'');
+        }();
     } catch (error) {
     }
 }
@@ -1460,7 +1462,7 @@ function getRendererType() {
     return constants.RENDERER_2D;
 }
 module.exports = once(getRendererType);
-},{"../constants":15,"peako/once":78,"platform":"platform"}],23:[function(require,module,exports){
+},{"../constants":15,"peako/once":78}],23:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 function getWebGL() {

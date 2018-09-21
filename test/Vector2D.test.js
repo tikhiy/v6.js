@@ -2,7 +2,7 @@
 
 var Vector2D = require( '../math/Vector2D' );
 
-describe( 'math/Vector2D', function () {
+describe( 'Vector2D', function () {
   it( 'works', function () {
     Vector2D.should.be.a( 'function' );
   } );

@@ -173,7 +173,7 @@ Renderer2D.prototype.vertices = function vertices ( verts, count, _mode, _sx, _s
     this._fill();
   }
 
-  if ( this._doStroke && this._lineW > 0 ) {
+  if ( this._doStroke && this._lineWidth > 0 ) {
     this._stroke( true );
   }
 

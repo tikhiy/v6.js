@@ -216,7 +216,7 @@ AbstractRenderer.prototype = {
   },
 
   lineWidth: function lineWidth ( number ) {
-    this._lineW = number;
+    this._lineWidth = number;
     return this;
   },
 

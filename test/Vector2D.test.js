@@ -57,7 +57,7 @@ describe( 'Vector2D', function () {
 
       vector.mag()
         .should
-          .equal( 1 );
+          .closeTo( 1, 1e-8 );
     } );
   } );
 } );

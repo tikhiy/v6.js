@@ -1,14 +1,18 @@
 'use strict';
+
 var isObjectLike = require( 'peako/is-object-like' );
-var getElementW = require( 'peako/get-element-w' );
-var getElementH = require( 'peako/get-element-h' );
+var getElementW  = require( 'peako/get-element-w' );
+var getElementH  = require( 'peako/get-element-h' );
+
 var setDefaultDrawingSettings = require( './internal/set_default_drawing_settings' );
-var getWebGL = require( './internal/get_webgl' );
-var copyDrawingSettings = require( './internal/copy_drawing_settings' );
-var createPolygon = require( './internal/create_polygon' );
-var polygons = require( './internal/polygons' );
+var getWebGL                  = require( './internal/get_webgl' );
+var copyDrawingSettings       = require( './internal/copy_drawing_settings' );
+var createPolygon             = require( './internal/create_polygon' );
+var polygons                  = require( './internal/polygons' );
+
 var constants = require( './constants' );
-var options = require( './options' );
+var options   = require( './options' );
+
 /**
  * Абстрактный класс AbstractRenderer - это основа для {@link v6.RendererGL} и {@link v6.Renderer2D}.
  * @abstract
@@ -18,18 +22,22 @@ var options = require( './options' );
  */
 function AbstractRenderer ( options, type ) {
   var context;
+
   /**
    * @member {HTMLCanvasElement} v6.AbstractRenderer#canvas
    */
+
   if ( options.canvas ) {
     this.canvas = options.canvas;
   } else {
     this.canvas = document.createElement( 'canvas' );
     this.canvas.innerHTML = 'Unable to run this application.';
   }
+
   if ( typeof options.append === 'undefined' || options.append ) {
     this.append();
   }
+
   if ( type === constants.RENDERER_2D ) {
     context = '2d';
   } else if ( type !== constants.RENDERER_GL ) {
@@ -37,43 +45,99 @@ function AbstractRenderer ( options, type ) {
   } else if ( ! ( context = getWebGL() ) ) {
     throw Error( 'Cannot get WebGL context. Try to use `v6.constants.RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
   }
+
   /**
    * @member {object} v6.AbstractRenderer#context
    */
   this.context = this.canvas.getContext( context, {
     alpha: options.alpha
   } );
+
   /**
    * @member {object} v6.AbstractRenderer#settings
    */
   this.settings = options.settings;
+
   /**
    * @member {constant} v6.AbstractRenderer#type
    */
   this.type = type;
+
   /**
    * @private
    * @member {Array.<object>} v6.AbstractRenderer#_stack
    */
   this._stack = [];
+
   /**
    * @private
    * @member {number} v6.AbstractRenderer#_stackIndex
    */
   this._stackIndex = -1;
+
   /**
    * Выглядит так: `[ x1, y1, x2, y2 ]`.
    * @private
    * @member {Array.<number>} v6.AbstractRenderer#_vertices
    */
   this._vertices = [];
+
   if ( 'w' in options || 'h' in options ) {
     this.resize( options.w, options.h );
   } else {
     this.resizeTo( window );
   }
+
   setDefaultDrawingSettings( this, this );
 }
+
+#define backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT )                              \
+  backgroundPositionX: function backgroundPositionX ( value, type ) {                                   \
+    if ( typeof type !== 'undefined' && type !== constants.VALUE ) {                                    \
+      if ( type === constants.CONSTANT ) {                                                              \
+        type = constants.PERCENTAGES;                                                                   \
+                                                                                                        \
+        if ( value === constants.LEFT ) {                                                               \
+          value = 0;                                                                                    \
+        } else if ( value === constants.CENTER ) {                                                      \
+          value = 0.5;                                                                                  \
+        } else if ( value === constants.RIGHT ) {                                                       \
+          value = 1;                                                                                    \
+        } else {                                                                                        \
+          throw Error( 'Got unknown value. The known are: ' + #LEFT + ', ' + #CENTER + ', ' + #RIGHT ); \
+        }                                                                                               \
+      }                                                                                                 \
+                                                                                                        \
+      if ( type === constants.PERCENTAGES ) {                                                           \
+        value *= this.w;                                                                                \
+      } else {                                                                                          \
+        throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' );         \
+      }                                                                                                 \
+    }                                                                                                   \
+                                                                                                        \
+    this._backgroundPositionX = value;                                                                  \
+    return this;                                                                                        \
+  }
+
+#define fill( fill, _doFill )                                          \
+  fill: function fill ( r, g, b, a ) {                                                    \
+    if ( typeof r === 'undefined' ) {                                                     \
+      this._##fill();                                                                       \
+    } else if ( typeof r !== 'boolean' ) {                                                \
+      if ( typeof r === 'string' || this._##fill##Color.type !== this.settings.color.type ) { \
+        this._##fill##Color = new this.settings.color( r, g, b, a );                          \
+      } else {                                                                            \
+        this._##fill##Color.set( r, g, b, a );                                                \
+      }                                                                                   \
+                                                                                          \
+      this._doFill = true;                                                                \
+    } else {                                                                              \
+      this._doFill = r;                                                                   \
+    }                                                                                     \
+                                                                                          \
+    return this;                                                                          \
+  }
+
 AbstractRenderer.prototype = {
   /**
    * Добавляет `canvas` в DOM.
@@ -86,6 +150,7 @@ AbstractRenderer.prototype = {
     ( parent || document.body ).appendChild( this.canvas );
     return this;
   },
+
   /**
    * Удаляет {@link v6.AbstractRenderer#canvas} из DOM.
    * @method v6.AbstractRenderer#destroy
@@ -95,44 +160,59 @@ AbstractRenderer.prototype = {
     this.canvas.parentNode.removeChild( this.canvas );
     return this;
   },
+
   push: function push () {
     if ( this._stack[ ++this._stackIndex ] ) {
       copyDrawingSettings( this._stack[ this._stackIndex ], this );
     } else {
       this._stack.push( setDefaultDrawingSettings( {}, this ) );
     }
+
     return this;
   },
+
   pop: function pop () {
+
     if ( this._stackIndex >= 0 ) {
       copyDrawingSettings( this, this._stack[ this._stackIndex-- ] );
     } else {
       setDefaultDrawingSettings( this, this );
     }
+
     return this;
+
   },
+
   /**
    * @param {number} w
    * @param {number} h
    */
   resize: function resize ( w, h ) {
+
     var canvas = this.canvas;
-    var scale = this.settings.scale;
-    canvas.style.width = w + 'px';
+    var scale  = this.settings.scale;
+
+    canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
-    canvas.width = this.w = Math.floor( w * scale );
+
+    canvas.width  = this.w = Math.floor( w * scale );
     canvas.height = this.h = Math.floor( h * scale );
+
     return this;
+
   },
+
   /**
    * @param {Element} element
    */
   resizeTo: function resizeTo ( element ) {
     return this.resize( getElementW( element ), getElementH( element ) );
   },
+
   rescale: function rescale () {
     return this.resizeTo( this.canvas );
   },
+
   /**
    * @param {number|string|v6.Image|v6.CompoundedImage} r R value (RGBA), H value (HSLA), an image, or a string color.
    * @param {number} g G value (RGBA), S value (HSLA).
@@ -143,39 +223,50 @@ AbstractRenderer.prototype = {
     if ( isObjectLike( r ) ) {
       return this.backgroundImage( r );
     }
+
     return this.backgroundColor( r, g, b, a );
   },
+
   _polygon: function _polygon ( x, y, rx, ry, n, a, degrees ) {
     var polygon = polygons[ n ];
     var matrix = this.matrix;
+
     if ( ! polygon ) {
       polygon = polygons[ n ] = createPolygon( n );
     }
+
     if ( degrees ) {
       a *= Math.PI / 180;
     }
+
     matrix.save();
     matrix.translate( x, y );
     matrix.rotate( a );
     this.vertices( polygon, polygon.length * 0.5, null, rx, ry );
     matrix.restore();
+
     return this;
   },
+
   polygon: function polygon ( x, y, r, n, a ) {
     if ( n % 1 ) {
       n = Math.floor( n * 100 ) * 0.01;
     }
+
     if ( typeof a !== 'undefined' ) {
       this._polygon( x, y, r, r, n, a, options.degrees );
     } else {
       this._polygon( x, y, r, r, n, -Math.PI * 0.5 );
     }
+
     return this;
   },
+
   lineWidth: function lineWidth ( number ) {
     this._lineWidth = number;
     return this;
   },
+
   /**
    * Устанавливает stroke color.
    * @method v6.AbstractRenderer#stroke
@@ -192,13 +283,15 @@ AbstractRenderer.prototype = {
    * renderer.stroke( 255, 0, 0, 0.5 );
    * renderer.noStroke().stroke( true );
    */
-  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r !== 'boolean' ) { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } else { this._doStroke = r; } return this; },
+  fill( stroke, _doStroke ),
+
   /**
    * Устанавливает fill color.
    * @method v6.AbstractRenderer#fill
    * @see {@link v6.AbstractRenderer#stroke}
    */
-  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r !== 'boolean' ) { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } else { this._doFill = r; } return this; },
+  fill( fill, _doFill ),
+
   /**
    * @method v6.AbstractRenderer#setTransform
    * @param {number|v6.Camera} m11
@@ -211,15 +304,18 @@ AbstractRenderer.prototype = {
    */
   setTransform: function setTransform ( m11, m12, m21, m22, dx, dy ) {
     var position, zoom;
+
     if ( typeof m11 === 'object' ) {
       position = m11.position;
-      zoom = m11.zoom;
+      zoom     = m11.zoom;
       this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
     } else {
       this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
     }
+
     return this;
   },
+
   /**
    * @method v6.AbstractRenderer#transform
    * @param {number} m11
@@ -234,6 +330,7 @@ AbstractRenderer.prototype = {
     this.matrix.transform( m11, m12, m21, m22, dx, dy );
     return this;
   },
+
   /**
    * @method v6.AbstractRenderer#backgroundPositionX
    * @param  {number}   value
@@ -244,7 +341,8 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionX( 0.5, constants.PERCENTAGES );
    * renderer.backgroundPositionX( renderer.w / 2 );
    */
-  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.VALUE ) { if ( type === constants.CONSTANT ) { type = constants.PERCENTAGES; if ( value === constants.LEFT ) { value = 0; } else if ( value === constants.CENTER ) { value = 0.5; } else if ( value === constants.RIGHT ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.PERCENTAGES ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT ),
+
   /**
    * @method v6.AbstractRenderer#backgroundPositionY
    * @param  {number}   value
@@ -255,9 +353,12 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionY( 0.5, constants.PERCENTAGES );
    * renderer.backgroundPositionY( renderer.h / 2 );
    */
-  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.VALUE ) { if ( type === constants.CONSTANT ) { type = constants.PERCENTAGES; if ( value === constants.TOP ) { value = 0; } else if ( value === constants.MIDDLE ) { value = 0.5; } else if ( value === constants.BOTTOM ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.PERCENTAGES ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionX( backgroundPositionY, h, TOP, MIDDLE, BOTTOM ),
+
   constructor: AbstractRenderer
+
 };
+
 [
   'transform',
   'translate',
@@ -267,6 +368,7 @@ AbstractRenderer.prototype = {
 ].forEach( function ( name ) {
   AbstractRenderer.prototype[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' ); // jshint ignore: line
 } );
+
 /**
  * @virtual
  * @method v6.AbstractRenderer#backgroundColor
@@ -276,6 +378,7 @@ AbstractRenderer.prototype = {
  * @param {number}                        a
  * @chainable
  */
+
 /**
  * @virtual
  * @method v6.AbstractRenderer#backgroundImage
@@ -286,4 +389,5 @@ AbstractRenderer.prototype = {
  * var image = new Image( './assets/background.jpg' );
  * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
  */
+
 module.exports = AbstractRenderer;

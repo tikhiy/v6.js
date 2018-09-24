@@ -115,11 +115,39 @@ AbstractRenderer.prototype = {
         return this;
     },
     lineWidth: function lineWidth(number) {
-        this._lineW = number;
+        this._lineWidth = number;
         return this;
     },
-    stroke: create$1('_stroke', '_strokeColor', '_doStroke'),
-    fill: create$1('_fill', '_fillColor', '_doFill'),
+    stroke: function stroke(r, g, b, a) {
+        if (typeof r === 'undefined') {
+            this._stroke();
+        } else if (typeof r !== 'boolean') {
+            if (typeof r === 'string' || this._strokeColor.type !== this.settings.color.type) {
+                this._strokeColor = new this.settings.color(r, g, b, a);
+            } else {
+                this._strokeColor.set(r, g, b, a);
+            }
+            this._doStroke = true;
+        } else {
+            this._doStroke = r;
+        }
+        return this;
+    },
+    fill: function fill(r, g, b, a) {
+        if (typeof r === 'undefined') {
+            this._fill();
+        } else if (typeof r !== 'boolean') {
+            if (typeof r === 'string' || this._fillColor.type !== this.settings.color.type) {
+                this._fillColor = new this.settings.color(r, g, b, a);
+            } else {
+                this._fillColor.set(r, g, b, a);
+            }
+            this._doFill = true;
+        } else {
+            this._doFill = r;
+        }
+        return this;
+    },
     setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
         var position, zoom;
         if (typeof m11 === 'object') {
@@ -135,25 +163,54 @@ AbstractRenderer.prototype = {
         this.matrix.transform(m11, m12, m21, m22, dx, dy);
         return this;
     },
+    backgroundPositionX: function backgroundPositionX(value, type) {
+        if (typeof type !== 'undefined' && type !== constants.VALUE) {
+            if (type === constants.CONSTANT) {
+                type = constants.PERCENTAGES;
+                if (value === constants.LEFT) {
+                    value = 0;
+                } else if (value === constants.CENTER) {
+                    value = 0.5;
+                } else if (value === constants.RIGHT) {
+                    value = 1;
+                } else {
+                    throw Error('Got unknown value. The known are: ' + 'LEFT' + ', ' + 'CENTER' + ', ' + 'RIGHT');
+                }
+            }
+            if (type === constants.PERCENTAGES) {
+                value *= this.w;
+            } else {
+                throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
+            }
+        }
+        this._backgroundPositionX = value;
+        return this;
+    },
+    backgroundPositionY: function backgroundPositionY(value, type) {
+        if (typeof type !== 'undefined' && type !== constants.VALUE) {
+            if (type === constants.CONSTANT) {
+                type = constants.PERCENTAGES;
+                if (value === constants.TOP) {
+                    value = 0;
+                } else if (value === constants.MIDDLE) {
+                    value = 0.5;
+                } else if (value === constants.BOTTOM) {
+                    value = 1;
+                } else {
+                    throw Error('Got unknown value. The known are: ' + 'TOP' + ', ' + 'MIDDLE' + ', ' + 'BOTTOM');
+                }
+            }
+            if (type === constants.PERCENTAGES) {
+                value *= this.h;
+            } else {
+                throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
+            }
+        }
+        this._backgroundPositionX = value;
+        return this;
+    },
     constructor: AbstractRenderer
 };
-function create$1(_$var, _$varcolor, _do$var) {
-    return function (r, g, b, a) {
-        if (typeof r === 'undefined') {
-            this[_$var]();
-        } else if (typeof r !== 'boolean') {
-            if (typeof r === 'string' || this[_$varcolor].type !== this.settings.color.type) {
-                this[_$varcolor] = new this.settings.color(r, g, b, a);
-            } else {
-                this[_$varcolor].set(r, g, b, a);
-            }
-            this[_do$var] = true;
-        } else {
-            this[_do$var] = r;
-        }
-        return this;
-    };
-}
 [
     'transform',
     'translate',
@@ -356,29 +413,29 @@ module.exports = Image;
 },{"./CompoundedImage":3,"./report":89}],5:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
-var constants = require('./constants');
 var AbstractRenderer = require('./AbstractRenderer');
-var _options = require('./options');
-var align = require('./internal/align');
+var constants = require('./constants');
+var options_ = require('./options');
 function Renderer2D(options) {
-    options = defaults(_options, options);
-    AbstractRenderer.call(this, options, constants.RENDERER_2D);
+    AbstractRenderer.call(this, options = defaults(options_, options), constants.RENDERER_2D);
     this.matrix = this.context;
     this._beginPath = false;
 }
 Renderer2D.prototype = Object.create(AbstractRenderer.prototype);
 Renderer2D.prototype.constructor = Renderer2D;
 Renderer2D.prototype.backgroundColor = function backgroundColor(r, g, b, a) {
+    var settings = this.settings;
     var context = this.context;
     context.save();
-    context.setTransform(this.settings.scale, 0, 0, this.settings.scale, 0, 0);
-    context.fillStyle = new this.settings.color(r, g, b, a);
+    context.fillStyle = new settings.color(r, g, b, a);
+    context.setTransform(settings.scale, 0, 0, settings.scale, 0, 0);
     context.fillRect(0, 0, this.w, this.h);
     context.restore();
     return this;
 };
 Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
-    var _rectAlignX = this._rectAlignX, _rectAlignY = this._rectAlignY;
+    var _rectAlignX = this._rectAlignX;
+    var _rectAlignY = this._rectAlignY;
     this._rectAlignX = constants.CENTER;
     this._rectAlignY = constants.MIDDLE;
     this.image(image, this.w * 0.5, this.h * 0.5);
@@ -386,102 +443,8 @@ Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
     this._rectAlignY = _rectAlignY;
     return this;
 };
-Renderer2D.prototype.image = function image(image, x, y, w, h) {
-    if (image.get().loaded) {
-        if (typeof w === 'undefined') {
-            w = image.dw;
-        }
-        if (typeof h === 'undefined') {
-            h = image.dh;
-        }
-        x = Math.floor(align(x, w, this._rectAlignX));
-        y = Math.floor(align(y, h, this._rectAlignY));
-        this.context.drawImage(image.get().image, image.x, image.y, image.w, image.h, x, y, w, h);
-    }
-    return this;
-};
-Renderer2D.prototype.clear = function clear(x, y, w, h) {
-    if (typeof x === 'undefined') {
-        x = y = 0;
-        w = this.w;
-        h = this.h;
-    } else {
-        x = Math.floor(align(x, w, this._rectAlignX));
-        y = Math.floor(align(y, h, this._rectAlignY));
-    }
-    this.context.clearRect(x, y, w, h);
-    return this;
-};
-Renderer2D.prototype.rect = function rect(x, y, w, h) {
-    x = Math.floor(align(x, w, this._rectAlignX));
-    y = Math.floor(align(y, h, this._rectAlignY));
-    if (this._beginPath) {
-        this.context.rect(x, y, w, h);
-    } else {
-        this.context.beginPath();
-        this.context.rect(x, y, w, h);
-        if (this._doFill) {
-            this._fill();
-        }
-        if (this._doStroke) {
-            this._stroke();
-        }
-    }
-    return this;
-};
-Renderer2D.prototype.arc = function arc(x, y, r) {
-    if (this._beginPath) {
-        this.context.arc(x, y, r, 0, Math.PI * 2, false);
-    } else {
-        this.context.beginPath();
-        this.context.arc(x, y, r, 0, Math.PI * 2, false);
-        if (this._doFill) {
-            this._fill();
-        }
-        if (this._doStroke) {
-            this._stroke(true);
-        }
-    }
-    return this;
-};
-Renderer2D.prototype.vertices = function vertices(verts, count, _mode, _sx, _sy) {
-    var context = this.context, i;
-    if (count < 2) {
-        return this;
-    }
-    if (_sx == null) {
-        _sx = _sy = 1;
-    }
-    context.beginPath();
-    context.moveTo(verts[0] * _sx, verts[1] * _sy);
-    for (i = 2, count *= 2; i < count; i += 2) {
-        context.lineTo(verts[i] * _sx, verts[i + 1] * _sy);
-    }
-    if (this._doFill) {
-        this._fill();
-    }
-    if (this._doStroke && this._lineW > 0) {
-        this._stroke(true);
-    }
-    return this;
-};
-Renderer2D.prototype._fill = function _fill() {
-    this.context.fillStyle = this._fillColor;
-    this.context.fill();
-};
-Renderer2D.prototype._stroke = function (close) {
-    var context = this.context;
-    if (close) {
-        context.closePath();
-    }
-    context.strokeStyle = this._strokeColor;
-    if ((context.lineWidth = this._lineWidth) <= 1) {
-        context.stroke();
-    }
-    context.stroke();
-};
 module.exports = Renderer2D;
-},{"./AbstractRenderer":1,"./constants":15,"./internal/align":17,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
+},{"./AbstractRenderer":1,"./constants":15,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var align = require('./internal/align');

@@ -4,7 +4,7 @@
   "description": "A rendering library; write the same code for both 2D and WebGL contexts.",
   "main": "v6.js",
   "scripts": {
-    "prepublish": "npm run lint && npm run test && npm run docs",
+    "prepublish": "make lint && npm run docs",
     "test": "mocha -r test/.register --use_strict ./test/**/*.test.js",
     "docs": "jsdoc -c .jsdoc.js",
     "lint": "jshint ."

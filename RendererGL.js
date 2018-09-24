@@ -116,12 +116,8 @@ RendererGL.prototype._clear = function _clear ( r, g, b, a ) {
 };
 
 /**
+ * @override
  * @method v6.RendererGL#backgroundColor
- * @param {number|string|v6.RGBA|v6.HSLA} r
- * @param {number}                        g
- * @param {number}                        b
- * @param {number}                        a
- * @chainable
  */
 RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
   var rgba = new this.settings.color( r, g, b, a ).rgba();

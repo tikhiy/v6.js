@@ -2,6 +2,7 @@
 
 module.exports = {
   source: {
+    excludePattern: '\\.preprocess\\.js$',
     exclude: [ '.temp', 'node_modules', 'docs', 'dist', 'test', '.jsdoc.js' ],
     include: [ '.' ]
   },

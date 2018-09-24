@@ -400,7 +400,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line26">line 26</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -473,7 +473,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line49">line 49</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -738,7 +738,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line56">line 56</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -811,7 +811,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line61">line 61</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -966,7 +966,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line95">line 95</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line78">line 78</a>
     </li></ul></dd>
     
 
@@ -1147,7 +1147,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line203">line 203</a>
+        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line199">line 199</a>
     </li></ul></dd>
     
 
@@ -1336,6 +1336,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundColor">v6.AbstractRenderer#backgroundColor</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1356,7 +1361,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line118">line 118</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line270">line 270</a>
     </li></ul></dd>
     
 
@@ -1381,6 +1386,548 @@
 
 
 
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="backgroundImage"><span class="type-signature">(abstract) </span>backgroundImage<span class="signature">(image)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>image</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">v6.Image</span>
+|
+
+<span class="param-type">v6.CompoundedImage</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundImage">v6.AbstractRenderer#backgroundImage</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line279">line 279</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var Image = require( 'v6.js/Image' );
+var image = new Image( './assets/background.jpg' );
+renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="backgroundPositionX"><span class="type-signature"></span>backgroundPositionX<span class="signature">(value, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">constant</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    v6.constants.VALUE
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundPositionX">v6.AbstractRenderer#backgroundPositionX</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line237">line 237</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>renderer.backgroundPositionX( constants.CENTER, constants.CONSTANT );
+renderer.backgroundPositionX( 0.5, constants.PERCENTAGES );
+renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="backgroundPositionY"><span class="type-signature"></span>backgroundPositionY<span class="signature">(value, type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">constant</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    v6.constants.VALUE
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundPositionY">v6.AbstractRenderer#backgroundPositionY</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line248">line 248</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>renderer.backgroundPositionY( constants.MIDDLE, constants.CONSTANT );
+renderer.backgroundPositionY( 0.5, constants.PERCENTAGES );
+renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 
@@ -1569,7 +2116,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line132">line 132</a>
+        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -1660,7 +2207,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line107">line 107</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line89">line 89</a>
     </li></ul></dd>
     
 
@@ -1751,7 +2298,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line241">line 241</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -1962,7 +2509,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line215">line 215</a>
+        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -2430,7 +2977,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line248">line 248</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -2689,7 +3236,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line223">line 223</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line179">line 179</a>
     </li></ul></dd>
     
 
@@ -2948,7 +3495,7 @@ renderer.noStroke().stroke( true );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line272">line 272</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -3250,7 +3797,7 @@ renderer.noStroke().stroke( true );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line141">line 141</a>
+        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line137">line 137</a>
     </li></ul></dd>
     
 
@@ -3307,13 +3854,13 @@ renderer.vertices( vertices, 3 );</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-_v6.js_.CompoundedImage.html">CompoundedImage</a></li><li><a href="module-_v6.js_.Image.html">Image</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module-_v6.js_.CompoundedImage.html">CompoundedImage</a></li><li><a href="module-_v6.js_.Image.html">Image</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 23 2018 12:58:05 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Sep 25 2018 00:23:49 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

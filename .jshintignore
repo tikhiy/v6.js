@@ -4,3 +4,4 @@ node_modules
 docs
 dist
 v6-old.js
+*.preprocess.js

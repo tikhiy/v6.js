@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: AbstractRenderer</title>
+    <title>JSDoc: Class: Renderer2D</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: AbstractRenderer</h1>
+    <h1 class="page-title">Class: Renderer2D</h1>
 
     
 
@@ -28,8 +28,8 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature">(abstract) </span></span>
-            <span class="ancestors"><a href="v6.html">v6</a>.</span>AbstractRenderer<span class="signature">(options, type)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="v6.html">v6</a>.</span>Renderer2D<span class="signature">(options)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -42,7 +42,7 @@
     
 
     
-    <h4 class="name" id="AbstractRenderer"><span class="type-signature">(abstract) </span>new AbstractRenderer<span class="signature">(options, type)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Renderer2D"><span class="type-signature"></span>new Renderer2D<span class="signature">(options)</span><span class="type-signature"></span></h4>
     
 
     
@@ -50,7 +50,7 @@
 
 
 <div class="description">
-    <p>Абстрактный класс AbstractRenderer - это основа для <a href="v6.RendererGL.html">v6.RendererGL</a> и <a href="v6.Renderer2D.html">v6.Renderer2D</a>.</p>
+    <p>2D рендерер.</p>
 </div>
 
 
@@ -106,29 +106,6 @@
         </tr>
 
     
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">constant</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Тип рендерера: 2D (<code>RENDERER_2D</code>) или WebGL (<code>RENDERER_GL</code>).</p></td>
-        </tr>
-
-    
     </tbody>
 </table>
 
@@ -166,7 +143,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line12">line 12</a>
+        <a href="Renderer2D.js.html">Renderer2D.js</a>, <a href="Renderer2D.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -196,6 +173,17 @@
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="v6.AbstractRenderer.html">v6.AbstractRenderer</a></li>
+    </ul>
+
 
     
 
@@ -242,6 +230,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#canvas">v6.AbstractRenderer#canvas</a>
+    </li></ul></dd>
+    
 
     
 
@@ -282,22 +275,12 @@
 
         
             
-<h4 class="name" id="context"><span class="type-signature"></span>context<span class="type-signature"> :object</span></h4>
+<h4 class="name" id="context"><span class="type-signature"></span>context<span class="type-signature"></span></h4>
 
 
 
 
 
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
 
 
 
@@ -311,6 +294,11 @@
 
     
 
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#context">v6.AbstractRenderer#context</a>
+    </li></ul></dd>
     
 
     
@@ -332,7 +320,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line40">line 40</a>
+        <a href="Renderer2D.js.html">Renderer2D.js</a>, <a href="Renderer2D.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -377,6 +365,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#settings">v6.AbstractRenderer#settings</a>
+    </li></ul></dd>
     
 
     
@@ -445,6 +438,11 @@
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#type">v6.AbstractRenderer#type</a>
+    </li></ul></dd>
     
 
     
@@ -596,6 +594,11 @@
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#append">v6.AbstractRenderer#append</a>
+    </li></ul></dd>
+    
 
     
 
@@ -652,7 +655,7 @@
     
 
     
-    <h4 class="name" id="backgroundColor"><span class="type-signature">(abstract) </span>backgroundColor<span class="signature">(r, g, b, a)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="backgroundColor"><span class="type-signature"></span>backgroundColor<span class="signature">(r, g, b, a)</span><span class="type-signature"></span></h4>
     
 
     
@@ -807,6 +810,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundColor">v6.AbstractRenderer#backgroundColor</a>
+    </li></ul></dd>
+    
 
     
 
@@ -861,7 +869,7 @@
     
 
     
-    <h4 class="name" id="backgroundImage"><span class="type-signature">(abstract) </span>backgroundImage<span class="signature">(image)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="backgroundImage"><span class="type-signature"></span>backgroundImage<span class="signature">(image)</span><span class="type-signature"></span></h4>
     
 
     
@@ -940,6 +948,11 @@
 
     
 
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundImage">v6.AbstractRenderer#backgroundImage</a>
+    </li></ul></dd>
     
 
     
@@ -1131,6 +1144,11 @@ renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</cod
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundPositionX">v6.AbstractRenderer#backgroundPositionX</a>
+    </li></ul></dd>
     
 
     
@@ -1325,6 +1343,11 @@ renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#backgroundPositionY">v6.AbstractRenderer#backgroundPositionY</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1418,6 +1441,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#destroy">v6.AbstractRenderer#destroy</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1503,6 +1531,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#fill">v6.AbstractRenderer#fill</a>
+    </li></ul></dd>
     
 
     
@@ -1820,6 +1853,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#setTransform">v6.AbstractRenderer#setTransform</a>
+    </li></ul></dd>
+    
 
     
 
@@ -2074,6 +2112,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#stroke">v6.AbstractRenderer#stroke</a>
+    </li></ul></dd>
+    
 
     
 
@@ -2327,6 +2370,11 @@ renderer.noStroke().stroke( true );</code></pre>
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#transform">v6.AbstractRenderer#transform</a>
+    </li></ul></dd>
     
 
     

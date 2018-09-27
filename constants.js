@@ -1,20 +1,49 @@
 'use strict';
 
-module.exports = {
+/**
+ * @member v6.constants
+ */
 
-  // Эти константы используются в `v6.renderer(options)` как `options.mode`.
+var _constants = {};
+var _counter   = 0;
 
-  RENDERER_AUTO: 1,
-  RENDERER_GL:   2,
-  RENDERER_2D:   3,
+/**
+ * @method v6.constants.add
+ * @param  {string} key
+ * @return {void}
+ */
+function add ( key ) {
+  if ( typeof _constants[ key ] !== 'undefined' ) {
+    throw Error( 'Cannot re-set (add) existing constant: ' + key );
+  }
 
-  // Эти константы используются для выравнивания, например в `AbstractRenderer#rectAlign(align)` как `align`.
+  _constants[ key ] = ++_counter;
+}
 
-  BOTTOM: 7,
-  RIGHT:  8,
-  LEFT:   9,
-  TOP:    10,
-  CENTER: 11,
-  MIDDLE: 12
+/**
+ * @method v6.constants.get
+ * @param  {string}   key
+ * @return {constant}
+ */
+function get ( key ) {
+  if ( typeof _constants[ key ] === 'undefined' ) {
+    throw ReferenceError( 'Cannot get unknown constant: ' + key );
+  }
 
-};
+  return _constants[ key ];
+}
+
+[
+  'RENDERER_AUTO',
+  'RENDERER_GL',
+  'RENDERER_2D',
+  'LEFT',
+  'TOP',
+  'CENTER',
+  'MIDDLE',
+  'RIGHT',
+  'BOTTOM'
+].forEach( add );
+
+exports.add = add;
+exports.get = get;

@@ -8,6 +8,7 @@ var getWebGL = require('./internal/get_webgl');
 var copyDrawingSettings = require('./internal/copy_drawing_settings');
 var createPolygon = require('./internal/create_polygon');
 var polygons = require('./internal/polygons');
+var align = require('./internal/align');
 var constants = require('./constants');
 var options = require('./options');
 function AbstractRenderer(options, type) {
@@ -99,7 +100,7 @@ AbstractRenderer.prototype = {
         matrix.save();
         matrix.translate(x, y);
         matrix.rotate(a);
-        this.vertices(polygon, polygon.length * 0.5, null, rx, ry);
+        this.drawArrays(polygon, polygon.length * 0.5, null, rx, ry);
         matrix.restore();
         return this;
     },
@@ -209,6 +210,41 @@ AbstractRenderer.prototype = {
         this._backgroundPositionX = value;
         return this;
     },
+    image: function image(image, x, y, w, h) {
+        if (image.get().loaded) {
+            if (typeof w === 'undefined') {
+                w = image.dw;
+            }
+            if (typeof h === 'undefined') {
+                h = image.dh;
+            }
+            this.drawImage(image, align(x, w, this._rectAlignX), align(y, h, this._rectAlignY), w, h);
+        }
+        return this;
+    },
+    closeShape: function closeShape() {
+        this._closeShape = true;
+        return this;
+    },
+    beginShape: function beginShape(options) {
+        if (!options) {
+            options = {};
+        }
+        this._vertices.length = 0;
+        if (typeof options.type !== 'undefined') {
+            this._shapeType = options.type;
+        } else {
+            this._shapeType = null;
+        }
+        return this;
+    },
+    vertex: function vertex(x, y) {
+        this._vertices.push(Math.floor(x), Math.floor(y));
+        return this;
+    },
+    endShape: function endShape() {
+        throw Error('not impemented now');
+    },
     constructor: AbstractRenderer
 };
 [
@@ -221,7 +257,7 @@ AbstractRenderer.prototype = {
     AbstractRenderer.prototype[name] = Function('a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;');
 });
 module.exports = AbstractRenderer;
-},{"./constants":15,"./internal/copy_drawing_settings":18,"./internal/create_polygon":19,"./internal/get_webgl":23,"./internal/polygons":24,"./internal/set_default_drawing_settings":25,"./options":88,"peako/get-element-h":57,"peako/get-element-w":58,"peako/is-object-like":65}],2:[function(require,module,exports){
+},{"./constants":15,"./internal/align":17,"./internal/copy_drawing_settings":18,"./internal/create_polygon":19,"./internal/get_webgl":23,"./internal/polygons":24,"./internal/set_default_drawing_settings":25,"./options":88,"peako/get-element-h":57,"peako/get-element-w":58,"peako/is-object-like":65}],2:[function(require,module,exports){
 'use strict';
 var defaultTo = require('peako/default-to');
 var Vector2D = require('./math/Vector2D');
@@ -413,6 +449,7 @@ module.exports = Image;
 },{"./CompoundedImage":3,"./report":89}],5:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
+var align = require('./internal/align');
 var AbstractRenderer = require('./AbstractRenderer');
 var constants = require('./constants');
 var options_ = require('./options');
@@ -443,8 +480,69 @@ Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
     this._rectAlignY = _rectAlignY;
     return this;
 };
+Renderer2D.prototype.clear = function clear() {
+    this.context.clear(0, 0, this.w, this.h);
+    return this;
+};
+Renderer2D.prototype.drawArrays = function drawArrays(verts, count, _mode, _sx, _sy) {
+    var context = this.context;
+    var i;
+    if (count < 2) {
+        return this;
+    }
+    if (_sx == null) {
+        _sx = _sy = 1;
+    }
+    context.beginPath();
+    context.moveTo(verts[0] * _sx, verts[1] * _sy);
+    for (i = 2, count *= 2; i < count; i += 2) {
+        context.lineTo(verts[i] * _sx, verts[i + 1] * _sy);
+    }
+    if (this._doFill) {
+        this._fill();
+    }
+    if (this._doStroke && this._lineWidth > 0) {
+        this._stroke(true);
+    }
+    return this;
+};
+Renderer2D.prototype.drawImage = function drawImage(image, x, y, w, h) {
+    this.context.drawImage(image.get().image, image.x, image.y, image.w, image.h, x, y, w, h);
+};
+Renderer2D.prototype.rect = function rect(x, y, w, h) {
+    x = Math.floor(align(x, w, this._rectAlignX));
+    y = Math.floor(align(y, h, this._rectAlignY));
+    if (this._beginPath) {
+        this.context.rect(x, y, w, h);
+    } else {
+        this.context.beginPath();
+        this.context.rect(x, y, w, h);
+        if (this._doFill) {
+            this._fill();
+        }
+        if (this._doStroke) {
+            this._stroke();
+        }
+    }
+    return this;
+};
+Renderer2D.prototype.arc = function arc(x, y, r) {
+    if (this._beginPath) {
+        this.context.arc(x, y, r, 0, Math.PI * 2, false);
+    } else {
+        this.context.beginPath();
+        this.context.arc(x, y, r, 0, Math.PI * 2, false);
+        if (this._doFill) {
+            this._fill();
+        }
+        if (this._doStroke) {
+            this._stroke(true);
+        }
+    }
+    return this;
+};
 module.exports = Renderer2D;
-},{"./AbstractRenderer":1,"./constants":15,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
+},{"./AbstractRenderer":1,"./constants":15,"./internal/align":17,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var align = require('./internal/align');
@@ -511,7 +609,7 @@ RendererGL.prototype.clear = function clear() {
     this._clear(0, 0, 0, 0);
     return this;
 };
-RendererGL.prototype.vertices = function vertices(verts, count, mode, _sx, _sy) {
+RendererGL.prototype.drawArrays = function drawArrays(verts, count, mode, _sx, _sy) {
     var program = this.programs.default;
     var gl = this.context;
     if (count < 2) {
@@ -531,16 +629,22 @@ RendererGL.prototype.vertices = function vertices(verts, count, mode, _sx, _sy) 
         this.w,
         this.h
     ]).pointer('apos', 2, gl.FLOAT, false, 0, 0);
-    if (this._doFill) {
-        program.setUniform('ucolor', this._fillColor.rgba());
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, count);
-    }
-    if (this._doStroke && this._lineWidth > 0) {
-        program.setUniform('ucolor', this._strokeColor.rgba());
-        gl.lineWidth(this._lineWidth);
-        gl.drawArrays(gl.LINE_LOOP, 0, count);
-    }
+    this._fill(count);
+    this._stroke(count);
     return this;
+};
+RendererGL.prototype._fill = function _fill(count) {
+    if (this._doFill) {
+        this.program.setUniform('ucolor', this._fillColor.rgba());
+        this.context.drawArrays(this.context.TRIANGLE_FAN, 0, count);
+    }
+};
+RendererGL.prototype._stroke = function _stroke(count) {
+    if (this._doStroke && this._lineWidth > 0) {
+        this.program.setUniform('ucolor', this._strokeColor.rgba());
+        this.context.lineWidth(this._lineWidth);
+        this.context.drawArrays(this.context.LINE_LOOP, 0, count);
+    }
 };
 RendererGL.prototype.arc = function arc(x, y, r) {
     return this._polygon(x, y, r, r, 24, 0);
@@ -552,7 +656,7 @@ RendererGL.prototype.rect = function rect(x, y, w, h) {
     this.matrix.translate(alignedX, alignedY);
     this.matrix.scale(w, h);
     this.context.bindBuffer(this.context.ARRAY_BUFFER, this.buffers.rect);
-    this.vertices(null, 4);
+    this.drawArrays(null, 4);
     this.matrix.restore();
     return this;
 };
@@ -1280,17 +1384,33 @@ function ColorData(match, color) {
 }
 },{"../HSLA":10,"../RGBA":11,"./colors":13}],15:[function(require,module,exports){
 'use strict';
-module.exports = {
-    RENDERER_AUTO: 1,
-    RENDERER_GL: 2,
-    RENDERER_2D: 3,
-    BOTTOM: 7,
-    RIGHT: 8,
-    LEFT: 9,
-    TOP: 10,
-    CENTER: 11,
-    MIDDLE: 12
-};
+var _constants = {};
+var _counter = 0;
+function add(key) {
+    if (typeof _constants[key] !== 'undefined') {
+        throw Error('Cannot re-set (add) existing constant: ' + key);
+    }
+    _constants[key] = ++_counter;
+}
+function get(key) {
+    if (typeof _constants[key] === 'undefined') {
+        throw ReferenceError('Cannot get unknown constant: ' + key);
+    }
+    return _constants[key];
+}
+[
+    'RENDERER_AUTO',
+    'RENDERER_GL',
+    'RENDERER_2D',
+    'LEFT',
+    'TOP',
+    'CENTER',
+    'MIDDLE',
+    'RIGHT',
+    'BOTTOM'
+].forEach(add);
+exports.add = add;
+exports.get = get;
 },{}],16:[function(require,module,exports){
 'use strict';
 var getRendererType = require('./internal/get_renderer_type');
@@ -1322,17 +1442,17 @@ module.exports = createRenderer;
 var constants = require('../constants');
 function align(value, width, align) {
     switch (align) {
-    case constants.LEFT:
-    case constants.TOP:
+    case constants.get('LEFT'):
+    case constants.get('TOP'):
         return value;
-    case constants.CENTER:
-    case constants.MIDDLE:
+    case constants.get('CENTER'):
+    case constants.get('MIDDLE'):
         return value - width * 0.5;
-    case constants.RIGHT:
-    case constants.BOTTOM:
+    case constants.get('RIGHT'):
+    case constants.get('BOTTOM'):
         return value - width;
     }
-    throw Error('Got unknown alignment constant. The known are: `constants.LEFT`, `constants.CENTER`, `constants.RIGHT`, `constants.TOP`, `constants.MIDDLE`, and `constants.BOTTOM`');
+    throw Error('Got unknown alignment constant. The known are: `LEFT`, `CENTER`, `RIGHT`, `TOP`, `MIDDLE`, and `BOTTOM`');
 }
 module.exports = align;
 },{"../constants":15}],18:[function(require,module,exports){

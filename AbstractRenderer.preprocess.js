@@ -9,6 +9,7 @@ var getWebGL                  = require( './internal/get_webgl' );
 var copyDrawingSettings       = require( './internal/copy_drawing_settings' );
 var createPolygon             = require( './internal/create_polygon' );
 var polygons                  = require( './internal/polygons' );
+var align                     = require( './internal/align' );
 
 var constants = require( './constants' );
 var options   = require( './options' );
@@ -119,23 +120,23 @@ function AbstractRenderer ( options, type ) {
     return this;                                                                                        \
   }
 
-#define fill( fill, _doFill )                                          \
-  fill: function fill ( r, g, b, a ) {                                                    \
-    if ( typeof r === 'undefined' ) {                                                     \
-      this._##fill();                                                                       \
-    } else if ( typeof r !== 'boolean' ) {                                                \
+#define fill( fill, _doFill )                                                                 \
+  fill: function fill ( r, g, b, a ) {                                                        \
+    if ( typeof r === 'undefined' ) {                                                         \
+      this._##fill();                                                                         \
+    } else if ( typeof r !== 'boolean' ) {                                                    \
       if ( typeof r === 'string' || this._##fill##Color.type !== this.settings.color.type ) { \
         this._##fill##Color = new this.settings.color( r, g, b, a );                          \
-      } else {                                                                            \
+      } else {                                                                                \
         this._##fill##Color.set( r, g, b, a );                                                \
-      }                                                                                   \
-                                                                                          \
-      this._doFill = true;                                                                \
-    } else {                                                                              \
-      this._doFill = r;                                                                   \
-    }                                                                                     \
-                                                                                          \
-    return this;                                                                          \
+      }                                                                                       \
+                                                                                              \
+      this._doFill = true;                                                                    \
+    } else {                                                                                  \
+      this._doFill = r;                                                                       \
+    }                                                                                         \
+                                                                                              \
+    return this;                                                                              \
   }
 
 AbstractRenderer.prototype = {
@@ -242,12 +243,23 @@ AbstractRenderer.prototype = {
     matrix.save();
     matrix.translate( x, y );
     matrix.rotate( a );
-    this.vertices( polygon, polygon.length * 0.5, null, rx, ry );
+    this.drawArrays( polygon, polygon.length * 0.5, null, rx, ry );
     matrix.restore();
 
     return this;
   },
 
+  /**
+   * Рисует многоугольник.
+   * @method v6.AbstractRenderer#polygon
+   * @param {number} x
+   * @param {number} y
+   * @param {number} r   Радиус многоугольника.
+   * @param {number} n   Количество сторон многоугольника.
+   * @param {number} [a] Угол поворота. В целях оптимизации вместо {@link v6.AbstractRenderer#rotate}
+   *                     для поворота можно использовать этот параметр.
+   * @chainable
+   */
   polygon: function polygon ( x, y, r, n, a ) {
     if ( n % 1 ) {
       n = Math.floor( n * 100 ) * 0.01;
@@ -355,6 +367,84 @@ AbstractRenderer.prototype = {
    */
   backgroundPositionX( backgroundPositionY, h, TOP, MIDDLE, BOTTOM ),
 
+  /**
+   * Отрисовывает картинку.
+   * @method v6.AbstractRenderer#image
+   * @param {v6.Image|v6.CompoundedImage} image
+   * @param {number}                      x
+   * @param {number}                      y
+   * @param {number}                      w
+   * @param {number}                      h
+   * @chainable
+   */
+  image: function image ( image, x, y, w, h ) {
+    if ( image.get().loaded ) {
+      if ( typeof w === 'undefined' ) {
+        w = image.dw;
+      }
+
+      if ( typeof h === 'undefined' ) {
+        h = image.dh;
+      }
+
+      this.drawImage( image, align( x, w, this._rectAlignX ), align( y, h, this._rectAlignY ), w, h );
+    }
+
+    return this;
+  },
+
+  closeShape: function closeShape () {
+    this._closeShape = true;
+    return this;
+  },
+
+  /**
+   * @method v6.AbstractRenderer#beginShape
+   * @param {constant} [type] POINTS, LINES.
+   * @chainable
+   * @example
+   * renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );
+   */
+  beginShape: function beginShape ( options ) {
+    if ( ! options ) {
+      options = {};
+    }
+
+    this._vertices.length = 0;
+
+    if ( typeof options.type !== 'undefined' ) {
+      this._shapeType = options.type;
+    } else {
+      this._shapeType = null;
+    }
+
+    return this;
+  },
+
+  /**
+   * @method v6.AbstractRenderer#vertex
+   * @param {number} x
+   * @param {number} y
+   * @chainable
+   */
+  vertex: function vertex ( x, y ) {
+    this._vertices.push( Math.floor( x ), Math.floor( y ) );
+    return this;
+  },
+
+  /**
+   * @method v6.AbstractRenderer#endShape
+   * @param {object}   [options]
+   * @param {boolean}  [options.close]
+   * @param {constant} [options.type]
+   * @chainable
+   * @example
+   * renderer.endShape( { close: true } );
+   */
+  endShape: function endShape () {
+    throw Error( 'not impemented now' );
+  },
+
   constructor: AbstractRenderer
 
 };
@@ -370,6 +460,7 @@ AbstractRenderer.prototype = {
 } );
 
 /**
+ * Заполняет фон цветом.
  * @virtual
  * @method v6.AbstractRenderer#backgroundColor
  * @param {number|string|v6.RGBA|v6.HSLA} r
@@ -380,6 +471,7 @@ AbstractRenderer.prototype = {
  */
 
 /**
+ * Заполняет фон картинкой.
  * @virtual
  * @method v6.AbstractRenderer#backgroundImage
  * @param {v6.Image|v6.CompoundedImage} image
@@ -388,6 +480,68 @@ AbstractRenderer.prototype = {
  * var Image = require( 'v6.js/Image' );
  * var image = new Image( './assets/background.jpg' );
  * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
+ */
+
+/**
+ * Очищает контекст.
+ * @virtual
+ * @method v6.AbstractRenderer#clear
+ * @chainable
+ * @example
+ * renderer.clear();
+ */
+
+/**
+ * Отрисовывает переданные вершины.
+ * @virtual
+ * @method v6.AbstractRenderer#drawArrays
+ * @param {Float32Array|Array} verts Вершины, которые надо отрисовать. Если не передано для
+ *                                   {@link v6.RendererGL}, то будут использоваться вершины из
+ *                                   стандартного буфера ({@link v6.RendererGL#buffers.default}).
+ * @param {number}             count Количество вершин, например: 3 для треугольника.
+ * @chainable
+ * @example
+ * // triangle
+ * var vertices = new Float32Array( [
+ *   0, 0,
+ *   1, 1,
+ *   0, 1
+ * ] );
+ *
+ * // draws triangle
+ * renderer.drawArrays( vertices, 3 );
+ */
+
+/**
+ * @virtual
+ * @method v6.AbstractRenderer#drawImage
+ * @param {v6.Image|v6.CompoundedImage} image
+ * @param {number}                      x
+ * @param {number}                      y
+ * @param {number}                      w
+ * @param {number}                      h
+ * @chainable
+ */
+
+/**
+ * Рисует прямоугольник.
+ * @virtual
+ * @method v6.AbstractRenderer#rect
+ * @param {number} x
+ * @param {number} y
+ * @param {number} w
+ * @param {number} h
+ * @chainable
+ */
+
+/**
+ * Рисует круг.
+ * @virtual
+ * @method v6.AbstractRenderer#arc
+ * @param {number} x
+ * @param {number} y
+ * @param {number} r
+ * @chainable
  */
 
 module.exports = AbstractRenderer;

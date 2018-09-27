@@ -126,8 +126,8 @@ RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
 };
 
 /**
+ * @override
  * @method v6.RendererGL#clear
- * @chainable
  */
 RendererGL.prototype.clear = function clear () {
   this._clear( 0, 0, 0, 0 );
@@ -135,27 +135,10 @@ RendererGL.prototype.clear = function clear () {
 };
 
 /**
- * Отрисовывает переданные вершины.
- * @method v6.RendererGL#vertices
- * @param {Float32Array?} verts Вершины, которые надо отрисовать. Если не передано, будут
- *                               использоваться вершины из стандартного буфера ({@link v6.RendererGL#buffers.default}).
- * @param {number}        count Количество вершин, например: 3 для треугольника.
- * @param {constant}      [mode=STATIC_DRAW]  Например: `GL_STATIC_DRAW`.
- * @param {number?}       _sx   X scale. Used for backwards-compability with {@link v6.Renderer2D#vertices}.
- * @param {number?}       _sy   Y scale. Used for backwards-compability with {@link v6.Renderer2D#vertices}.
- * @chainable
- * @example
- * // triangle
- * var vertices = new Float32Array( [
- *   0, 0,
- *   1, 1,
- *   0, 1
- * ] );
- *
- * // draws triangle
- * renderer.vertices( vertices, 3 );
+ * @override
+ * @method v6.RendererGL#drawArrays
  */
-RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy ) {
+RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx, _sy ) {
   var program = this.programs.default;
   var gl      = this.context;
 
@@ -182,40 +165,38 @@ RendererGL.prototype.vertices = function vertices ( verts, count, mode, _sx, _sy
     .setUniform( 'ures', [ this.w, this.h ] )
     .pointer( 'apos', 2, gl.FLOAT, false, 0, 0 );
 
-  if ( this._doFill ) {
-    program.setUniform( 'ucolor', this._fillColor.rgba() );
-    gl.drawArrays( gl.TRIANGLE_FAN, 0, count );
-  }
-
-  if ( this._doStroke && this._lineWidth > 0 ) {
-    program.setUniform( 'ucolor', this._strokeColor.rgba() );
-    gl.lineWidth( this._lineWidth );
-    gl.drawArrays( gl.LINE_LOOP, 0, count );
-  }
+  this._fill( count );
+  this._stroke( count );
 
   return this;
 };
 
+RendererGL.prototype._fill = function _fill ( count ) {
+  if ( this._doFill ) {
+    this.program.setUniform( 'ucolor', this._fillColor.rgba() );
+    this.context.drawArrays( this.context.TRIANGLE_FAN, 0, count );
+  }
+};
+
+RendererGL.prototype._stroke = function _stroke ( count ) {
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    this.program.setUniform( 'ucolor', this._strokeColor.rgba() );
+    this.context.lineWidth( this._lineWidth );
+    this.context.drawArrays( this.context.LINE_LOOP, 0, count );
+  }
+};
+
 /**
- * Отрисовывает круг.
+ * @override
  * @method v6.RendererGL#arc
- * @param {number} x
- * @param {number} y
- * @param {number} r
- * @chainable
  */
 RendererGL.prototype.arc = function arc ( x, y, r ) {
   return this._polygon( x, y, r, r, 24, 0 );
 };
 
 /**
- * Отрисовывает прямоугольник.
+ * @override
  * @method v6.RendererGL#rect
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
- * @chainable
  */
 RendererGL.prototype.rect = function rect ( x, y, w, h ) {
   var alignedX = align( x, w, this._rectAlignX );
@@ -224,7 +205,7 @@ RendererGL.prototype.rect = function rect ( x, y, w, h ) {
   this.matrix.translate( alignedX, alignedY );
   this.matrix.scale( w, h );
   this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
-  this.vertices( null, 4 );
+  this.drawArrays( null, 4 );
   this.matrix.restore();
   return this;
 };

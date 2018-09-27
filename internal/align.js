@@ -8,26 +8,26 @@ var constants = require( '../constants' );
  * @method align
  * @param  {number}   value Текущая координата.
  * @param  {number}   width Размер контейнера (rect, image).
- * @param  {constant} align `constants.LEFT`, `constants.MIDDLE`, `constants.BOTTOM`, и так далее.
+ * @param  {constant} align `LEFT`, `MIDDLE`, `BOTTOM`, и так далее.
  * @return {number}
  * @example
- * align( 100, 200, constants.LEFT );   // -> 100
- * align( 100, 200, constants.CENTER ); // -> 0
+ * align( 100, 200, constants.get( 'LEFT' ) );   // -> 100
+ * align( 100, 200, constants.get( 'CENTER' ) ); // -> 0
  */
 function align ( value, width, align ) {
   switch ( align ) {
-    case constants.LEFT:
-    case constants.TOP:
+    case constants.get( 'LEFT' ):
+    case constants.get( 'TOP' ):
       return value;
-    case constants.CENTER:
-    case constants.MIDDLE:
+    case constants.get( 'CENTER' ):
+    case constants.get( 'MIDDLE' ):
       return value - width * 0.5;
-    case constants.RIGHT:
-    case constants.BOTTOM:
+    case constants.get( 'RIGHT' ):
+    case constants.get( 'BOTTOM' ):
       return value - width;
   }
 
-  throw Error( 'Got unknown alignment constant. The known are: `constants.LEFT`, `constants.CENTER`, `constants.RIGHT`, `constants.TOP`, `constants.MIDDLE`, and `constants.BOTTOM`' );
+  throw Error( 'Got unknown alignment constant. The known are: `LEFT`, `CENTER`, `RIGHT`, `TOP`, `MIDDLE`, and `BOTTOM`' );
 }
 
 module.exports = align;

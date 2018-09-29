@@ -111,7 +111,8 @@ Vector2D.prototype.div = function div ( value )
  */
 Vector2D.prototype.dot = function dot ( x, y )
 {
-  return ( this.x * ( x || 0 ) ) + ( this.y * ( y || 0 ) );
+  return ( this.x * ( x || 0 ) ) +
+         ( this.y * ( y || 0 ) );
 };
 
 /**
@@ -170,7 +171,9 @@ Vector2D.prototype.subVector = function subVector ( vector )
  */
 Vector2D.prototype.mulVector = function mulVector ( vector )
 {
-  return this.mul( vector.x, vector.y );
+  this.x *= vector.x;
+  this.y *= vector.y;
+  return this;
 };
 
 /**
@@ -181,7 +184,9 @@ Vector2D.prototype.mulVector = function mulVector ( vector )
  */
 Vector2D.prototype.divVector = function divVector ( vector )
 {
-  return this.div( vector.x, vector.y );
+  this.x /= vector.x;
+  this.y /= vector.y;
+  return this;
 };
 
 /**

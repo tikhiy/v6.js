@@ -1,216 +1,236 @@
 'use strict';
 
-var Vector2D = require( './Vector2D' );
-var settings = require( '../settings' );
+var settings       = require( '../settings' );
+var AbstractVector = require( './AbstractVector' );
 
 /**
+ * 3D вектор.
  * @constructor v6.Vector3D
+ * @extends v6.AbstractVector
+ * @param {number} [x=0] X координата вектора.
+ * @param {number} [y=0] Y координата вектора.
+ * @param {number} [z=0] Z координата вектора.
+ * @example
+ * var Vector3D = require( 'v6.js/math/Vector3D' );
+ * var position = new Vector3D( 4, 2, 3 );
  */
 function Vector3D ( x, y, z )
 {
+  /**
+   * X координата вектора.
+   * @member {number} v6.Vector3D#x
+   * @example
+   * var x = new Vector3D( 4, 2, 3 ).x; // -> 4
+   */
+
+  /**
+   * Y координата вектора.
+   * @member {number} v6.Vector3D#y
+   * @example
+   * var y = new Vector3D( 4, 2, 3 ).y; // -> 2
+   */
+
+  /**
+   * Z координата вектора.
+   * @member {number} v6.Vector3D#z
+   * @example
+   * var z = new Vector3D( 4, 2, 3 ).z; // -> 3
+   */
+
   this.set( x, y, z );
 }
 
-Vector3D.prototype = {
-  set: function set ( x, y, z )
-  {
+Vector3D.prototype = Object.create( AbstractVector.prototype );
+Vector3D.prototype.constructor = Vector3D;
 
-    this.x = x || 0;
-    this.y = y || 0;
-    this.z = z || 0;
-
-    return this;
-
-  },
-
-  setVector: function setVector ( vector )
-  {
-    return this.set( vector.x, vector.y, vector.z );
-  },
-
-  lerp: function lerp ( x, y, z, value )
-  {
-
-    this.x += ( x - this.x ) * value || 0;
-    this.y += ( y - this.y ) * value || 0;
-    this.z += ( z - this.z ) * value || 0;
-
-    return this;
-
-  },
-
-  lerpVector: function lerpVector ( vector, value )
-  {
-    var x = vector.x || 0,
-        y = vector.y || 0,
-        z = vector.z || 0;
-
-    return this.lerp( x, y, z, value );
-  },
-
-  add: function add ( x, y, z )
-  {
-
-    this.x += x || 0;
-    this.y += y || 0;
-    this.z += z || 0;
-
-    return this;
-
-  },
-
-  addVector: function addVector ( vector )
-  {
-    return this.add( vector.x, vector.y, vector.z );
-  },
-
-  sub: function sub ( x, y, z )
-  {
-
-    this.x -= x || 0;
-    this.y -= y || 0;
-    this.z -= z || 0;
-
-    return this;
-
-  },
-
-  subVector: function subVector ( vector )
-  {
-    return this.sub( vector.x, vector.y, vector.z );
-  },
-
-  mul: function mul ( value )
-  {
-
-    this.x *= value || 0;
-    this.y *= value || 0;
-    this.z *= value || 0;
-
-    return this;
-
-  },
-
-  mulVector: function mulVector ( vector )
-  {
-
-    this.x *= vector.x || 0;
-    this.y *= vector.y || 0;
-    this.z *= vector.z || 0;
-
-    return this;
-
-  },
-
-  div: function div ( value )
-  {
-
-    this.x /= value || 0;
-    this.y /= value || 0;
-    this.z /= value || 0;
-
-    return this;
-
-  },
-
-  divVector: function divVector ( vector )
-  {
-
-    this.x /= vector.x || 0;
-    this.y /= vector.y || 0;
-    this.z /= vector.z || 0;
-
-    return this;
-
-  },
-
-  magSquare: function magSquare ()
-  {
-    // Return this.dotVector( this );
-    return this.x * this.x + this.y * this.y + this.z * this.z;
-  },
-
-  dot: function dot ( x, y, z )
-  {
-    return this.x * x + this.y * y + this.z * z;
-  },
-
-  dotVector: function dotVector ( vector )
-  {
-    var x = vector.x || 0,
-        y = vector.y || 0,
-        z = vector.z || 0;
-
-    return this.dot( x, y, z );
-  },
-
-  copy: function copy ()
-  {
-    return new Vector3D( this.x, this.y, this.z );
-  },
-
-  dist: function dist ( vector )
-  {
-    var x = vector.x - this.x,
-        y = vector.y - this.y,
-        z = vector.z - this.z;
-
-    return Math.sqrt( x * x + y * y + z * z );
-  },
-
-  toString: function toString ()
-  {
-    return 'vec3(' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ', ' + this.z.toFixed( 2 ) + ')';
-  },
-
-  normalize: Vector2D.prototype.normalize,
-  setAngle:  Vector2D.prototype.setAngle,
-  setMag:    Vector2D.prototype.setMag,
-  rotate:    Vector2D.prototype.rotate,
-  angle:     Vector2D.prototype.angle,
-  limit:     Vector2D.prototype.limit,
-  mag:       Vector2D.prototype.mag,
-
-  constructor: Vector3D
+/**
+ * Устанавливает X, Y, и Z координаты.
+ * @method v6.Vector3D#set
+ * @param {number} [x=0] Новая X координата.
+ * @param {number} [y=0] Новая Y координата.
+ * @param {number} [z=0] Новая Z координата.
+ * @chainable
+ */
+Vector3D.prototype.set = function set ( x, y, z )
+{
+  this.x = x || 0;
+  this.y = y || 0;
+  this.z = z || 0;
+  return this;
 };
 
-[
-  'normalize',
-  'setMag',
-  'rotate',
-  'limit',
-  'lerp',
-  'mul',
-  'div',
-  'add',
-  'sub',
-  'set'
-].forEach( function ( method )
+/**
+ * Добавляет к координатам X, Y, и Z соответствующие параметры.
+ * @method v6.Vector3D#add
+ * @param {number} [x=0] Число, которое должно быть добавлено.
+ * @param {number} [y=0] Число, которое должно быть добавлено.
+ * @param {number} [z=0] Число, которое должно быть добавлено.
+ * @chainable
+ */
+Vector3D.prototype.add = function add ( x, y, z )
 {
-  Vector3D[ method ] = Vector2D[ method ];
-} );
-
-// Use the equal-area projection algorithm.
-Vector3D.random = function random ()
-{
-  var theta = Math.random() * Math.PI * 2;
-  var z     = Math.random() * 2 - 1;
-  var n     = Math.root( 1 - z * z );
-  return new Vector3D( n * Math.cos( theta ), n * Math.sin( theta ), z );
+  this.x += x || 0;
+  this.y += y || 0;
+  this.z += z || 0;
+  return this;
 };
 
-Vector3D.fromAngle = function fromAngle ( angle )
+/**
+ * Вычитает из координат X, Y, и Z соответствующие параметры.
+ * @method v6.Vector3D#sub
+ * @param {number} [x=0] Число, которое должно быть вычтено.
+ * @param {number} [y=0] Число, которое должно быть вычтено.
+ * @param {number} [z=0] Число, которое должно быть вычтено.
+ * @chainable
+ */
+Vector3D.prototype.sub = function sub ( x, y, z )
 {
-  if ( settings.degrees ) {
-    angle *= Math.PI / 180;
-  }
-
-  return new Vector3D( Math.cos( angle ), Math.sin( angle ) );
+  this.x -= x || 0;
+  this.y -= y || 0;
+  this.z -= z || 0;
+  return this;
 };
 
-Vector3D.clone = function clone ( vector )
+/**
+ * Умножает X, Y, и Z координаты на `value`.
+ * @method v6.Vector3D#mul
+ * @param {number} value Число, на которое надо умножить.
+ * @chainable
+ */
+Vector3D.prototype.mul = function mul ( value )
 {
-  return new Vector3D( vector.x, vector.y, vector.z );
+  this.x *= value;
+  this.y *= value;
+  this.z *= value;
+  return this;
+};
+
+/**
+ * Делит X, Y, и Z координаты на `value`.
+ * @method v6.Vector3D#div
+ * @param {number} value Число, на которое надо разделить.
+ * @chainable
+ */
+Vector3D.prototype.div = function div ( value )
+{
+  this.x /= value;
+  this.y /= value;
+  this.z /= value;
+  return this;
+};
+
+/**
+ * @method v6.Vector3D#dot
+ * @param  {number} [x=0]
+ * @param  {number} [y=0]
+ * @param  {number} [z=0]
+ * @return {number}
+ */
+Vector3D.prototype.dot = function dot ( x, y, z )
+{
+  return ( this.x * ( x || 0 ) ) +
+         ( this.y * ( y || 0 ) ) +
+         ( this.z * ( z || 0 ) );
+};
+
+/**
+ * Интерполирует X, Y, и Z координаты между соответствующими параметрами.
+ * @method v6.Vector3D#lerp
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} value
+ * @chainable
+ */
+Vector3D.prototype.lerp = function ( x, y, z, value )
+{
+  this.x += ( x - this.x ) * value || 0;
+  this.y += ( y - this.y ) * value || 0;
+  this.z += ( z - this.z ) * value || 0;
+  return this;
+};
+
+/**
+ * Копирует другой вектор.
+ * @method v6.Vector3D#setVector
+ * @param {v6.AbstractVector} vector Вектор, который надо скопировать.
+ * @chainable
+ */
+Vector3D.prototype.setVector = function setVector ( vector )
+{
+  return this.set( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Добавляет другой вектор.
+ * @method v6.Vector3D#addVector
+ * @param {v6.AbstractVector} vector Вектор, который надо добавить.
+ * @chainable
+ */
+Vector3D.prototype.addVector = function addVector ( vector )
+{
+  return this.add( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Вычитает другой вектор.
+ * @method v6.Vector3D#subVector
+ * @param {v6.AbstractVector} vector Вектор, который надо вычесть.
+ * @chainable
+ */
+Vector3D.prototype.subVector = function subVector ( vector )
+{
+  return this.sub( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Умножает X, Y, и Z координаты на X, Y, и Z другого вектора.
+ * @method v6.Vector3D#mulVector
+ * @param {v6.AbstractVector} vector Вектор для умножения.
+ * @chainable
+ */
+Vector3D.prototype.mulVector = function mulVector ( vector )
+{
+  this.x *= vector.x;
+  this.y *= vector.y;
+  this.z *= vector.z;
+  return this;
+};
+
+/**
+ * Делит X, Y, и Z координаты на X, Y, и Z другого вектора.
+ * @method v6.Vector3D#divVector
+ * @param {v6.AbstractVector} vector Вектор, на который надо делить.
+ * @chainable
+ */
+Vector3D.prototype.divVector = function divVector ( vector )
+{
+  this.x /= vector.x;
+  this.y /= vector.y;
+  this.z /= vector.z;
+  return this;
+};
+
+/**
+ * @method v6.Vector3D#dotVector
+ * @param  {v6.AbstractVector} vector
+ * @return {number}
+ */
+Vector3D.prototype.dotVector = function dotVector ( vector )
+{
+  return this.dot( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Интерполирует X, Y, и Z координаты между другим вектором.
+ * @method v6.Vector3D#lerpVector
+ * @param {v6.AbstractVector} vector
+ * @param {number}            value
+ * @chainable
+ */
+Vector3D.prototype.lerpVector = function lerpVector ( vector, value )
+{
+  return this.lerp( vector.x, vector.y, vector.z, value );
 };
 
 module.exports = Vector3D;

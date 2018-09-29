@@ -26,7 +26,8 @@ var timer        = require( 'peako/timer' );
  *   renderer.rotate( shape.rotation );
  * } );
  */
-function Ticker () {
+function Ticker ()
+{
   var self = this;
 
   LightEmitter.call( this );
@@ -42,7 +43,8 @@ function Ticker () {
    * @method v6.Ticker#start
    * @chainable
    */
-  function start ( _now ) {
+  function start ( _now )
+  {
     var elapsedTime;
 
     if ( ! self.running ) {
@@ -93,7 +95,8 @@ Ticker.prototype.constructor = Ticker;
  * // Do not need to restart ticker.
  * ticker.fps( 10 );
  */
-Ticker.prototype.fps = function fps ( fps ) {
+Ticker.prototype.fps = function fps ( fps )
+{
   this.step = 1 / fps;
   return this;
 };
@@ -102,7 +105,8 @@ Ticker.prototype.fps = function fps ( fps ) {
  * @method v6.Ticker#clear
  * @chainable
  */
-Ticker.prototype.clear = function clear () {
+Ticker.prototype.clear = function clear ()
+{
   this.skippedTime = 0;
   return this;
 };
@@ -119,7 +123,8 @@ Ticker.prototype.clear = function clear () {
  *   }
  * } );
  */
-Ticker.prototype.stop = function stop () {
+Ticker.prototype.stop = function stop ()
+{
   this.running = false;
   return this;
 };

@@ -17,11 +17,11 @@ var type            = require( './options' ).type;
 function createRenderer ( options ) {
   var type_ = options && options.type || type;
 
-  if ( type_ === constants.RENDERER_AUTO ) {
+  if ( type_ === constants.get( 'RENDERER_AUTO' ) ) {
     type_ = getRendererType();
   }
 
-  if ( type_ === constants.RENDERER_GL ) {
+  if ( type_ === constants.get( 'RENDERER_GL' ) ) {
     if ( getWebGL() ) {
       return new RendererGL( options );
     }
@@ -29,11 +29,11 @@ function createRenderer ( options ) {
     report( 'Cannot create WebGL context. Falling back to 2D.' );
   }
 
-  if ( type_ === constants.RENDERER_2D || type_ === constants.RENDERER_GL ) {
+  if ( type_ === constants.get( 'RENDERER_2D' ) || type_ === constants.get( 'RENDERER_GL' ) ) {
     return new Renderer2D( options );
   }
 
-  throw Error( 'Got unknown renderer type. The known are: `v6.constants.RENDERER_2D` and `v6.constants.RENDERER_GL`' );
+  throw Error( 'Got unknown renderer type. The known are: RENDERER_2D and RENDERER_GL' );
 }
 
 module.exports = createRenderer;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Vector3D</title>
+    <title>JSDoc: Source: constants.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,132 +17,67 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Vector3D</h1>
+    <h1 class="page-title">Source: constants.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="v6.html">v6</a>.</span>Vector3D<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
-    
-    <h4 class="name" id="Vector3D"><span class="type-signature"></span>new Vector3D<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math_Vector3D.js.html">math/Vector3D.js</a>, <a href="math_Vector3D.js.html#line6">line 6</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * @member v6.constants
+ */
+
+var _constants = {};
+var _counter   = 0;
+
+/**
+ * @method v6.constants.add
+ * @param  {string} key
+ * @return {void}
+ */
+function add ( key ) {
+  if ( typeof _constants[ key ] !== 'undefined' ) {
+    throw Error( 'Cannot re-set (add) existing constant: ' + key );
+  }
+
+  _constants[ key ] = ++_counter;
+}
+
+/**
+ * @method v6.constants.get
+ * @param  {string}   key
+ * @return {constant}
+ */
+function get ( key ) {
+  if ( typeof _constants[ key ] === 'undefined' ) {
+    throw ReferenceError( 'Cannot get unknown constant: ' + key );
+  }
+
+  return _constants[ key ];
+}
+
+[
+  'RENDERER_AUTO',
+  'RENDERER_GL',
+  'RENDERER_2D',
+  'LEFT',
+  'TOP',
+  'CENTER',
+  'MIDDLE',
+  'RIGHT',
+  'BOTTOM'
+].forEach( add );
+
+exports.add = add;
+exports.get = get;
+</code></pre>
+        </article>
+    </section>
 
 
 

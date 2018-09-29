@@ -19,7 +19,7 @@ var renderer = createRenderer( {
   settings: {
     color: HSLA
   },
-  type: constants.RENDERER_AUTO
+  type: constants.get( 'RENDERER_AUTO' )
 } )
   .stroke( 'black' )
   .fill( 'white' );

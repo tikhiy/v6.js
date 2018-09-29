@@ -13,7 +13,7 @@ var options_         = require( './options' );
  * @param {object} options {@link v6.options}
  */
 function Renderer2D ( options ) {
-  AbstractRenderer.call( this, ( options = defaults( options_, options ) ), constants.RENDERER_2D );
+  AbstractRenderer.call( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_2D' ) );
 
   /**
    * @alias v6.Renderer2D#context
@@ -58,8 +58,8 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
   var _rectAlignX = this._rectAlignX;
   var _rectAlignY = this._rectAlignY;
 
-  this._rectAlignX = constants.CENTER;
-  this._rectAlignY = constants.MIDDLE;
+  this._rectAlignX = constants.get( 'CENTER' );
+  this._rectAlignY = constants.get( 'MIDDLE' );
 
   this.image( image, this.w * 0.5, this.h * 0.5 );
 

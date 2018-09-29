@@ -9,14 +9,15 @@ var settings = require( '../settings' );
  * @see v6.Vector2D
  * @see v6.Vector3D
  */
-function AbstractVector () {}
+function AbstractVector () {} // eslint-disable-line no-empty-function, brace-rules/brace-on-same-line
 
 AbstractVector.prototype = {
   /**
    * @method v6.AbstractVector#normalize
    * @chainable
    */
-  normalize: function normalize () {
+  normalize: function normalize ()
+  {
     var mag = this.mag();
 
     if ( mag && mag !== 1 ) {
@@ -31,7 +32,8 @@ AbstractVector.prototype = {
    * @param {number} angle
    * @chainable
    */
-  setAngle: function setAngle ( angle ) {
+  setAngle: function setAngle ( angle )
+  {
     var mag = this.mag();
 
     if ( settings.degrees ) {
@@ -49,7 +51,8 @@ AbstractVector.prototype = {
    * @param {number} value
    * @chainable
    */
-  setMag: function setMag ( value ) {
+  setMag: function setMag ( value )
+  {
     return this.normalize().mul( value );
   },
 
@@ -58,7 +61,8 @@ AbstractVector.prototype = {
    * @param  {number} angle
    * @chainable
    */
-  rotate: function rotate ( angle ) {
+  rotate: function rotate ( angle )
+  {
     var x = this.x,
         y = this.y;
 
@@ -71,8 +75,8 @@ AbstractVector.prototype = {
     c = Math.cos( angle );
     s = Math.sin( angle );
 
-    this.x = x * c - y * s;
-    this.y = x * s + y * c;
+    this.x = ( x * c ) - ( y * s );
+    this.y = ( x * s ) + ( y * c );
 
     return this;
   },
@@ -81,7 +85,8 @@ AbstractVector.prototype = {
    * @method v6.AbstractVector#getAngle
    * @return {number}
    */
-  getAngle: function getAngle () {
+  getAngle: function getAngle ()
+  {
     if ( settings.degrees ) {
       return Math.atan2( this.y, this.x ) * 180 / Math.PI;
     }
@@ -94,7 +99,8 @@ AbstractVector.prototype = {
    * @param  {number} value
    * @chainable
    */
-  limit: function limit ( value ) {
+  limit: function limit ( value )
+  {
     var mag = this.magSquare();
 
     if ( mag > value * value ) {
@@ -108,7 +114,8 @@ AbstractVector.prototype = {
    * @method v6.AbstractVector#mag
    * @return {number}
    */
-  mag: function mag () {
+  mag: function mag ()
+  {
     return Math.sqrt( this.magSquare() );
   },
 

@@ -31,12 +31,12 @@ function AbstractRenderer ( options, type ) {
   if ( typeof options.append === 'undefined' || options.append ) {
     this.append();
   }
-  if ( type === constants.RENDERER_2D ) {
+  if ( type === constants.get( 'RENDERER_2D' ) ) {
     context = '2d';
-  } else if ( type !== constants.RENDERER_GL ) {
-    throw Error( 'Got unknown renderer type. The known are: `v6.constants.RENDERER_2D` and `v6.constants.RENDERER_GL`' );
+  } else if ( type !== constants.get( 'RENDERER_GL' ) ) {
+    throw Error( 'Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`' );
   } else if ( ! ( context = getWebGL() ) ) {
-    throw Error( 'Cannot get WebGL context. Try to use `v6.constants.RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
+    throw Error( 'Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
   }
   /**
    * @member {object} v6.AbstractRenderer#context
@@ -249,25 +249,25 @@ AbstractRenderer.prototype = {
   /**
    * @method v6.AbstractRenderer#backgroundPositionX
    * @param  {number}   value
-   * @param  {constant} [type=v6.constants.VALUE]
+   * @param  {constant} [type=VALUE]
    * @chainable
    * @example
-   * renderer.backgroundPositionX( constants.CENTER, constants.CONSTANT );
-   * renderer.backgroundPositionX( 0.5, constants.PERCENTAGES );
+   * renderer.backgroundPositionX( constants.get( 'CENTER' ), constants.get( 'CONSTANT' ) );
+   * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionX( renderer.w / 2 );
    */
-  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.VALUE ) { if ( type === constants.CONSTANT ) { type = constants.PERCENTAGES; if ( value === constants.LEFT ) { value = 0; } else if ( value === constants.CENTER ) { value = 0.5; } else if ( value === constants.RIGHT ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.PERCENTAGES ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
   /**
    * @method v6.AbstractRenderer#backgroundPositionY
    * @param  {number}   value
-   * @param  {constant} [type=v6.constants.VALUE]
+   * @param  {constant} [type=VALUE]
    * @chainable
    * @example
-   * renderer.backgroundPositionY( constants.MIDDLE, constants.CONSTANT );
-   * renderer.backgroundPositionY( 0.5, constants.PERCENTAGES );
+   * renderer.backgroundPositionY( constants.get( 'MIDDLE' ), constants.get( 'CONSTANT' ) );
+   * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionY( renderer.h / 2 );
    */
-  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.VALUE ) { if ( type === constants.CONSTANT ) { type = constants.PERCENTAGES; if ( value === constants.TOP ) { value = 0; } else if ( value === constants.MIDDLE ) { value = 0.5; } else if ( value === constants.BOTTOM ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.PERCENTAGES ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
   /**
    * Отрисовывает картинку.
    * @method v6.AbstractRenderer#image

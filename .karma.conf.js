@@ -16,8 +16,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'test/.register.js',
-      'test/.register.karma.js',
-      { pattern: 'test/**/*.test.js', included: true }
+      { pattern: 'test/**/*.test.js', included: true },
+      { pattern: 'test/**/*.test.karma.js', included: true }
     ],
 
 
@@ -30,8 +30,8 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'test/**/*.test.js': ['browserify'],
-      'test/.register.js': ['browserify'],
-      'test/.register.karma.js': ['browserify']
+      'test/**/*.test.karma.js': ['browserify'],
+      'test/.register.js': ['browserify']
     },
 
 
@@ -60,20 +60,20 @@ module.exports = function(config) {
     plugins: [
         'karma-browserify',
         'karma-chai',
+        'karma-chrome-launcher',
         'karma-firefox-launcher',
-        'karma-phantomjs-launcher',
         'karma-mocha'
     ],
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Firefox', 'PhantomJS'],
+    browsers: ['Chrome', 'Firefox'],
     // browsers: ['Chrome', 'ChromeCanary', 'Firefox', 'Safari', 'PhantomJS', 'Opera', 'IE'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser should be started simultaneous

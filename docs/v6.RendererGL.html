@@ -400,7 +400,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line21">line 21</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -473,7 +473,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line40">line 40</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -738,7 +738,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line46">line 46</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -811,7 +811,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line50">line 50</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -966,7 +966,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line78">line 78</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -1008,7 +1008,7 @@
 
 
 <div class="description">
-    <p>Отрисовывает круг.</p>
+    <p>Рисует круг.</p>
 </div>
 
 
@@ -1127,6 +1127,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#arc">v6.AbstractRenderer#arc</a>
+    </li></ul></dd>
+    
 
     
 
@@ -1147,7 +1152,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line199">line 199</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line418">line 418</a>
     </li></ul></dd>
     
 
@@ -1187,6 +1192,10 @@
     
 
 
+
+<div class="description">
+    <p>Заполняет фон цветом.</p>
+</div>
 
 
 
@@ -1361,7 +1370,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line270">line 270</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line349">line 349</a>
     </li></ul></dd>
     
 
@@ -1401,6 +1410,10 @@
     
 
 
+
+<div class="description">
+    <p>Заполняет фон картинкой.</p>
+</div>
 
 
 
@@ -1500,7 +1513,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line279">line 279</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line359">line 359</a>
     </li></ul></dd>
     
 
@@ -1647,7 +1660,7 @@ renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</cod
             
                 <td class="default">
                 
-                    v6.constants.VALUE
+                    VALUE
                 
                 </td>
             
@@ -1698,7 +1711,7 @@ renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</cod
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line237">line 237</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line249">line 249</a>
     </li></ul></dd>
     
 
@@ -1727,8 +1740,8 @@ renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</cod
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>renderer.backgroundPositionX( constants.CENTER, constants.CONSTANT );
-renderer.backgroundPositionX( 0.5, constants.PERCENTAGES );
+    <pre class="prettyprint"><code>renderer.backgroundPositionX( constants.get( 'CENTER' ), constants.get( 'CONSTANT' ) );
+renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
 renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
 
 
@@ -1845,7 +1858,7 @@ renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
             
                 <td class="default">
                 
-                    v6.constants.VALUE
+                    VALUE
                 
                 </td>
             
@@ -1896,7 +1909,7 @@ renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line248">line 248</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line260">line 260</a>
     </li></ul></dd>
     
 
@@ -1925,9 +1938,162 @@ renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>renderer.backgroundPositionY( constants.MIDDLE, constants.CONSTANT );
-renderer.backgroundPositionY( 0.5, constants.PERCENTAGES );
+    <pre class="prettyprint"><code>renderer.backgroundPositionY( constants.get( 'MIDDLE' ), constants.get( 'CONSTANT' ) );
+renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
 renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="beginShape"><span class="type-signature"></span>beginShape<span class="signature">(type<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">constant</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>POINTS, LINES.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#beginShape">v6.AbstractRenderer#beginShape</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line297">line 297</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );</code></pre>
 
 
 
@@ -2075,6 +2241,10 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 
+<div class="description">
+    <p>Очищает контекст.</p>
+</div>
+
 
 
 
@@ -2096,6 +2266,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#clear">v6.AbstractRenderer#clear</a>
+    </li></ul></dd>
+    
 
     
 
@@ -2116,7 +2291,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line128">line 128</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line370">line 370</a>
     </li></ul></dd>
     
 
@@ -2141,6 +2316,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>renderer.clear();</code></pre>
 
 
 
@@ -2207,7 +2387,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line89">line 89</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -2232,6 +2412,665 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="drawArrays"><span class="type-signature"></span>drawArrays<span class="signature">(verts, count)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Отрисовывает переданные вершины.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>verts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Float32Array</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Вершины, которые надо отрисовать. Если не передано для
+                                  <a href="v6.RendererGL.html">v6.RendererGL</a>, то будут использоваться вершины из
+                                  стандартного буфера (v6.RendererGL#buffers.default).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>count</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Количество вершин, например: 3 для треугольника.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#drawArrays">v6.AbstractRenderer#drawArrays</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line378">line 378</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// triangle
+var vertices = new Float32Array( [
+  0, 0,
+  1, 1,
+  0, 1
+] );
+
+// draws triangle
+renderer.drawArrays( vertices, 3 );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="drawImage"><span class="type-signature">(abstract) </span>drawImage<span class="signature">(image, x, y, w, h)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>image</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">v6.Image</span>
+|
+
+<span class="param-type">v6.CompoundedImage</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>w</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>h</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#drawImage">v6.AbstractRenderer#drawImage</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line398">line 398</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="endShape"><span class="type-signature"></span>endShape<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>close</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">constant</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#endShape">v6.AbstractRenderer#endShape</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line326">line 326</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>renderer.endShape( { close: true } );</code></pre>
 
 
 
@@ -2298,7 +3137,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line196">line 196</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line208">line 208</a>
     </li></ul></dd>
     
 
@@ -2339,6 +3178,518 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <h4 class="name" id="image"><span class="type-signature"></span>image<span class="signature">(image, x, y, w, h)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Отрисовывает картинку.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>image</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">v6.Image</span>
+|
+
+<span class="param-type">v6.CompoundedImage</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>w</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>h</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#image">v6.AbstractRenderer#image</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line271">line 271</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="polygon"><span class="type-signature"></span>polygon<span class="signature">(x, y, r, n, a<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Рисует многоугольник.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Радиус многоугольника.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Количество сторон многоугольника.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>a</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Угол поворота. В целях оптимизации вместо v6.AbstractRenderer#rotate
+                    для поворота можно использовать этот параметр.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#polygon">v6.AbstractRenderer#polygon</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line165">line 165</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="rect"><span class="type-signature"></span>rect<span class="signature">(x, y, w, h)</span><span class="type-signature"></span></h4>
     
 
@@ -2347,7 +3698,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 <div class="description">
-    <p>Отрисовывает прямоугольник.</p>
+    <p>Рисует прямоугольник.</p>
 </div>
 
 
@@ -2489,6 +3840,11 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#rect">v6.AbstractRenderer#rect</a>
+    </li></ul></dd>
+    
 
     
 
@@ -2509,7 +3865,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line211">line 211</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line408">line 408</a>
     </li></ul></dd>
     
 
@@ -2977,7 +4333,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line202">line 202</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line214">line 214</a>
     </li></ul></dd>
     
 
@@ -3236,7 +4592,7 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line179">line 179</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -3495,7 +4851,7 @@ renderer.noStroke().stroke( true );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line223">line 223</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line235">line 235</a>
     </li></ul></dd>
     
 
@@ -3529,16 +4885,12 @@ renderer.noStroke().stroke( true );</code></pre>
     
 
     
-    <h4 class="name" id="vertices"><span class="type-signature"></span>vertices<span class="signature">(verts<span class="signature-attributes">nullable</span>, count, mode<span class="signature-attributes">opt</span>, _sx<span class="signature-attributes">nullable</span>, _sy<span class="signature-attributes">nullable</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="vertex"><span class="type-signature"></span>vertex<span class="signature">(x, y)</span><span class="type-signature"></span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Отрисовывает переданные вершины.</p>
-</div>
 
 
 
@@ -3561,11 +4913,7 @@ renderer.noStroke().stroke( true );</code></pre>
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -3577,45 +4925,7 @@ renderer.noStroke().stroke( true );</code></pre>
 
         <tr>
             
-                <td class="name"><code>verts</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Float32Array</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                    &lt;nullable><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>Вершины, которые надо отрисовать. Если не передано, будут
-                              использоваться вершины из стандартного буфера (v6.RendererGL#buffers.default).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>count</code></td>
+                <td class="name"><code>x</code></td>
             
 
             <td class="type">
@@ -3628,68 +4938,17 @@ renderer.noStroke().stroke( true );</code></pre>
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>Количество вершин, например: 3 для треугольника.</p></td>
+            <td class="description last"></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>mode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">constant</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    STATIC_DRAW
-                
-                </td>
-            
-
-            <td class="description last"><p>Например: <code>GL_STATIC_DRAW</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>_sx</code></td>
+                <td class="name"><code>y</code></td>
             
 
             <td class="type">
@@ -3702,61 +4961,10 @@ renderer.noStroke().stroke( true );</code></pre>
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-                    &lt;nullable><br>
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>X scale. Used for backwards-compability with v6.Renderer2D#vertices.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>_sy</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                    &lt;nullable><br>
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>Y scale. Used for backwards-compability with v6.Renderer2D#vertices.</p></td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -3774,6 +4982,11 @@ renderer.noStroke().stroke( true );</code></pre>
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="v6.AbstractRenderer.html#vertex">v6.AbstractRenderer#vertex</a>
+    </li></ul></dd>
     
 
     
@@ -3797,7 +5010,7 @@ renderer.noStroke().stroke( true );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="RendererGL.js.html">RendererGL.js</a>, <a href="RendererGL.js.html#line137">line 137</a>
+        <a href="AbstractRenderer.js.html">AbstractRenderer.js</a>, <a href="AbstractRenderer.js.html#line316">line 316</a>
     </li></ul></dd>
     
 
@@ -3822,19 +5035,6 @@ renderer.noStroke().stroke( true );</code></pre>
 
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// triangle
-var vertices = new Float32Array( [
-  0, 0,
-  1, 1,
-  0, 1
-] );
-
-// draws triangle
-renderer.vertices( vertices, 3 );</code></pre>
 
 
 
@@ -3860,7 +5060,7 @@ renderer.vertices( vertices, 3 );</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Sep 25 2018 00:23:49 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Sep 29 2018 02:03:08 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

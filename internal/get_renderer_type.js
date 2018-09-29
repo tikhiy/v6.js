@@ -1,6 +1,7 @@
 'use strict';
 
 var once      = require( 'peako/once' );
+
 var constants = require( '../constants' );
 
 if ( typeof platform === 'undefined' ) {
@@ -25,10 +26,10 @@ function getRendererType () {
   }
 
   if ( touchable && ! safari ) {
-    return constants.RENDERER_GL;
+    return constants.get( 'RENDERER_GL' );
   }
 
-  return constants.RENDERER_2D;
+  return constants.get( 'RENDERER_2D' );
 }
 
 module.exports = once( getRendererType );

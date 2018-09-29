@@ -4,8 +4,8 @@ var constants           = require( '../constants' );
 var copyDrawingSettings = require( './copy_drawing_settings' );
 
 var defaultDrawingSettings = {
-  _rectAlignX: constants.LEFT,
-  _rectAlignY: constants.TOP,
+  _rectAlignX: constants.get( 'LEFT' ),
+  _rectAlignY: constants.get( 'TOP' ),
   _lineWidth:  2,
   _doStroke:   true,
   _doFill:     true

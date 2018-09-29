@@ -22,12 +22,12 @@ function AbstractRenderer(options, type) {
     if (typeof options.append === 'undefined' || options.append) {
         this.append();
     }
-    if (type === constants.RENDERER_2D) {
+    if (type === constants.get('RENDERER_2D')) {
         context = '2d';
-    } else if (type !== constants.RENDERER_GL) {
-        throw Error('Got unknown renderer type. The known are: `v6.constants.RENDERER_2D` and `v6.constants.RENDERER_GL`');
+    } else if (type !== constants.get('RENDERER_GL')) {
+        throw Error('Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`');
     } else if (!(context = getWebGL())) {
-        throw Error('Cannot get WebGL context. Try to use `v6.constants.RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`');
+        throw Error('Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`');
     }
     this.context = this.canvas.getContext(context, { alpha: options.alpha });
     this.settings = options.settings;
@@ -165,20 +165,20 @@ AbstractRenderer.prototype = {
         return this;
     },
     backgroundPositionX: function backgroundPositionX(value, type) {
-        if (typeof type !== 'undefined' && type !== constants.VALUE) {
-            if (type === constants.CONSTANT) {
-                type = constants.PERCENTAGES;
-                if (value === constants.LEFT) {
+        if (typeof type !== 'undefined' && type !== constants.get('VALUE')) {
+            if (type === constants.get('CONSTANT')) {
+                type = constants.get('PERCENTAGES');
+                if (value === constants.get('LEFT')) {
                     value = 0;
-                } else if (value === constants.CENTER) {
+                } else if (value === constants.get('CENTER')) {
                     value = 0.5;
-                } else if (value === constants.RIGHT) {
+                } else if (value === constants.get('RIGHT')) {
                     value = 1;
                 } else {
                     throw Error('Got unknown value. The known are: ' + 'LEFT' + ', ' + 'CENTER' + ', ' + 'RIGHT');
                 }
             }
-            if (type === constants.PERCENTAGES) {
+            if (type === constants.get('PERCENTAGES')) {
                 value *= this.w;
             } else {
                 throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
@@ -188,20 +188,20 @@ AbstractRenderer.prototype = {
         return this;
     },
     backgroundPositionY: function backgroundPositionY(value, type) {
-        if (typeof type !== 'undefined' && type !== constants.VALUE) {
-            if (type === constants.CONSTANT) {
-                type = constants.PERCENTAGES;
-                if (value === constants.TOP) {
+        if (typeof type !== 'undefined' && type !== constants.get('VALUE')) {
+            if (type === constants.get('CONSTANT')) {
+                type = constants.get('PERCENTAGES');
+                if (value === constants.get('LEFT')) {
                     value = 0;
-                } else if (value === constants.MIDDLE) {
+                } else if (value === constants.get('CENTER')) {
                     value = 0.5;
-                } else if (value === constants.BOTTOM) {
+                } else if (value === constants.get('RIGHT')) {
                     value = 1;
                 } else {
                     throw Error('Got unknown value. The known are: ' + 'TOP' + ', ' + 'MIDDLE' + ', ' + 'BOTTOM');
                 }
             }
-            if (type === constants.PERCENTAGES) {
+            if (type === constants.get('PERCENTAGES')) {
                 value *= this.h;
             } else {
                 throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
@@ -454,7 +454,7 @@ var AbstractRenderer = require('./AbstractRenderer');
 var constants = require('./constants');
 var options_ = require('./options');
 function Renderer2D(options) {
-    AbstractRenderer.call(this, options = defaults(options_, options), constants.RENDERER_2D);
+    AbstractRenderer.call(this, options = defaults(options_, options), constants.get('RENDERER_2D'));
     this.matrix = this.context;
     this._beginPath = false;
 }
@@ -473,8 +473,8 @@ Renderer2D.prototype.backgroundColor = function backgroundColor(r, g, b, a) {
 Renderer2D.prototype.backgroundImage = function backgroundImage(image) {
     var _rectAlignX = this._rectAlignX;
     var _rectAlignY = this._rectAlignY;
-    this._rectAlignX = constants.CENTER;
-    this._rectAlignY = constants.MIDDLE;
+    this._rectAlignX = constants.get('CENTER');
+    this._rectAlignY = constants.get('MIDDLE');
     this.image(image, this.w * 0.5, this.h * 0.5);
     this._rectAlignX = _rectAlignX;
     this._rectAlignY = _rectAlignY;
@@ -563,7 +563,7 @@ var square = new Float32Array([
         1
     ]);
 function RendererGL(options) {
-    AbstractRenderer.call(this, options = defaults(options_, options), constants.RENDERER_GL);
+    AbstractRenderer.call(this, options = defaults(options_, options), constants.get('RENDERER_GL'));
     this.matrix = new Transform();
     this.buffers = {
         default: this.context.createBuffer(),
@@ -1422,19 +1422,19 @@ var report = require('./report');
 var type = require('./options').type;
 function createRenderer(options) {
     var type_ = options && options.type || type;
-    if (type_ === constants.RENDERER_AUTO) {
+    if (type_ === constants.get('RENDERER_AUTO')) {
         type_ = getRendererType();
     }
-    if (type_ === constants.RENDERER_GL) {
+    if (type_ === constants.get('RENDERER_GL')) {
         if (getWebGL()) {
             return new RendererGL(options);
         }
         report('Cannot create WebGL context. Falling back to 2D.');
     }
-    if (type_ === constants.RENDERER_2D || type_ === constants.RENDERER_GL) {
+    if (type_ === constants.get('RENDERER_2D') || type_ === constants.get('RENDERER_GL')) {
         return new Renderer2D(options);
     }
-    throw Error('Got unknown renderer type. The known are: `v6.constants.RENDERER_2D` and `v6.constants.RENDERER_GL`');
+    throw Error('Got unknown renderer type. The known are: RENDERER_2D and RENDERER_GL');
 }
 module.exports = createRenderer;
 },{"./Renderer2D":5,"./RendererGL":6,"./constants":15,"./internal/get_renderer_type":22,"./internal/get_webgl":23,"./options":88,"./report":89}],17:[function(require,module,exports){
@@ -1525,9 +1525,7 @@ var constants = require('../constants');
 if (typeof platform === 'undefined') {
     var platform;
     try {
-        platform = function () {
-            throw new Error('Cannot find module \'platform\' from \'/home/silent/git/lib/v6.js/internal\'');
-        }();
+        platform = require('platform');
     } catch (error) {
     }
 }
@@ -1540,12 +1538,12 @@ function getRendererType() {
         touchable = 'ontouchend' in window;
     }
     if (touchable && !safari) {
-        return constants.RENDERER_GL;
+        return constants.get('RENDERER_GL');
     }
-    return constants.RENDERER_2D;
+    return constants.get('RENDERER_2D');
 }
 module.exports = once(getRendererType);
-},{"../constants":15,"peako/once":78}],23:[function(require,module,exports){
+},{"../constants":15,"peako/once":78,"platform":"platform"}],23:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 function getWebGL() {
@@ -1567,8 +1565,8 @@ module.exports = once(getWebGL);
 var constants = require('../constants');
 var copyDrawingSettings = require('./copy_drawing_settings');
 var defaultDrawingSettings = {
-        _rectAlignX: constants.LEFT,
-        _rectAlignY: constants.TOP,
+        _rectAlignX: constants.get('LEFT'),
+        _rectAlignY: constants.get('TOP'),
         _lineWidth: 2,
         _doStroke: true,
         _doFill: true
@@ -2911,7 +2909,7 @@ module.exports = function getType(value) {
 },{"./create":49}],88:[function(require,module,exports){
 'use strict';
 var color = require('./colors/RGBA');
-var type = require('./constants').RENDERER_2D;
+var type = require('./constants').get('RENDERER_2D');
 var options = {
         settings: {
             color: color,

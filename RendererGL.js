@@ -29,7 +29,7 @@ var square = new Float32Array( [
  * @param {object} options {@link v6.options}
  */
 function RendererGL ( options ) {
-  AbstractRenderer.call( this, ( options = defaults( options_, options ) ), constants.RENDERER_GL );
+  AbstractRenderer.call( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_GL' ) );
 
   /**
    * Эта матрица используется для таких методов как {@link v6.RendererGL#rotate}, {@link v6.RendererGL#transform}, и т.п.

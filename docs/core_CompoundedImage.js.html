@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Interface: IUniform</title>
+    <title>JSDoc: Source: core/CompoundedImage.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,97 +17,55 @@
 
 <div id="main">
 
-    <h1 class="page-title">Interface: IUniform</h1>
+    <h1 class="page-title">Source: core/CompoundedImage.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>IUniform</h2>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * @constructor v6.CompoundedImage
+ * @param {v6.Image|v6.CompoundedImage} image
+ * @param {number}                      x
+ * @param {number}                      y
+ * @param {number}                      w
+ * @param {number}                      h
+ * @param {number}                      dw
+ * @param {number}                      dh
+ */
+function CompoundedImage ( image, x, y, w, h, dw, dh )
+{
+  this.image = image;
+  this.x     = x;
+  this.y     = y;
+  this.w     = w;
+  this.h     = h;
+  this.dw    = dw;
+  this.dh    = dh;
+}
 
-        
+CompoundedImage.prototype = {
+  /**
+   * @method v6.CompoundedImage#get
+   * @return {v6.Image}
+   */
+  get: function get ()
+  {
+    return this.image.get();
+  },
 
+  constructor: CompoundedImage
+};
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line6">line 6</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = CompoundedImage;
+</code></pre>
+        </article>
+    </section>
 
 
 

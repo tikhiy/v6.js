@@ -1,16 +1,1366 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
+var defaultTo = require('peako/default-to');
+var Vector2D = require('./math/Vector2D');
+function Camera(renderer, options) {
+    if (!options) {
+        options = {};
+    }
+    this.xSpeed = defaultTo(options.xSpeed, 1);
+    this.ySpeed = defaultTo(options.ySpeed, 1);
+    this.zoomInSpeed = defaultTo(options.zoomInSpeed, 1);
+    this.zoomOutSpeed = defaultTo(options.zoomOutSpeed, 1);
+    this.zoom = defaultTo(options.zoom, 1);
+    this.minZoom = defaultTo(options.minZoom, 1);
+    this.maxZoom = defaultTo(options.maxZoom, 1);
+    this.linearZoomIn = defaultTo(options.linearZoomIn, true);
+    this.linearZoomOut = defaultTo(options.linearZoomOut, true);
+    this.offset = options.offset;
+    if (renderer) {
+        if (!this.offset) {
+            this.offset = new Vector2D(renderer.w * 0.5, renderer.h * 0.5);
+        }
+        this.renderer = renderer;
+    } else if (!this.offset) {
+        this.offset = new Vector2D();
+    }
+    this.position = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ];
+}
+Camera.prototype = {
+    update: function update() {
+        var pos = this.position;
+        if (pos[0] !== pos[2]) {
+            pos[0] += (pos[2] - pos[0]) * this.xSpeed;
+        }
+        if (pos[1] !== pos[3]) {
+            pos[1] += (pos[3] - pos[1]) * this.ySpeed;
+        }
+        return this;
+    },
+    lookAt: function lookAt(at) {
+        var pos = this.position;
+        var off = this.offset;
+        pos[2] = off.x / this.zoom - at.x;
+        pos[3] = off.y / this.zoom - at.y;
+        pos[4] = at.x;
+        pos[5] = at.y;
+        return this;
+    },
+    shouldLookAt: function shouldLookAt() {
+        return new Vector2D(this.position[4], this.position[5]);
+    },
+    looksAt: function looksAt() {
+        var x = (this.offset.x - this.position[0] * this.zoom) / this.zoom;
+        var y = (this.offset.y - this.position[1] * this.zoom) / this.zoom;
+        return new Vector2D(x, y);
+    },
+    sees: function sees(x, y, w, h, renderer) {
+        var off = this.offset;
+        var at = this.looksAt();
+        if (!renderer) {
+            renderer = this.renderer;
+        }
+        return x + w > at.x - off.x / this.zoom && x < at.x + (renderer.w - off.x) / this.zoom && y + h > at.y - off.y / this.zoom && y < at.y + (renderer.h - off.y) / this.zoom;
+    },
+    zoomIn: function zoomIn() {
+        var speed;
+        if (this.zoom !== this.maxZoom) {
+            if (this.linearZoomIn) {
+                speed = this.zoomInSpeed * this.zoom;
+            } else {
+                speed = this.zoomInSpeed;
+            }
+            this.zoom = Math.min(this.zoom + speed, this.maxZoom);
+        }
+    },
+    zoomOut: function zoomOut() {
+        var speed;
+        if (this.zoom !== this.minZoom) {
+            if (this.linearZoomOut) {
+                speed = this.zoomOutSpeed * this.zoom;
+            } else {
+                speed = this.zoomOutSpeed;
+            }
+            this.zoom = Math.max(this.zoom - speed, this.minZoom);
+        }
+    },
+    constructor: Camera
+};
+module.exports = Camera;
+},{"./math/Vector2D":20,"peako/default-to":60}],2:[function(require,module,exports){
+'use strict';
+function CompoundedImage(image, x, y, w, h, dw, dh) {
+    this.image = image;
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.dw = dw;
+    this.dh = dh;
+}
+CompoundedImage.prototype = {
+    get: function get() {
+        return this.image.get();
+    },
+    constructor: CompoundedImage
+};
+module.exports = CompoundedImage;
+},{}],3:[function(require,module,exports){
+'use strict';
+var report = require('./internal/report');
+var CompoundedImage = require('./CompoundedImage');
+function Image(url) {
+    var self = this;
+    this.loaded = false;
+    this.x = 0;
+    this.y = 0;
+    if (typeof HTMLImageElement !== 'undefined' && url instanceof HTMLImageElement) {
+        if (url.src) {
+            if (url.complete) {
+                this.onload();
+            } else if (url.addEventListener) {
+                url.addEventListener('load', function onload() {
+                    url.removeEventListener('load', onload);
+                    self.onload();
+                });
+            } else {
+                report('`new v6.Image(image: HTMLImageElement)`: do `image.onload()` in your "load" event listener');
+            }
+            this.url = url.src;
+        } else {
+            this.url = '';
+        }
+        this.image = url;
+    } else if (typeof url === 'string') {
+        this.image = document.createElement('img');
+        this.url = url;
+        this.load();
+    } else {
+        throw TypeError('`new v6.Image()`: first argument must be a string or HTMLImageElement object');
+    }
+}
+Image.prototype = {
+    onload: function onload(_e) {
+        if (_e) {
+            this.image.onload = null;
+        }
+        this.w = this.dw = this.image.width;
+        this.h = this.dh = this.image.height;
+        this.loaded = true;
+    },
+    load: function load(url) {
+        if (!this.loaded) {
+            this.image.onload = this.onload.bind(this);
+            this.image.src = this.url = this.url || url || '';
+        }
+        return this;
+    },
+    get: function get() {
+        return this;
+    },
+    constructor: Image
+};
+Image.stretch = function stretch(image, w, h) {
+    var x = h / image.h * image.w;
+    if (x < w) {
+        h = w / image.w * image.h;
+    } else {
+        w = x;
+    }
+    return new CompoundedImage(image.get(), image.x, image.y, image.w, image.h, w, h);
+};
+Image.cut = function cut(image, x, y, dw, dh) {
+    var w = image.w / image.dw * dw;
+    var h = image.h / image.dh * dh;
+    x += image.x;
+    if (x + w > image.x + image.w) {
+        throw Error('v6.Image.cut: cannot cut the image because the new image X or W is out of bounds');
+    }
+    y += image.y;
+    if (y + h > image.y + image.h) {
+        throw Error('v6.Image.cut: cannot cut the image because the new image Y or H is out of bounds');
+    }
+    return new CompoundedImage(image.get(), x, y, w, h, dw, dh);
+};
+module.exports = Image;
+},{"./CompoundedImage":2,"./internal/report":17}],4:[function(require,module,exports){
+'use strict';
+var createProgram = require('./internal/create_program');
+var createShader = require('./internal/create_shader');
+function ShaderProgram(sources, gl) {
+    var vert = createShader(sources.vert, gl.VERTEX_SHADER, gl);
+    var frag = createShader(sources.frag, gl.FRAGMENT_SHADER, gl);
+    this._program = createProgram(vert, frag, gl);
+    this._gl = gl;
+    this._uniforms = {};
+    this._attrs = {};
+    this._uniformIndex = gl.getProgramParameter(this._program, gl.ACTIVE_UNIFORMS);
+    this._attrIndex = gl.getProgramParameter(this._program, gl.ACTIVE_ATTRIBUTES);
+}
+ShaderProgram.prototype = {
+    use: function use() {
+        this._gl.useProgram(this._program);
+        return this;
+    },
+    pointer: function pointer(name, size, type, normalized, stride, offset) {
+        var location = this.getAttr(name).location;
+        this._gl.enableVertexAttribArray(location);
+        this._gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
+        return this;
+    },
+    getUniform: function getUniform(name) {
+        var uniform = this._uniforms[name];
+        var index, info;
+        if (uniform) {
+            return uniform;
+        }
+        while (--this._uniformIndex >= 0) {
+            info = this._gl.getActiveUniform(this._program, this._uniformIndex);
+            uniform = {
+                location: this._gl.getUniformLocation(this._program, info.name),
+                size: info.size,
+                type: info.type
+            };
+            if (info.size > 1 && ~(index = info.name.indexOf('['))) {
+                uniform.name = info.name.slice(0, index);
+            } else {
+                uniform.name = info.name;
+            }
+            this._uniforms[uniform.name] = uniform;
+            if (uniform.name === name) {
+                return uniform;
+            }
+        }
+        throw ReferenceError('No "' + name + '" uniform found');
+    },
+    getAttr: function getAttr(name) {
+        var attr = this._attrs[name];
+        if (attr) {
+            return attr;
+        }
+        while (--this._attrIndex >= 0) {
+            attr = this._gl.getActiveAttrib(this._program, this._attrIndex);
+            attr.location = this._gl.getAttribLocation(this._program, name);
+            this._attrs[name] = attr;
+            if (attr.name === name) {
+                return attr;
+            }
+        }
+        throw ReferenceError('No "' + name + '" attribute found');
+    },
+    constructor: ShaderProgram
+};
+ShaderProgram.prototype.setUniform = function setUniform(name, value) {
+    var uniform = this.getUniform(name);
+    var _gl = this._gl;
+    switch (uniform.type) {
+    case _gl.BOOL:
+    case _gl.INT:
+        if (uniform.size > 1) {
+            _gl.uniform1iv(uniform.location, value);
+        } else {
+            _gl.uniform1i(uniform.location, value);
+        }
+        break;
+    case _gl.FLOAT:
+        if (uniform.size > 1) {
+            _gl.uniform1fv(uniform.location, value);
+        } else {
+            _gl.uniform1f(uniform.location, value);
+        }
+        break;
+    case _gl.FLOAT_MAT2:
+        _gl.uniformMatrix2fv(uniform.location, false, value);
+        break;
+    case _gl.FLOAT_MAT3:
+        _gl.uniformMatrix3fv(uniform.location, false, value);
+        break;
+    case _gl.FLOAT_MAT4:
+        _gl.uniformMatrix4fv(uniform.location, false, value);
+        break;
+    case _gl.FLOAT_VEC2:
+        if (uniform.size > 1) {
+            _gl.uniform2fv(uniform.location, value);
+        } else {
+            _gl.uniform2f(uniform.location, value[0], value[1]);
+        }
+        break;
+    case _gl.FLOAT_VEC3:
+        if (uniform.size > 1) {
+            _gl.uniform3fv(uniform.location, value);
+        } else {
+            _gl.uniform3f(uniform.location, value[0], value[1], value[2]);
+        }
+        break;
+    case _gl.FLOAT_VEC4:
+        if (uniform.size > 1) {
+            _gl.uniform4fv(uniform.location, value);
+        } else {
+            _gl.uniform4f(uniform.location, value[0], value[1], value[2], value[3]);
+        }
+        break;
+    default:
+        throw TypeError('The uniform type is not supported');
+    }
+    return this;
+};
+module.exports = ShaderProgram;
+},{"./internal/create_program":14,"./internal/create_shader":15}],5:[function(require,module,exports){
+'use strict';
+var LightEmitter = require('light_emitter');
+var timestamp = require('peako/timestamp');
+var timer = require('peako/timer');
+function Ticker() {
+    var self = this;
+    LightEmitter.call(this);
+    this.lastRequestAnimationFrameID = 0;
+    this.lastRequestTime = 0;
+    this.skippedTime = 0;
+    this.totalTime = 0;
+    this.running = false;
+    function start(_now) {
+        var elapsedTime;
+        if (!self.running) {
+            if (!_now) {
+                self.lastRequestAnimationFrameID = timer.request(start);
+                self.lastRequestTime = timestamp();
+                self.running = true;
+            }
+            return this;
+        }
+        if (!_now) {
+            _now = timestamp();
+        }
+        elapsedTime = Math.min(1, (_now - self.lastRequestTime) * 0.001);
+        self.skippedTime += elapsedTime;
+        self.totalTime += elapsedTime;
+        while (self.skippedTime >= self.step && self.running) {
+            self.skippedTime -= self.step;
+            self.emit('update', self.step, _now);
+        }
+        self.emit('render', elapsedTime, _now);
+        self.lastRequestTime = _now;
+        self.lastRequestAnimationFrameID = timer.request(start);
+        return this;
+    }
+    this.start = start;
+    this.fps(60);
+}
+Ticker.prototype = Object.create(LightEmitter.prototype);
+Ticker.prototype.constructor = Ticker;
+Ticker.prototype.fps = function fps(fps) {
+    this.step = 1 / fps;
+    return this;
+};
+Ticker.prototype.clear = function clear() {
+    this.skippedTime = 0;
+    return this;
+};
+Ticker.prototype.stop = function stop() {
+    this.running = false;
+    return this;
+};
+module.exports = Ticker;
+},{"light_emitter":37,"peako/timer":90,"peako/timestamp":91}],6:[function(require,module,exports){
+'use strict';
+var mat3 = require('./mat3');
+function Transform() {
+    this.matrix = mat3.identity();
+    this._index = -1;
+    this._stack = [];
+}
+Transform.prototype = {
+    save: function save() {
+        if (++this._index < this._stack.length) {
+            mat3.copy(this._stack[this._index], this.matrix);
+        } else {
+            this._stack.push(mat3.clone(this.matrix));
+        }
+    },
+    restore: function restore() {
+        if (this._index >= 0) {
+            mat3.copy(this.matrix, this._stack[this._index--]);
+        } else {
+            mat3.setIdentity(this.matrix);
+        }
+    },
+    setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
+        mat3.setTransform(this.matrix, m11, m12, m21, m22, dx, dy);
+    },
+    translate: function translate(x, y) {
+        mat3.translate(this.matrix, x, y);
+    },
+    rotate: function rotate(angle) {
+        mat3.rotate(this.matrix, angle);
+    },
+    scale: function scale(x, y) {
+        mat3.scale(this.matrix, x, y);
+    },
+    transform: function transform(m11, m12, m21, m22, dx, dy) {
+        mat3.transform(this.matrix, m11, m12, m21, m22, dx, dy);
+    },
+    constructor: Transform
+};
+module.exports = Transform;
+},{"./mat3":18}],7:[function(require,module,exports){
+'use strict';
+module.exports = HSLA;
+var clamp = require('peako/clamp');
+var parse = require('./internal/parse');
+var RGBA = require('./RGBA');
+function HSLA(h, s, l, a) {
+    this.set(h, s, l, a);
+}
+HSLA.prototype = {
+    perceivedBrightness: function perceivedBrightness() {
+        return this.rgba().perceivedBrightness();
+    },
+    luminance: function luminance() {
+        return this.rgba().luminance();
+    },
+    brightness: function brightness() {
+        return this.rgba().brightness();
+    },
+    toString: function toString() {
+        return 'hsla(' + this[0] + ', ' + this[1] + '%, ' + this[2] + '%, ' + this[3] + ')';
+    },
+    set: function set(h, s, l, a) {
+        switch (true) {
+        case typeof h === 'string':
+            h = parse(h);
+        case typeof h === 'object' && h != null:
+            if (h.type !== this.type) {
+                h = h[this.type]();
+            }
+            this[0] = h[0];
+            this[1] = h[1];
+            this[2] = h[2];
+            this[3] = h[3];
+            break;
+        default:
+            switch (void 0) {
+            case h:
+                a = 1;
+                l = s = h = 0;
+                break;
+            case s:
+                a = 1;
+                l = Math.floor(h);
+                s = h = 0;
+                break;
+            case l:
+                a = s;
+                l = Math.floor(h);
+                s = h = 0;
+                break;
+            case a:
+                a = 1;
+            default:
+                h = Math.floor(h);
+                s = Math.floor(s);
+                l = Math.floor(l);
+            }
+            this[0] = h;
+            this[1] = s;
+            this[2] = l;
+            this[3] = a;
+        }
+        return this;
+    },
+    rgba: function rgba() {
+        var rgba = new RGBA();
+        var h = this[0] % 360 / 360, s = this[1] * 0.01, l = this[2] * 0.01;
+        var tr = h + 1 / 3, tg = h, tb = h - 1 / 3;
+        var q;
+        if (l < 0.5) {
+            q = l * (1 + s);
+        } else {
+            q = l + s - l * s;
+        }
+        var p = 2 * l - q;
+        if (tr < 0) {
+            ++tr;
+        }
+        if (tg < 0) {
+            ++tg;
+        }
+        if (tb < 0) {
+            ++tb;
+        }
+        if (tr > 1) {
+            --tr;
+        }
+        if (tg > 1) {
+            --tg;
+        }
+        if (tb > 1) {
+            --tb;
+        }
+        rgba[0] = foo(tr, p, q);
+        rgba[1] = foo(tg, p, q);
+        rgba[2] = foo(tb, p, q);
+        rgba[3] = this[3];
+        return rgba;
+    },
+    lerp: function lerp(h, s, l, value) {
+        var color = new HSLA();
+        color[0] = h;
+        color[1] = s;
+        color[2] = l;
+        return this.lerpColor(color, value);
+    },
+    lerpColor: function lerpColor(color, value) {
+        return this.rgba().lerpColor(color, value).hsla();
+    },
+    shade: function shade(value) {
+        var hsla = new HSLA();
+        hsla[0] = this[0];
+        hsla[1] = this[1];
+        hsla[2] = clamp(this[2] + value, 0, 100);
+        hsla[3] = this[3];
+        return hsla;
+    },
+    constructor: HSLA,
+    type: 'hsla'
+};
+function foo(t, p, q) {
+    if (t < 1 / 6) {
+        return Math.round((p + (q - p) * 6 * t) * 255);
+    }
+    if (t < 0.5) {
+        return Math.round(q * 255);
+    }
+    if (t < 2 / 3) {
+        return Math.round((p + (q - p) * (2 / 3 - t) * 6) * 255);
+    }
+    return Math.round(p * 255);
+}
+},{"./RGBA":8,"./internal/parse":11,"peako/clamp":53}],8:[function(require,module,exports){
+'use strict';
+module.exports = RGBA;
+var parse = require('./internal/parse');
+var HSLA = require('./HSLA');
+function RGBA(r, g, b, a) {
+    this.set(r, g, b, a);
+}
+RGBA.prototype = {
+    perceivedBrightness: function perceivedBrightness() {
+        var r = this[0], g = this[1], b = this[2];
+        return Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b);
+    },
+    luminance: function luminance() {
+        return this[0] * 0.2126 + this[1] * 0.7152 + this[2] * 0.0722;
+    },
+    brightness: function brightness() {
+        return 0.299 * this[0] + 0.587 * this[1] + 0.114 * this[2];
+    },
+    toString: function toString() {
+        return 'rgba(' + this[0] + ', ' + this[1] + ', ' + this[2] + ', ' + this[3] + ')';
+    },
+    set: function set(r, g, b, a) {
+        switch (true) {
+        case typeof r === 'string':
+            r = parse(r);
+        case typeof r === 'object' && r != null:
+            if (r.type !== this.type) {
+                r = r[this.type]();
+            }
+            this[0] = r[0];
+            this[1] = r[1];
+            this[2] = r[2];
+            this[3] = r[3];
+            break;
+        default:
+            switch (void 0) {
+            case r:
+                a = 1;
+                b = g = r = 0;
+                break;
+            case g:
+                a = 1;
+                b = g = r = Math.floor(r);
+                break;
+            case b:
+                a = g;
+                b = g = r = Math.floor(r);
+                break;
+            case a:
+                a = 1;
+            default:
+                r = Math.floor(r);
+                g = Math.floor(g);
+                b = Math.floor(b);
+            }
+            this[0] = r;
+            this[1] = g;
+            this[2] = b;
+            this[3] = a;
+        }
+        return this;
+    },
+    hsla: function hsla() {
+        var hsla = new HSLA();
+        var r = this[0] / 255, g = this[1] / 255, b = this[2] / 255;
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var l = (max + min) * 50, h, s;
+        var diff = max - min;
+        if (diff) {
+            if (l > 50) {
+                s = diff / (2 - max - min);
+            } else {
+                s = diff / (max + min);
+            }
+            switch (max) {
+            case r:
+                if (g < b) {
+                    h = 1.0472 * (g - b) / diff + 6.2832;
+                } else {
+                    h = 1.0472 * (g - b) / diff;
+                }
+                break;
+            case g:
+                h = 1.0472 * (b - r) / diff + 2.0944;
+                break;
+            default:
+                h = 1.0472 * (r - g) / diff + 4.1888;
+            }
+            h = Math.round(h * 360 / 6.2832);
+            s = Math.round(s * 100);
+        } else {
+            h = s = 0;
+        }
+        hsla[0] = h;
+        hsla[1] = s;
+        hsla[2] = Math.round(l);
+        hsla[3] = this[3];
+        return hsla;
+    },
+    rgba: function rgba() {
+        return this;
+    },
+    lerp: function lerp(r, g, b, value) {
+        r = lerp(this[0], r, value);
+        g = lerp(this[0], g, value);
+        b = lerp(this[0], b, value);
+        return new RGBA(r, g, b, this[3]);
+    },
+    lerpColor: function lerpColor(color, value) {
+        var r, g, b;
+        if (typeof color !== 'object') {
+            color = parse(color);
+        }
+        if (color.type !== 'rgba') {
+            color = color.rgba();
+        }
+        r = color[0];
+        g = color[1];
+        b = color[2];
+        return this.lerp(r, g, b, value);
+    },
+    shade: function shade(value) {
+        return this.hsla().shade(value).rgba();
+    },
+    constructor: RGBA,
+    type: 'rgba'
+};
+},{"./HSLA":7,"./internal/parse":11}],9:[function(require,module,exports){
+'use strict';
+var parse = require('./internal/parse');
+var RGBA = require('./RGBA');
+function color(r, g, b, a) {
+    if (typeof r !== 'string') {
+        return new RGBA(r, g, b, a);
+    }
+    return parse(r);
+}
+module.exports = color;
+},{"./RGBA":8,"./internal/parse":11}],10:[function(require,module,exports){
+'use strict';
+var colors = {
+        aliceblue: 'f0f8ffff',
+        antiquewhite: 'faebd7ff',
+        aqua: '00ffffff',
+        aquamarine: '7fffd4ff',
+        azure: 'f0ffffff',
+        beige: 'f5f5dcff',
+        bisque: 'ffe4c4ff',
+        black: '000000ff',
+        blanchedalmond: 'ffebcdff',
+        blue: '0000ffff',
+        blueviolet: '8a2be2ff',
+        brown: 'a52a2aff',
+        burlywood: 'deb887ff',
+        cadetblue: '5f9ea0ff',
+        chartreuse: '7fff00ff',
+        chocolate: 'd2691eff',
+        coral: 'ff7f50ff',
+        cornflowerblue: '6495edff',
+        cornsilk: 'fff8dcff',
+        crimson: 'dc143cff',
+        cyan: '00ffffff',
+        darkblue: '00008bff',
+        darkcyan: '008b8bff',
+        darkgoldenrod: 'b8860bff',
+        darkgray: 'a9a9a9ff',
+        darkgreen: '006400ff',
+        darkkhaki: 'bdb76bff',
+        darkmagenta: '8b008bff',
+        darkolivegreen: '556b2fff',
+        darkorange: 'ff8c00ff',
+        darkorchid: '9932ccff',
+        darkred: '8b0000ff',
+        darksalmon: 'e9967aff',
+        darkseagreen: '8fbc8fff',
+        darkslateblue: '483d8bff',
+        darkslategray: '2f4f4fff',
+        darkturquoise: '00ced1ff',
+        darkviolet: '9400d3ff',
+        deeppink: 'ff1493ff',
+        deepskyblue: '00bfffff',
+        dimgray: '696969ff',
+        dodgerblue: '1e90ffff',
+        feldspar: 'd19275ff',
+        firebrick: 'b22222ff',
+        floralwhite: 'fffaf0ff',
+        forestgreen: '228b22ff',
+        fuchsia: 'ff00ffff',
+        gainsboro: 'dcdcdcff',
+        ghostwhite: 'f8f8ffff',
+        gold: 'ffd700ff',
+        goldenrod: 'daa520ff',
+        gray: '808080ff',
+        green: '008000ff',
+        greenyellow: 'adff2fff',
+        honeydew: 'f0fff0ff',
+        hotpink: 'ff69b4ff',
+        indianred: 'cd5c5cff',
+        indigo: '4b0082ff',
+        ivory: 'fffff0ff',
+        khaki: 'f0e68cff',
+        lavender: 'e6e6faff',
+        lavenderblush: 'fff0f5ff',
+        lawngreen: '7cfc00ff',
+        lemonchiffon: 'fffacdff',
+        lightblue: 'add8e6ff',
+        lightcoral: 'f08080ff',
+        lightcyan: 'e0ffffff',
+        lightgoldenrodyellow: 'fafad2ff',
+        lightgrey: 'd3d3d3ff',
+        lightgreen: '90ee90ff',
+        lightpink: 'ffb6c1ff',
+        lightsalmon: 'ffa07aff',
+        lightseagreen: '20b2aaff',
+        lightskyblue: '87cefaff',
+        lightslateblue: '8470ffff',
+        lightslategray: '778899ff',
+        lightsteelblue: 'b0c4deff',
+        lightyellow: 'ffffe0ff',
+        lime: '00ff00ff',
+        limegreen: '32cd32ff',
+        linen: 'faf0e6ff',
+        magenta: 'ff00ffff',
+        maroon: '800000ff',
+        mediumaquamarine: '66cdaaff',
+        mediumblue: '0000cdff',
+        mediumorchid: 'ba55d3ff',
+        mediumpurple: '9370d8ff',
+        mediumseagreen: '3cb371ff',
+        mediumslateblue: '7b68eeff',
+        mediumspringgreen: '00fa9aff',
+        mediumturquoise: '48d1ccff',
+        mediumvioletred: 'c71585ff',
+        midnightblue: '191970ff',
+        mintcream: 'f5fffaff',
+        mistyrose: 'ffe4e1ff',
+        moccasin: 'ffe4b5ff',
+        navajowhite: 'ffdeadff',
+        navy: '000080ff',
+        oldlace: 'fdf5e6ff',
+        olive: '808000ff',
+        olivedrab: '6b8e23ff',
+        orange: 'ffa500ff',
+        orangered: 'ff4500ff',
+        orchid: 'da70d6ff',
+        palegoldenrod: 'eee8aaff',
+        palegreen: '98fb98ff',
+        paleturquoise: 'afeeeeff',
+        palevioletred: 'd87093ff',
+        papayawhip: 'ffefd5ff',
+        peachpuff: 'ffdab9ff',
+        peru: 'cd853fff',
+        pink: 'ffc0cbff',
+        plum: 'dda0ddff',
+        powderblue: 'b0e0e6ff',
+        purple: '800080ff',
+        red: 'ff0000ff',
+        rosybrown: 'bc8f8fff',
+        royalblue: '4169e1ff',
+        saddlebrown: '8b4513ff',
+        salmon: 'fa8072ff',
+        sandybrown: 'f4a460ff',
+        seagreen: '2e8b57ff',
+        seashell: 'fff5eeff',
+        sienna: 'a0522dff',
+        silver: 'c0c0c0ff',
+        skyblue: '87ceebff',
+        slateblue: '6a5acdff',
+        slategray: '708090ff',
+        snow: 'fffafaff',
+        springgreen: '00ff7fff',
+        steelblue: '4682b4ff',
+        tan: 'd2b48cff',
+        teal: '008080ff',
+        thistle: 'd8bfd8ff',
+        tomato: 'ff6347ff',
+        turquoise: '40e0d0ff',
+        violet: 'ee82eeff',
+        violetred: 'd02090ff',
+        wheat: 'f5deb3ff',
+        white: 'ffffffff',
+        whitesmoke: 'f5f5f5ff',
+        yellow: 'ffff00ff',
+        yellowgreen: '9acd32ff',
+        transparent: '00000000'
+    };
+module.exports = colors;
+},{}],11:[function(require,module,exports){
+'use strict';
+var RGBA = require('../RGBA');
+var HSLA = require('../HSLA');
+var colors = require('./colors');
+var parsed = Object.create(null);
+var TRANSPARENT = [
+        0,
+        0,
+        0,
+        0
+    ];
+var regexps = {
+        hex3: /^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/,
+        hex: /^#([0-9a-f]{6})([0-9a-f]{2})?$/,
+        rgb: /^rgb\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$|^\s*rgba\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
+        hsl: /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/
+    };
+module.exports = parse;
+function parse(string) {
+    var cache = parsed[string] || parsed[string = string.trim().toLowerCase()];
+    if (!cache) {
+        if (cache = colors[string]) {
+            cache = new ColorData(parseHex(cache), RGBA);
+        } else if ((cache = regexps.hex.exec(string)) || (cache = regexps.hex3.exec(string))) {
+            cache = new ColorData(parseHex(formatHex(cache)), RGBA);
+        } else if (cache = regexps.rgb.exec(string)) {
+            cache = new ColorData(compactMatch(cache), RGBA);
+        } else if (cache = regexps.hsl.exec(string)) {
+            cache = new ColorData(compactMatch(cache), HSLA);
+        } else {
+            throw SyntaxError(string + ' is not a valid syntax');
+        }
+        parsed[string] = cache;
+    }
+    return new cache.color(cache[0], cache[1], cache[2], cache[3]);
+}
+function formatHex(match) {
+    var r, g, b, a;
+    if (match.length === 3) {
+        return match[1] + (match[2] || 'ff');
+    }
+    r = match[1];
+    g = match[2];
+    b = match[3];
+    a = match[4] || 'f';
+    return r + r + g + g + b + b + a + a;
+}
+function parseHex(hex) {
+    if (hex == 0) {
+        return TRANSPARENT;
+    }
+    hex = parseInt(hex, 16);
+    return [
+        hex >> 24 & 255,
+        hex >> 16 & 255,
+        hex >> 8 & 255,
+        (hex & 255) / 255
+    ];
+}
+function compactMatch(match) {
+    if (match[7]) {
+        return [
+            Number(match[4]),
+            Number(match[5]),
+            Number(match[6]),
+            Number(match[7])
+        ];
+    }
+    return [
+        Number(match[1]),
+        Number(match[2]),
+        Number(match[3])
+    ];
+}
+function ColorData(match, color) {
+    this[0] = match[0];
+    this[1] = match[1];
+    this[2] = match[2];
+    this[3] = match[3];
+    this.color = color;
+}
+},{"../HSLA":7,"../RGBA":8,"./colors":10}],12:[function(require,module,exports){
+'use strict';
+var _constants = {};
+var _counter = 0;
+function add(key) {
+    if (typeof _constants[key] !== 'undefined') {
+        throw Error('Cannot re-set (add) existing constant: ' + key);
+    }
+    _constants[key] = ++_counter;
+}
+function get(key) {
+    if (typeof _constants[key] === 'undefined') {
+        throw ReferenceError('Cannot get unknown constant: ' + key);
+    }
+    return _constants[key];
+}
+[
+    'RENDERER_AUTO',
+    'RENDERER_GL',
+    'RENDERER_2D',
+    'LEFT',
+    'TOP',
+    'CENTER',
+    'MIDDLE',
+    'RIGHT',
+    'BOTTOM'
+].forEach(add);
+exports.add = add;
+exports.get = get;
+},{}],13:[function(require,module,exports){
+'use strict';
+function createPolygon(sides) {
+    var i = Math.floor(sides);
+    var step = Math.PI * 2 / sides;
+    var vertices = new Float32Array(i * 2 + 2);
+    for (; i >= 0; --i) {
+        vertices[i * 2] = Math.cos(step * i);
+        vertices[1 + i * 2] = Math.sin(step * i);
+    }
+    return vertices;
+}
+module.exports = createPolygon;
+},{}],14:[function(require,module,exports){
+'use strict';
+function createProgram(vert, frag, gl) {
+    var program = gl.createProgram();
+    gl.attachShader(program, vert);
+    gl.attachShader(program, frag);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        throw Error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(program));
+    }
+    gl.validateProgram(program);
+    if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+        throw Error('Unable to validate the shader program: ' + gl.getProgramInfoLog(program));
+    }
+    return program;
+}
+module.exports = createProgram;
+},{}],15:[function(require,module,exports){
+'use strict';
+function createShader(source, type, gl) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw SyntaxError('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+    }
+    return shader;
+}
+module.exports = createShader;
+},{}],16:[function(require,module,exports){
+'use strict';
+},{}],17:[function(require,module,exports){
+'use strict';
+var noop = require('peako/noop');
+var report, reported;
+if (typeof console !== 'undefined' && console.warn) {
+    reported = {};
+    report = function report(message) {
+        if (reported[message]) {
+            return;
+        }
+        console.warn(message);
+        reported[message] = true;
+    };
+} else {
+    report = noop;
+}
+module.exports = report;
+},{"peako/noop":83}],18:[function(require,module,exports){
+'use strict';
+exports.identity = function identity() {
+    return [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+    ];
+};
+exports.setIdentity = function setIdentity(m1) {
+    m1[0] = 1;
+    m1[1] = 0;
+    m1[2] = 0;
+    m1[3] = 0;
+    m1[4] = 1;
+    m1[5] = 0;
+    m1[6] = 0;
+    m1[7] = 0;
+    m1[8] = 1;
+};
+exports.copy = function copy(m1, m2) {
+    m1[0] = m2[0];
+    m1[1] = m2[1];
+    m1[2] = m2[2];
+    m1[3] = m2[3];
+    m1[4] = m2[4];
+    m1[5] = m2[5];
+    m1[6] = m2[6];
+    m1[7] = m2[7];
+    m1[8] = m2[8];
+};
+exports.clone = function clone(m1) {
+    return [
+        m1[0],
+        m1[1],
+        m1[2],
+        m1[3],
+        m1[4],
+        m1[5],
+        m1[6],
+        m1[7],
+        m1[8]
+    ];
+};
+exports.translate = function translate(m1, x, y) {
+    m1[6] = x * m1[0] + y * m1[3] + m1[6];
+    m1[7] = x * m1[1] + y * m1[4] + m1[7];
+    m1[8] = x * m1[2] + y * m1[5] + m1[8];
+};
+exports.rotate = function rotate(m1, angle) {
+    var m10 = m1[0], m11 = m1[1], m12 = m1[2], m13 = m1[3], m14 = m1[4], m15 = m1[5];
+    var x = Math.cos(angle), y = Math.sin(angle);
+    m1[0] = x * m10 + y * m13;
+    m1[1] = x * m11 + y * m14;
+    m1[2] = x * m12 + y * m15;
+    m1[3] = x * m13 - y * m10;
+    m1[4] = x * m14 - y * m11;
+    m1[5] = x * m15 - y * m12;
+};
+exports.scale = function scale(m1, x, y) {
+    m1[0] *= x;
+    m1[1] *= x;
+    m1[2] *= x;
+    m1[3] *= y;
+    m1[4] *= y;
+    m1[5] *= y;
+};
+exports.transform = function transform(m1, m11, m12, m21, m22, dx, dy) {
+    m1[0] *= m11;
+    m1[1] *= m21;
+    m1[2] *= dx;
+    m1[3] *= m12;
+    m1[4] *= m22;
+    m1[5] *= dy;
+    m1[6] = 0;
+    m1[7] = 0;
+};
+exports.setTransform = function setTransform(m1, m11, m12, m21, m22, dx, dy) {
+    m1[0] = m11;
+    m1[1] = m12;
+    m1[3] = m21;
+    m1[4] = m22;
+    m1[6] = dx;
+    m1[7] = dy;
+};
+},{}],19:[function(require,module,exports){
+'use strict';
+var settings = require('../settings');
+function AbstractVector() {
+}
+AbstractVector.prototype = {
+    normalize: function normalize() {
+        var mag = this.mag();
+        if (mag && mag !== 1) {
+            this.div(mag);
+        }
+        return this;
+    },
+    setAngle: function setAngle(angle) {
+        var mag = this.mag();
+        if (settings.degrees) {
+            angle *= Math.PI / 180;
+        }
+        this.x = mag * Math.cos(angle);
+        this.y = mag * Math.sin(angle);
+        return this;
+    },
+    setMag: function setMag(value) {
+        return this.normalize().mul(value);
+    },
+    rotate: function rotate(angle) {
+        var x = this.x, y = this.y;
+        var c, s;
+        if (settings.degrees) {
+            angle *= Math.PI / 180;
+        }
+        c = Math.cos(angle);
+        s = Math.sin(angle);
+        this.x = x * c - y * s;
+        this.y = x * s + y * c;
+        return this;
+    },
+    getAngle: function getAngle() {
+        if (settings.degrees) {
+            return Math.atan2(this.y, this.x) * 180 / Math.PI;
+        }
+        return Math.atan2(this.y, this.x);
+    },
+    limit: function limit(value) {
+        var mag = this.magSq();
+        if (mag > value * value) {
+            this.div(Math.sqrt(mag)).mul(value);
+        }
+        return this;
+    },
+    mag: function mag() {
+        return Math.sqrt(this.magSq());
+    },
+    constructor: AbstractVector
+};
+AbstractVector._fromAngle = function _fromAngle(Vector, angle) {
+    if (settings.degrees) {
+        angle *= Math.PI / 180;
+    }
+    return new Vector(Math.cos(angle), Math.sin(angle));
+};
+module.exports = AbstractVector;
+},{"../settings":32}],20:[function(require,module,exports){
+'use strict';
+var settings = require('../settings');
+var AbstractVector = require('./AbstractVector');
+function Vector2D(x, y) {
+    this.set(x, y);
+}
+Vector2D.prototype = Object.create(AbstractVector.prototype);
+Vector2D.prototype.constructor = Vector2D;
+Vector2D.prototype.set = function set(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+    return this;
+};
+Vector2D.prototype.add = function add(x, y) {
+    this.x += x || 0;
+    this.y += y || 0;
+    return this;
+};
+Vector2D.prototype.sub = function sub(x, y) {
+    this.x -= x || 0;
+    this.y -= y || 0;
+    return this;
+};
+Vector2D.prototype.mul = function mul(value) {
+    this.x *= value;
+    this.y *= value;
+    return this;
+};
+Vector2D.prototype.div = function div(value) {
+    this.x /= value;
+    this.y /= value;
+    return this;
+};
+Vector2D.prototype.dot = function dot(x, y) {
+    return this.x * (x || 0) + this.y * (y || 0);
+};
+Vector2D.prototype.lerp = function (x, y, value) {
+    this.x += (x - this.x) * value || 0;
+    this.y += (y - this.y) * value || 0;
+    return this;
+};
+Vector2D.prototype.setVector = function setVector(vector) {
+    return this.set(vector.x, vector.y);
+};
+Vector2D.prototype.addVector = function addVector(vector) {
+    return this.add(vector.x, vector.y);
+};
+Vector2D.prototype.subVector = function subVector(vector) {
+    return this.sub(vector.x, vector.y);
+};
+Vector2D.prototype.mulVector = function mulVector(vector) {
+    this.x *= vector.x;
+    this.y *= vector.y;
+    return this;
+};
+Vector2D.prototype.divVector = function divVector(vector) {
+    this.x /= vector.x;
+    this.y /= vector.y;
+    return this;
+};
+Vector2D.prototype.dotVector = function dotVector(vector) {
+    return this.dot(vector.x, vector.y);
+};
+Vector2D.prototype.lerpVector = function lerpVector(vector, value) {
+    return this.lerp(vector.x, vector.y, value);
+};
+Vector2D.prototype.magSq = function magSq() {
+    return this.x * this.x + this.y * this.y;
+};
+Vector2D.prototype.clone = function clone() {
+    return new Vector2D(this.x, this.y);
+};
+Vector2D.prototype.dist = function dist(vector) {
+    var x = vector.x - this.x;
+    var y = vector.y - this.y;
+    return Math.sqrt(x * x + y * y);
+};
+Vector2D.prototype.toString = function toString() {
+    return 'Vector2D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ' }';
+};
+Vector2D.random = function random() {
+    var value;
+    if (settings.degrees) {
+        value = 360;
+    } else {
+        value = Math.PI * 2;
+    }
+    return Vector2D.fromAngle(Math.random() * value);
+};
+Vector2D.fromAngle = function fromAngle(angle) {
+    return AbstractVector._fromAngle(Vector2D, angle);
+};
+module.exports = Vector2D;
+},{"../settings":32,"./AbstractVector":19}],21:[function(require,module,exports){
+'use strict';
+var AbstractVector = require('./AbstractVector');
+function Vector3D(x, y, z) {
+    this.set(x, y, z);
+}
+Vector3D.prototype = Object.create(AbstractVector.prototype);
+Vector3D.prototype.constructor = Vector3D;
+Vector3D.prototype.set = function set(x, y, z) {
+    this.x = x || 0;
+    this.y = y || 0;
+    this.z = z || 0;
+    return this;
+};
+Vector3D.prototype.add = function add(x, y, z) {
+    this.x += x || 0;
+    this.y += y || 0;
+    this.z += z || 0;
+    return this;
+};
+Vector3D.prototype.sub = function sub(x, y, z) {
+    this.x -= x || 0;
+    this.y -= y || 0;
+    this.z -= z || 0;
+    return this;
+};
+Vector3D.prototype.mul = function mul(value) {
+    this.x *= value;
+    this.y *= value;
+    this.z *= value;
+    return this;
+};
+Vector3D.prototype.div = function div(value) {
+    this.x /= value;
+    this.y /= value;
+    this.z /= value;
+    return this;
+};
+Vector3D.prototype.dot = function dot(x, y, z) {
+    return this.x * (x || 0) + this.y * (y || 0) + this.z * (z || 0);
+};
+Vector3D.prototype.lerp = function (x, y, z, value) {
+    this.x += (x - this.x) * value || 0;
+    this.y += (y - this.y) * value || 0;
+    this.z += (z - this.z) * value || 0;
+    return this;
+};
+Vector3D.prototype.setVector = function setVector(vector) {
+    return this.set(vector.x, vector.y, vector.z);
+};
+Vector3D.prototype.addVector = function addVector(vector) {
+    return this.add(vector.x, vector.y, vector.z);
+};
+Vector3D.prototype.subVector = function subVector(vector) {
+    return this.sub(vector.x, vector.y, vector.z);
+};
+Vector3D.prototype.mulVector = function mulVector(vector) {
+    this.x *= vector.x;
+    this.y *= vector.y;
+    this.z *= vector.z;
+    return this;
+};
+Vector3D.prototype.divVector = function divVector(vector) {
+    this.x /= vector.x;
+    this.y /= vector.y;
+    this.z /= vector.z;
+    return this;
+};
+Vector3D.prototype.dotVector = function dotVector(vector) {
+    return this.dot(vector.x, vector.y, vector.z);
+};
+Vector3D.prototype.lerpVector = function lerpVector(vector, value) {
+    return this.lerp(vector.x, vector.y, vector.z, value);
+};
+Vector3D.prototype.magSq = function magSq() {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+};
+Vector3D.prototype.clone = function clone() {
+    return new Vector3D(this.x, this.y, this.z);
+};
+Vector3D.prototype.dist = function dist(vector) {
+    var x = vector.x - this.x;
+    var y = vector.y - this.y;
+    var z = vector.z - this.z;
+    return Math.sqrt(x * x + y * y + z * z);
+};
+Vector3D.prototype.toString = function toString() {
+    return 'Vector3D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ', ' + this.z.toFixed(2) + ' }';
+};
+Vector3D.random = function random() {
+    var theta = Math.random() * Math.PI * 2;
+    var z = Math.random() * 2 - 1;
+    var n = Math.sqrt(1 - z * z);
+    return new Vector3D(n * Math.cos(theta), n * Math.sin(theta), z);
+};
+Vector3D.fromAngle = function fromAngle(angle) {
+    return AbstractVector._fromAngle(Vector3D, angle);
+};
+module.exports = Vector3D;
+},{"./AbstractVector":19}],22:[function(require,module,exports){
+'use strict';
 var isObjectLike = require('peako/is-object-like');
 var getElementW = require('peako/get-element-w');
 var getElementH = require('peako/get-element-h');
+var constants = require('../constants');
+var createPolygon = require('../internal/create_polygon');
+var polygons = require('../internal/polygons');
 var setDefaultDrawingSettings = require('./internal/set_default_drawing_settings');
 var getWebGL = require('./internal/get_webgl');
 var copyDrawingSettings = require('./internal/copy_drawing_settings');
-var createPolygon = require('./internal/create_polygon');
-var polygons = require('./internal/polygons');
 var align = require('./internal/align');
-var constants = require('./constants');
-var options = require('./options');
+var options = require('./settings');
 function AbstractRenderer(options, type) {
     var context;
     if (options.canvas) {
@@ -257,202 +1607,13 @@ AbstractRenderer.prototype = {
     AbstractRenderer.prototype[name] = Function('a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;');
 });
 module.exports = AbstractRenderer;
-},{"./constants":15,"./internal/align":17,"./internal/copy_drawing_settings":18,"./internal/create_polygon":19,"./internal/get_webgl":23,"./internal/polygons":24,"./internal/set_default_drawing_settings":25,"./options":88,"peako/get-element-h":57,"peako/get-element-w":58,"peako/is-object-like":65}],2:[function(require,module,exports){
-'use strict';
-var defaultTo = require('peako/default-to');
-var Vector2D = require('./math/Vector2D');
-function Camera(renderer, options) {
-    if (!options) {
-        options = {};
-    }
-    this.xSpeed = defaultTo(options.xSpeed, 1);
-    this.ySpeed = defaultTo(options.ySpeed, 1);
-    this.zoomInSpeed = defaultTo(options.zoomInSpeed, 1);
-    this.zoomOutSpeed = defaultTo(options.zoomOutSpeed, 1);
-    this.zoom = defaultTo(options.zoom, 1);
-    this.minZoom = defaultTo(options.minZoom, 1);
-    this.maxZoom = defaultTo(options.maxZoom, 1);
-    this.useLinearZoomIn = defaultTo(options.useLinearZoomIn, true);
-    this.useLinearZoomOut = defaultTo(options.useLinearZoomOut, true);
-    this.offset = options.offset;
-    if (renderer) {
-        if (!this.offset) {
-            this.offset = new Vector2D(renderer.w * 0.5, renderer.h * 0.5);
-        }
-        this.renderer = renderer;
-    } else if (!this.offset) {
-        this.offset = new Vector2D();
-    }
-    this.position = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    ];
-}
-Camera.prototype = {
-    update: function update() {
-        var pos = this.position;
-        if (pos[0] !== pos[2]) {
-            pos[0] += (pos[2] - pos[0]) * this.xSpeed;
-        }
-        if (pos[1] !== pos[3]) {
-            pos[1] += (pos[3] - pos[1]) * this.ySpeed;
-        }
-        return this;
-    },
-    lookAt: function lookAt(at) {
-        var pos = this.position, off = this.offset;
-        pos[2] = off.x / this.zoom - (pos[4] = at.x);
-        pos[3] = off.y / this.zoom - (pos[5] = at.y);
-        return this;
-    },
-    shouldLookAt: function shouldLookAt() {
-        return new Vector2D(this.position[4], this.position[5]);
-    },
-    looksAt: function looksAt() {
-        var x = (this.offset.x - this.position[0] * this.zoom) / this.zoom;
-        var y = (this.offset.y - this.position[1] * this.zoom) / this.zoom;
-        return new Vector2D(x, y);
-    },
-    sees: function sees(x, y, w, h, renderer) {
-        var off = this.offset;
-        var at = this.looksAt();
-        if (!renderer) {
-            renderer = this.renderer;
-        }
-        return x + w > at.x - off.x / this.zoom && x < at.x + (renderer.w - off.x) / this.zoom && y + h > at.y - off.y / this.zoom && y < at.y + (renderer.h - off.y) / this.zoom;
-    },
-    zoomIn: function zoomIn() {
-        var spd;
-        if (this.zoom !== this.maxZoom) {
-            if (this.useLinearZoomIn) {
-                spd = this.zoomInSpeed * this.zoom;
-            } else {
-                spd = this.zoomInSpeed;
-            }
-            this.zoom = Math.min(this.zoom + spd, this.maxZoom);
-        }
-    },
-    zoomOut: function zoomOut() {
-        var spd;
-        if (this.zoom !== this.minZoom) {
-            if (this.useLinearZoomOut) {
-                spd = this.zoomOutSpeed * this.zoom;
-            } else {
-                spd = this.zoomOutSpeed;
-            }
-            this.zoom = Math.max(this.zoom - spd, this.minZoom);
-        }
-    },
-    constructor: Camera
-};
-module.exports = Camera;
-},{"./math/Vector2D":28,"peako/default-to":53}],3:[function(require,module,exports){
-'use strict';
-function CompoundedImage(image, x, y, w, h, dw, dh) {
-    this.image = image;
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.dw = dw;
-    this.dh = dh;
-}
-CompoundedImage.prototype = {
-    get: function get() {
-        return this.image.get();
-    },
-    constructor: CompoundedImage
-};
-module.exports = CompoundedImage;
-},{}],4:[function(require,module,exports){
-'use strict';
-var CompoundedImage = require('./CompoundedImage');
-var report = require('./report');
-function Image(url) {
-    var self = this;
-    this.loaded = false;
-    this.x = 0;
-    this.y = 0;
-    if (typeof HTMLImageElement !== 'undefined' && url instanceof HTMLImageElement) {
-        if (url.src) {
-            if (url.complete) {
-                this.onload();
-            } else if (url.addEventListener) {
-                url.addEventListener('load', function onload() {
-                    url.removeEventListener('load', onload);
-                    self.onload();
-                });
-            } else {
-                report('`new v6.Image(image: HTMLImageElement)`: do `image.onload()` in your "load" event listener');
-            }
-            this.url = url.src;
-        } else {
-            this.url = '';
-        }
-        this.image = url;
-    } else if (typeof url === 'string') {
-        this.image = document.createElement('img');
-        this.url = url;
-        this.load();
-    } else {
-        throw TypeError('`new v6.Image()`: first argument must be a string or HTMLImageElement object');
-    }
-}
-Image.prototype = {
-    onload: function onload(_e) {
-        if (_e) {
-            this.image.onload = null;
-        }
-        this.w = this.dw = this.image.width;
-        this.h = this.dh = this.image.height;
-        this.loaded = true;
-    },
-    load: function load(url) {
-        if (!this.loaded) {
-            this.image.onload = this.onload.bind(this);
-            this.image.src = this.url = this.url || url || '';
-        }
-        return this;
-    },
-    get: function get() {
-        return this;
-    },
-    constructor: Image
-};
-Image.stretch = function stretch(image, w, h) {
-    var x = h / image.h * image.w;
-    if (x < w) {
-        h = w / image.w * image.h;
-    } else {
-        w = x;
-    }
-    return new CompoundedImage(image.get(), image.x, image.y, image.w, image.h, w, h);
-};
-Image.cut = function cut(image, x, y, dw, dh) {
-    var w = image.w / image.dw * dw;
-    var h = image.h / image.dh * dh;
-    x += image.x;
-    if (x + w > image.x + image.w) {
-        throw Error('v6.Image.cut: cannot cut the image because the new image X or W is out of bounds');
-    }
-    y += image.y;
-    if (y + h > image.y + image.h) {
-        throw Error('v6.Image.cut: cannot cut the image because the new image Y or H is out of bounds');
-    }
-    return new CompoundedImage(image.get(), x, y, w, h, dw, dh);
-};
-module.exports = Image;
-},{"./CompoundedImage":3,"./report":89}],5:[function(require,module,exports){
+},{"../constants":12,"../internal/create_polygon":13,"../internal/polygons":16,"./internal/align":26,"./internal/copy_drawing_settings":27,"./internal/get_webgl":29,"./internal/set_default_drawing_settings":30,"./settings":31,"peako/get-element-h":64,"peako/get-element-w":65,"peako/is-object-like":72}],23:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
+var constants = require('../constants');
 var align = require('./internal/align');
 var AbstractRenderer = require('./AbstractRenderer');
-var constants = require('./constants');
-var options_ = require('./options');
+var options_ = require('./settings');
 function Renderer2D(options) {
     AbstractRenderer.call(this, options = defaults(options_, options), constants.get('RENDERER_2D'));
     this.matrix = this.context;
@@ -490,7 +1651,7 @@ Renderer2D.prototype.drawArrays = function drawArrays(verts, count, _mode, _sx, 
     if (count < 2) {
         return this;
     }
-    if (_sx == null) {
+    if (typeof _sx === 'undefined') {
         _sx = _sy = 1;
     }
     context.beginPath();
@@ -542,26 +1703,32 @@ Renderer2D.prototype.arc = function arc(x, y, r) {
     return this;
 };
 module.exports = Renderer2D;
-},{"./AbstractRenderer":1,"./constants":15,"./internal/align":17,"./options":88,"peako/defaults":54}],6:[function(require,module,exports){
+},{"../constants":12,"./AbstractRenderer":22,"./internal/align":26,"./settings":31,"peako/defaults":61}],24:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
+var ShaderProgram = require('../ShaderProgram');
+var Transform = require('../Transform');
+var constants = require('../constants');
+var shaders = require('../shaders');
 var align = require('./internal/align');
 var AbstractRenderer = require('./AbstractRenderer');
-var ShaderProgram = require('./ShaderProgram');
-var Transform = require('./Transform');
-var constants = require('./constants');
-var shaders = require('./shaders');
-var options_ = require('./options');
-var square = new Float32Array([
-        0,
-        0,
-        1,
-        0,
-        1,
-        1,
-        0,
-        1
-    ]);
+var options_ = require('./settings');
+var square = function () {
+        var square = [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                1
+            ];
+        if (typeof Float32Array === 'function') {
+            return new Float32Array(square);
+        }
+        return square;
+    }();
 function RendererGL(options) {
     AbstractRenderer.call(this, options = defaults(options_, options), constants.get('RENDERER_GL'));
     this.matrix = new Transform();
@@ -616,13 +1783,13 @@ RendererGL.prototype.drawArrays = function drawArrays(verts, count, mode, _sx, _
         return this;
     }
     if (verts) {
-        if (mode == null) {
+        if (typeof mode === 'undefined') {
             mode = gl.STATIC_DRAW;
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.default);
         gl.bufferData(gl.ARRAY_BUFFER, verts, mode);
     }
-    if (_sx != null) {
+    if (typeof _sx !== 'undefined') {
         this.matrix.scale(_sx, _sy);
     }
     program.use().setUniform('utransform', this.matrix.matrix).setUniform('ures', [
@@ -661,765 +1828,15 @@ RendererGL.prototype.rect = function rect(x, y, w, h) {
     return this;
 };
 module.exports = RendererGL;
-},{"./AbstractRenderer":1,"./ShaderProgram":7,"./Transform":9,"./constants":15,"./internal/align":17,"./options":88,"./shaders":91,"peako/defaults":54}],7:[function(require,module,exports){
+},{"../ShaderProgram":4,"../Transform":6,"../constants":12,"../shaders":33,"./AbstractRenderer":22,"./internal/align":26,"./settings":31,"peako/defaults":61}],25:[function(require,module,exports){
 'use strict';
-var createProgram = require('./internal/create_program');
-var createShader = require('./internal/create_shader');
-function ShaderProgram(sources, gl) {
-    var vert = createShader(sources.vert, gl.VERTEX_SHADER, gl);
-    var frag = createShader(sources.frag, gl.FRAGMENT_SHADER, gl);
-    this._program = createProgram(vert, frag, gl);
-    this._gl = gl;
-    this._uniforms = {};
-    this._attrs = {};
-    this._uniformIndex = gl.getProgramParameter(this._program, gl.ACTIVE_UNIFORMS);
-    this._attrIndex = gl.getProgramParameter(this._program, gl.ACTIVE_ATTRIBUTES);
-}
-ShaderProgram.prototype = {
-    use: function use() {
-        this._gl.useProgram(this._program);
-        return this;
-    },
-    pointer: function pointer(name, size, type, normalized, stride, offset) {
-        var location = this.getAttr(name).location;
-        this._gl.enableVertexAttribArray(location);
-        this._gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
-        return this;
-    },
-    getUniform: function getUniform(name) {
-        var uniform = this._uniforms[name];
-        var info, index;
-        if (uniform) {
-            return uniform;
-        }
-        while (--this._uniformIndex >= 0) {
-            info = this._gl.getActiveUniform(this._program, this._uniformIndex);
-            uniform = {
-                location: this._gl.getUniformLocation(this._program, info.name),
-                size: info.size,
-                type: info.type
-            };
-            if (info.size > 1 && ~(index = info.name.indexOf('['))) {
-                uniform.name = info.name.slice(0, index);
-            } else {
-                uniform.name = info.name;
-            }
-            this._uniforms[uniform.name] = uniform;
-            if (uniform.name === name) {
-                return uniform;
-            }
-        }
-        throw ReferenceError('No "' + name + '" uniform found');
-    },
-    getAttr: function getAttr(name) {
-        var attr = this._attrs[name];
-        if (attr) {
-            return attr;
-        }
-        while (--this._attrIndex >= 0) {
-            attr = this._gl.getActiveAttrib(this._program, this._attrIndex);
-            attr.location = this._gl.getAttribLocation(this._program, name);
-            this._attrs[name] = attr;
-            if (attr.name === name) {
-                return attr;
-            }
-        }
-        throw ReferenceError('No "' + name + '" attribute found');
-    },
-    constructor: ShaderProgram
-};
-ShaderProgram.prototype.setUniform = function setUniform(name, value) {
-    var uniform = this.getUniform(name);
-    var _gl = this._gl;
-    switch (uniform.type) {
-    case _gl.BOOL:
-    case _gl.INT:
-        if (uniform.size > 1) {
-            _gl.uniform1iv(uniform.location, value);
-        } else {
-            _gl.uniform1i(uniform.location, value);
-        }
-        break;
-    case _gl.FLOAT:
-        if (uniform.size > 1) {
-            _gl.uniform1fv(uniform.location, value);
-        } else {
-            _gl.uniform1f(uniform.location, value);
-        }
-        break;
-    case _gl.FLOAT_MAT2:
-        _gl.uniformMatrix2fv(uniform.location, false, value);
-        break;
-    case _gl.FLOAT_MAT3:
-        _gl.uniformMatrix3fv(uniform.location, false, value);
-        break;
-    case _gl.FLOAT_MAT4:
-        _gl.uniformMatrix4fv(uniform.location, false, value);
-        break;
-    case _gl.FLOAT_VEC2:
-        if (uniform.size > 1) {
-            _gl.uniform2fv(uniform.location, value);
-        } else {
-            _gl.uniform2f(uniform.location, value[0], value[1]);
-        }
-        break;
-    case _gl.FLOAT_VEC3:
-        if (uniform.size > 1) {
-            _gl.uniform3fv(uniform.location, value);
-        } else {
-            _gl.uniform3f(uniform.location, value[0], value[1], value[2]);
-        }
-        break;
-    case _gl.FLOAT_VEC4:
-        if (uniform.size > 1) {
-            _gl.uniform4fv(uniform.location, value);
-        } else {
-            _gl.uniform4f(uniform.location, value[0], value[1], value[2], value[3]);
-        }
-        break;
-    default:
-        throw TypeError('The uniform type is not supported');
-    }
-    return this;
-};
-module.exports = ShaderProgram;
-},{"./internal/create_program":20,"./internal/create_shader":21}],8:[function(require,module,exports){
-'use strict';
-var LightEmitter = require('light_emitter');
-var timestamp = require('peako/timestamp');
-var timer = require('peako/timer');
-function Ticker() {
-    var self = this;
-    LightEmitter.call(this);
-    this.lastRequestAnimationFrameID = 0;
-    this.lastRequestTime = 0;
-    this.skippedTime = 0;
-    this.totalTime = 0;
-    this.running = false;
-    function start(_now) {
-        var elapsedTime;
-        if (!self.running) {
-            if (!_now) {
-                self.lastRequestAnimationFrameID = timer.request(start);
-                self.lastRequestTime = timestamp();
-                self.running = true;
-            }
-            return this;
-        }
-        if (!_now) {
-            _now = timestamp();
-        }
-        elapsedTime = Math.min(1, (_now - self.lastRequestTime) * 0.001);
-        self.skippedTime += elapsedTime;
-        self.totalTime += elapsedTime;
-        while (self.skippedTime >= self.step && self.running) {
-            self.skippedTime -= self.step;
-            self.emit('update', self.step, _now);
-        }
-        self.emit('render', elapsedTime, _now);
-        self.lastRequestTime = _now;
-        self.lastRequestAnimationFrameID = timer.request(start);
-        return this;
-    }
-    this.start = start;
-    this.fps(60);
-}
-Ticker.prototype = Object.create(LightEmitter.prototype);
-Ticker.prototype.constructor = Ticker;
-Ticker.prototype.fps = function fps(fps) {
-    this.step = 1 / fps;
-    return this;
-};
-Ticker.prototype.clear = function clear() {
-    this.skippedTime = 0;
-    return this;
-};
-Ticker.prototype.stop = function stop() {
-    this.running = false;
-    return this;
-};
-module.exports = Ticker;
-},{"light_emitter":30,"peako/timer":83,"peako/timestamp":84}],9:[function(require,module,exports){
-'use strict';
-var mat3 = require('./mat3');
-function Transform() {
-    this.matrix = mat3.identity();
-    this._index = -1;
-    this._stack = [];
-}
-Transform.prototype = {
-    save: function save() {
-        if (++this._index < this._stack.length) {
-            mat3.copy(this._stack[this._index], this.matrix);
-        } else {
-            this._stack.push(mat3.clone(this.matrix));
-        }
-    },
-    restore: function restore() {
-        if (this._index >= 0) {
-            mat3.copy(this.matrix, this._stack[this._index--]);
-        } else {
-            mat3.setIdentity(this.matrix);
-        }
-    },
-    setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
-        mat3.setTransform(this.matrix, m11, m12, m21, m22, dx, dy);
-    },
-    translate: function translate(x, y) {
-        mat3.translate(this.matrix, x, y);
-    },
-    rotate: function rotate(angle) {
-        mat3.rotate(this.matrix, angle);
-    },
-    scale: function scale(x, y) {
-        mat3.scale(this.matrix, x, y);
-    },
-    transform: function transform(m11, m12, m21, m22, dx, dy) {
-        mat3.transform(this.matrix, m11, m12, m21, m22, dx, dy);
-    },
-    constructor: Transform
-};
-module.exports = Transform;
-},{"./mat3":26}],10:[function(require,module,exports){
-'use strict';
-module.exports = HSLA;
-var clamp = require('peako/clamp');
-var RGBA = require('./RGBA');
-var parse = require('./internal/parse');
-function HSLA(h, s, l, a) {
-    this.set(h, s, l, a);
-}
-HSLA.prototype = {
-    perceivedBrightness: function perceivedBrightness() {
-        return this.rgba().perceivedBrightness();
-    },
-    luminance: function luminance() {
-        return this.rgba().luminance();
-    },
-    brightness: function brightness() {
-        return this.rgba().brightness();
-    },
-    toString: function toString() {
-        return 'hsla(' + this[0] + ', ' + this[1] + '%, ' + this[2] + '%, ' + this[3] + ')';
-    },
-    set: function set(h, s, l, a) {
-        switch (true) {
-        case typeof h === 'string':
-            h = parse(h);
-        case typeof h === 'object' && h != null:
-            if (h.type !== this.type) {
-                h = h[this.type]();
-            }
-            this[0] = h[0];
-            this[1] = h[1];
-            this[2] = h[2];
-            this[3] = h[3];
-            break;
-        default:
-            switch (void 0) {
-            case h:
-                a = 1;
-                l = s = h = 0;
-                break;
-            case s:
-                a = 1;
-                l = Math.floor(h);
-                s = h = 0;
-                break;
-            case l:
-                a = s;
-                l = Math.floor(h);
-                s = h = 0;
-                break;
-            case a:
-                a = 1;
-            default:
-                h = Math.floor(h);
-                s = Math.floor(s);
-                l = Math.floor(l);
-            }
-            this[0] = h;
-            this[1] = s;
-            this[2] = l;
-            this[3] = a;
-        }
-        return this;
-    },
-    rgba: function rgba() {
-        var rgba = new RGBA();
-        var h = this[0] % 360 / 360, s = this[1] * 0.01, l = this[2] * 0.01;
-        var tr = h + 1 / 3, tg = h, tb = h - 1 / 3;
-        var q;
-        if (l < 0.5) {
-            q = l * (1 + s);
-        } else {
-            q = l + s - l * s;
-        }
-        var p = 2 * l - q;
-        if (tr < 0) {
-            ++tr;
-        }
-        if (tg < 0) {
-            ++tg;
-        }
-        if (tb < 0) {
-            ++tb;
-        }
-        if (tr > 1) {
-            --tr;
-        }
-        if (tg > 1) {
-            --tg;
-        }
-        if (tb > 1) {
-            --tb;
-        }
-        rgba[0] = foo(tr, p, q);
-        rgba[1] = foo(tg, p, q);
-        rgba[2] = foo(tb, p, q);
-        rgba[3] = this[3];
-        return rgba;
-    },
-    lerp: function lerp(h, s, l, value) {
-        var color = new HSLA();
-        color[0] = h;
-        color[1] = s;
-        color[2] = l;
-        return this.lerpColor(color, value);
-    },
-    lerpColor: function lerpColor(color, value) {
-        return this.rgba().lerpColor(color, value).hsla();
-    },
-    shade: function shade(value) {
-        var hsla = new HSLA();
-        hsla[0] = this[0];
-        hsla[1] = this[1];
-        hsla[2] = clamp(this[2] + value, 0, 100);
-        hsla[3] = this[3];
-        return hsla;
-    },
-    constructor: HSLA,
-    type: 'hsla'
-};
-function foo(t, p, q) {
-    if (t < 1 / 6) {
-        return Math.round((p + (q - p) * 6 * t) * 255);
-    }
-    if (t < 0.5) {
-        return Math.round(q * 255);
-    }
-    if (t < 2 / 3) {
-        return Math.round((p + (q - p) * (2 / 3 - t) * 6) * 255);
-    }
-    return Math.round(p * 255);
-}
-},{"./RGBA":11,"./internal/parse":14,"peako/clamp":46}],11:[function(require,module,exports){
-'use strict';
-module.exports = RGBA;
-var HSLA = require('./HSLA');
-var parse = require('./internal/parse');
-function RGBA(r, g, b, a) {
-    this.set(r, g, b, a);
-}
-RGBA.prototype = {
-    perceivedBrightness: function perceivedBrightness() {
-        var r = this[0], g = this[1], b = this[2];
-        return Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b);
-    },
-    luminance: function luminance() {
-        return this[0] * 0.2126 + this[1] * 0.7152 + this[2] * 0.0722;
-    },
-    brightness: function brightness() {
-        return 0.299 * this[0] + 0.587 * this[1] + 0.114 * this[2];
-    },
-    toString: function toString() {
-        return 'rgba(' + this[0] + ', ' + this[1] + ', ' + this[2] + ', ' + this[3] + ')';
-    },
-    set: function set(r, g, b, a) {
-        switch (true) {
-        case typeof r === 'string':
-            r = parse(r);
-        case typeof r === 'object' && r != null:
-            if (r.type !== this.type) {
-                r = r[this.type]();
-            }
-            this[0] = r[0];
-            this[1] = r[1];
-            this[2] = r[2];
-            this[3] = r[3];
-            break;
-        default:
-            switch (void 0) {
-            case r:
-                a = 1;
-                b = g = r = 0;
-                break;
-            case g:
-                a = 1;
-                b = g = r = Math.floor(r);
-                break;
-            case b:
-                a = g;
-                b = g = r = Math.floor(r);
-                break;
-            case a:
-                a = 1;
-            default:
-                r = Math.floor(r);
-                g = Math.floor(g);
-                b = Math.floor(b);
-            }
-            this[0] = r;
-            this[1] = g;
-            this[2] = b;
-            this[3] = a;
-        }
-        return this;
-    },
-    hsla: function hsla() {
-        var hsla = new HSLA();
-        var r = this[0] / 255, g = this[1] / 255, b = this[2] / 255;
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var l = (max + min) * 50, h, s;
-        var diff = max - min;
-        if (diff) {
-            if (l > 50) {
-                s = diff / (2 - max - min);
-            } else {
-                s = diff / (max + min);
-            }
-            switch (max) {
-            case r:
-                if (g < b) {
-                    h = 1.0472 * (g - b) / diff + 6.2832;
-                } else {
-                    h = 1.0472 * (g - b) / diff;
-                }
-                break;
-            case g:
-                h = 1.0472 * (b - r) / diff + 2.0944;
-                break;
-            default:
-                h = 1.0472 * (r - g) / diff + 4.1888;
-            }
-            h = Math.round(h * 360 / 6.2832);
-            s = Math.round(s * 100);
-        } else {
-            h = s = 0;
-        }
-        hsla[0] = h;
-        hsla[1] = s;
-        hsla[2] = Math.round(l);
-        hsla[3] = this[3];
-        return hsla;
-    },
-    rgba: function rgba() {
-        return this;
-    },
-    lerp: function lerp(r, g, b, value) {
-        r = lerp(this[0], r, value);
-        g = lerp(this[0], g, value);
-        b = lerp(this[0], b, value);
-        return new RGBA(r, g, b, this[3]);
-    },
-    lerpColor: function lerpColor(color, value) {
-        var r, g, b;
-        if (typeof color !== 'object') {
-            color = parse(color);
-        }
-        if (color.type !== 'rgba') {
-            color = color.rgba();
-        }
-        r = color[0];
-        g = color[1];
-        b = color[2];
-        return this.lerp(r, g, b, value);
-    },
-    shade: function shade(value) {
-        return this.hsla().shade(value).rgba();
-    },
-    constructor: RGBA,
-    type: 'rgba'
-};
-},{"./HSLA":10,"./internal/parse":14}],12:[function(require,module,exports){
-'use strict';
-var RGBA = require('./RGBA');
-var parse = require('./internal/parse');
-function color(r, g, b, a) {
-    if (typeof r !== 'string') {
-        return new RGBA(r, g, b, a);
-    }
-    return parse(r);
-}
-module.exports = color;
-},{"./RGBA":11,"./internal/parse":14}],13:[function(require,module,exports){
-'use strict';
-module.exports = {
-    aliceblue: 'f0f8ffff',
-    antiquewhite: 'faebd7ff',
-    aqua: '00ffffff',
-    aquamarine: '7fffd4ff',
-    azure: 'f0ffffff',
-    beige: 'f5f5dcff',
-    bisque: 'ffe4c4ff',
-    black: '000000ff',
-    blanchedalmond: 'ffebcdff',
-    blue: '0000ffff',
-    blueviolet: '8a2be2ff',
-    brown: 'a52a2aff',
-    burlywood: 'deb887ff',
-    cadetblue: '5f9ea0ff',
-    chartreuse: '7fff00ff',
-    chocolate: 'd2691eff',
-    coral: 'ff7f50ff',
-    cornflowerblue: '6495edff',
-    cornsilk: 'fff8dcff',
-    crimson: 'dc143cff',
-    cyan: '00ffffff',
-    darkblue: '00008bff',
-    darkcyan: '008b8bff',
-    darkgoldenrod: 'b8860bff',
-    darkgray: 'a9a9a9ff',
-    darkgreen: '006400ff',
-    darkkhaki: 'bdb76bff',
-    darkmagenta: '8b008bff',
-    darkolivegreen: '556b2fff',
-    darkorange: 'ff8c00ff',
-    darkorchid: '9932ccff',
-    darkred: '8b0000ff',
-    darksalmon: 'e9967aff',
-    darkseagreen: '8fbc8fff',
-    darkslateblue: '483d8bff',
-    darkslategray: '2f4f4fff',
-    darkturquoise: '00ced1ff',
-    darkviolet: '9400d3ff',
-    deeppink: 'ff1493ff',
-    deepskyblue: '00bfffff',
-    dimgray: '696969ff',
-    dodgerblue: '1e90ffff',
-    feldspar: 'd19275ff',
-    firebrick: 'b22222ff',
-    floralwhite: 'fffaf0ff',
-    forestgreen: '228b22ff',
-    fuchsia: 'ff00ffff',
-    gainsboro: 'dcdcdcff',
-    ghostwhite: 'f8f8ffff',
-    gold: 'ffd700ff',
-    goldenrod: 'daa520ff',
-    gray: '808080ff',
-    green: '008000ff',
-    greenyellow: 'adff2fff',
-    honeydew: 'f0fff0ff',
-    hotpink: 'ff69b4ff',
-    indianred: 'cd5c5cff',
-    indigo: '4b0082ff',
-    ivory: 'fffff0ff',
-    khaki: 'f0e68cff',
-    lavender: 'e6e6faff',
-    lavenderblush: 'fff0f5ff',
-    lawngreen: '7cfc00ff',
-    lemonchiffon: 'fffacdff',
-    lightblue: 'add8e6ff',
-    lightcoral: 'f08080ff',
-    lightcyan: 'e0ffffff',
-    lightgoldenrodyellow: 'fafad2ff',
-    lightgrey: 'd3d3d3ff',
-    lightgreen: '90ee90ff',
-    lightpink: 'ffb6c1ff',
-    lightsalmon: 'ffa07aff',
-    lightseagreen: '20b2aaff',
-    lightskyblue: '87cefaff',
-    lightslateblue: '8470ffff',
-    lightslategray: '778899ff',
-    lightsteelblue: 'b0c4deff',
-    lightyellow: 'ffffe0ff',
-    lime: '00ff00ff',
-    limegreen: '32cd32ff',
-    linen: 'faf0e6ff',
-    magenta: 'ff00ffff',
-    maroon: '800000ff',
-    mediumaquamarine: '66cdaaff',
-    mediumblue: '0000cdff',
-    mediumorchid: 'ba55d3ff',
-    mediumpurple: '9370d8ff',
-    mediumseagreen: '3cb371ff',
-    mediumslateblue: '7b68eeff',
-    mediumspringgreen: '00fa9aff',
-    mediumturquoise: '48d1ccff',
-    mediumvioletred: 'c71585ff',
-    midnightblue: '191970ff',
-    mintcream: 'f5fffaff',
-    mistyrose: 'ffe4e1ff',
-    moccasin: 'ffe4b5ff',
-    navajowhite: 'ffdeadff',
-    navy: '000080ff',
-    oldlace: 'fdf5e6ff',
-    olive: '808000ff',
-    olivedrab: '6b8e23ff',
-    orange: 'ffa500ff',
-    orangered: 'ff4500ff',
-    orchid: 'da70d6ff',
-    palegoldenrod: 'eee8aaff',
-    palegreen: '98fb98ff',
-    paleturquoise: 'afeeeeff',
-    palevioletred: 'd87093ff',
-    papayawhip: 'ffefd5ff',
-    peachpuff: 'ffdab9ff',
-    peru: 'cd853fff',
-    pink: 'ffc0cbff',
-    plum: 'dda0ddff',
-    powderblue: 'b0e0e6ff',
-    purple: '800080ff',
-    red: 'ff0000ff',
-    rosybrown: 'bc8f8fff',
-    royalblue: '4169e1ff',
-    saddlebrown: '8b4513ff',
-    salmon: 'fa8072ff',
-    sandybrown: 'f4a460ff',
-    seagreen: '2e8b57ff',
-    seashell: 'fff5eeff',
-    sienna: 'a0522dff',
-    silver: 'c0c0c0ff',
-    skyblue: '87ceebff',
-    slateblue: '6a5acdff',
-    slategray: '708090ff',
-    snow: 'fffafaff',
-    springgreen: '00ff7fff',
-    steelblue: '4682b4ff',
-    tan: 'd2b48cff',
-    teal: '008080ff',
-    thistle: 'd8bfd8ff',
-    tomato: 'ff6347ff',
-    turquoise: '40e0d0ff',
-    violet: 'ee82eeff',
-    violetred: 'd02090ff',
-    wheat: 'f5deb3ff',
-    white: 'ffffffff',
-    whitesmoke: 'f5f5f5ff',
-    yellow: 'ffff00ff',
-    yellowgreen: '9acd32ff',
-    transparent: '00000000'
-};
-},{}],14:[function(require,module,exports){
-'use strict';
-module.exports = parse;
-var RGBA = require('../RGBA');
-var HSLA = require('../HSLA');
-var colors = require('./colors');
-var parsed = Object.create(null);
-var TRANSPARENT = [
-        0,
-        0,
-        0,
-        0
-    ];
-var regexps = {
-        hex3: /^#([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])?$/,
-        hex: /^#([0-9a-f]{6})([0-9a-f]{2})?$/,
-        rgb: /^rgb\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$|^\s*rgba\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\s*\)$/,
-        hsl: /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/
-    };
-function parse(string) {
-    var cache = parsed[string] || parsed[string = string.trim().toLowerCase()];
-    if (!cache) {
-        if (cache = colors[string]) {
-            cache = new ColorData(parseHex(cache), RGBA);
-        } else if ((cache = regexps.hex.exec(string)) || (cache = regexps.hex3.exec(string))) {
-            cache = new ColorData(parseHex(formatHex(cache)), RGBA);
-        } else if (cache = regexps.rgb.exec(string)) {
-            cache = new ColorData(compactMatch(cache), RGBA);
-        } else if (cache = regexps.hsl.exec(string)) {
-            cache = new ColorData(compactMatch(cache), HSLA);
-        } else {
-            throw SyntaxError(string + ' is not a valid syntax');
-        }
-        parsed[string] = cache;
-    }
-    return new cache.color(cache[0], cache[1], cache[2], cache[3]);
-}
-function formatHex(match) {
-    var r, g, b, a;
-    if (match.length === 3) {
-        return match[1] + (match[2] || 'ff');
-    }
-    r = match[1];
-    g = match[2];
-    b = match[3];
-    a = match[4] || 'f';
-    return r + r + g + g + b + b + a + a;
-}
-function parseHex(hex) {
-    if (hex == 0) {
-        return TRANSPARENT;
-    }
-    hex = parseInt(hex, 16);
-    return [
-        hex >> 24 & 255,
-        hex >> 16 & 255,
-        hex >> 8 & 255,
-        (hex & 255) / 255
-    ];
-}
-function compactMatch(match) {
-    if (match[7]) {
-        return [
-            +match[4],
-            +match[5],
-            +match[6],
-            +match[7]
-        ];
-    }
-    return [
-        +match[1],
-        +match[2],
-        +match[3]
-    ];
-}
-function ColorData(match, color) {
-    this[0] = match[0];
-    this[1] = match[1];
-    this[2] = match[2];
-    this[3] = match[3];
-    this.color = color;
-}
-},{"../HSLA":10,"../RGBA":11,"./colors":13}],15:[function(require,module,exports){
-'use strict';
-var _constants = {};
-var _counter = 0;
-function add(key) {
-    if (typeof _constants[key] !== 'undefined') {
-        throw Error('Cannot re-set (add) existing constant: ' + key);
-    }
-    _constants[key] = ++_counter;
-}
-function get(key) {
-    if (typeof _constants[key] === 'undefined') {
-        throw ReferenceError('Cannot get unknown constant: ' + key);
-    }
-    return _constants[key];
-}
-[
-    'RENDERER_AUTO',
-    'RENDERER_GL',
-    'RENDERER_2D',
-    'LEFT',
-    'TOP',
-    'CENTER',
-    'MIDDLE',
-    'RIGHT',
-    'BOTTOM'
-].forEach(add);
-exports.add = add;
-exports.get = get;
-},{}],16:[function(require,module,exports){
-'use strict';
+var constants = require('../constants');
+var report = require('../internal/report');
 var getRendererType = require('./internal/get_renderer_type');
 var getWebGL = require('./internal/get_webgl');
 var RendererGL = require('./RendererGL');
 var Renderer2D = require('./Renderer2D');
-var constants = require('./constants');
-var report = require('./report');
-var type = require('./options').type;
+var type = require('./settings').type;
 function createRenderer(options) {
     var type_ = options && options.type || type;
     if (type_ === constants.get('RENDERER_AUTO')) {
@@ -1437,9 +1854,9 @@ function createRenderer(options) {
     throw Error('Got unknown renderer type. The known are: RENDERER_2D and RENDERER_GL');
 }
 module.exports = createRenderer;
-},{"./Renderer2D":5,"./RendererGL":6,"./constants":15,"./internal/get_renderer_type":22,"./internal/get_webgl":23,"./options":88,"./report":89}],17:[function(require,module,exports){
+},{"../constants":12,"../internal/report":17,"./Renderer2D":23,"./RendererGL":24,"./internal/get_renderer_type":28,"./internal/get_webgl":29,"./settings":31}],26:[function(require,module,exports){
 'use strict';
-var constants = require('../constants');
+var constants = require('../../constants');
 function align(value, width, align) {
     switch (align) {
     case constants.get('LEFT'):
@@ -1455,7 +1872,7 @@ function align(value, width, align) {
     throw Error('Got unknown alignment constant. The known are: `LEFT`, `CENTER`, `RIGHT`, `TOP`, `MIDDLE`, and `BOTTOM`');
 }
 module.exports = align;
-},{"../constants":15}],18:[function(require,module,exports){
+},{"../../constants":12}],27:[function(require,module,exports){
 'use strict';
 function copyDrawingSettings(target, source, deep) {
     if (deep) {
@@ -1476,52 +1893,10 @@ function copyDrawingSettings(target, source, deep) {
     return target;
 }
 module.exports = copyDrawingSettings;
-},{}],19:[function(require,module,exports){
-'use strict';
-function createPolygon(sides) {
-    var i = Math.floor(sides);
-    var step = Math.PI * 2 / sides;
-    var vertices = new Float32Array(i * 2 + 2);
-    for (; i >= 0; --i) {
-        vertices[i * 2] = Math.cos(step * i);
-        vertices[1 + i * 2] = Math.sin(step * i);
-    }
-    return vertices;
-}
-module.exports = createPolygon;
-},{}],20:[function(require,module,exports){
-'use strict';
-function createProgram(vert, frag, gl) {
-    var program = gl.createProgram();
-    gl.attachShader(program, vert);
-    gl.attachShader(program, frag);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        throw Error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(program));
-    }
-    gl.validateProgram(program);
-    if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-        throw Error('Unable to validate the shader program: ' + gl.getProgramInfoLog(program));
-    }
-    return program;
-}
-module.exports = createProgram;
-},{}],21:[function(require,module,exports){
-'use strict';
-function createShader(source, type, gl) {
-    var shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        throw SyntaxError('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-    }
-    return shader;
-}
-module.exports = createShader;
-},{}],22:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
-var constants = require('../constants');
+var constants = require('../../constants');
 if (typeof platform === 'undefined') {
     var platform;
     try {
@@ -1543,7 +1918,7 @@ function getRendererType() {
     return constants.get('RENDERER_2D');
 }
 module.exports = once(getRendererType);
-},{"../constants":15,"peako/once":78,"platform":"platform"}],23:[function(require,module,exports){
+},{"../../constants":12,"peako/once":85,"platform":"platform"}],29:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 function getWebGL() {
@@ -1558,11 +1933,9 @@ function getWebGL() {
     return name;
 }
 module.exports = once(getWebGL);
-},{"peako/once":78}],24:[function(require,module,exports){
+},{"peako/once":85}],30:[function(require,module,exports){
 'use strict';
-},{}],25:[function(require,module,exports){
-'use strict';
-var constants = require('../constants');
+var constants = require('../../constants');
 var copyDrawingSettings = require('./copy_drawing_settings');
 var defaultDrawingSettings = {
         _rectAlignX: constants.get('LEFT'),
@@ -1578,369 +1951,84 @@ function setDefaultDrawingSettings(target, renderer) {
     return target;
 }
 module.exports = setDefaultDrawingSettings;
-},{"../constants":15,"./copy_drawing_settings":18}],26:[function(require,module,exports){
+},{"../../constants":12,"./copy_drawing_settings":27}],31:[function(require,module,exports){
 'use strict';
-exports.identity = function identity() {
-    return [
-        1,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        1
-    ];
-};
-exports.setIdentity = function setIdentity(m1) {
-    m1[0] = m1[4] = m1[8] = 1;
-    m1[1] = m1[2] = m1[3] = m1[5] = m1[6] = m1[7] = 0;
-};
-exports.copy = function copy(m1, m2) {
-    m1[0] = m2[0];
-    m1[1] = m2[1];
-    m1[2] = m2[2];
-    m1[3] = m2[3];
-    m1[4] = m2[4];
-    m1[5] = m2[5];
-    m1[6] = m2[6];
-    m1[7] = m2[7];
-    m1[8] = m2[8];
-};
-exports.clone = function clone(m1) {
-    return [
-        m1[0],
-        m1[1],
-        m1[2],
-        m1[3],
-        m1[4],
-        m1[5],
-        m1[6],
-        m1[7],
-        m1[8]
-    ];
-};
-exports.translate = function translate(m1, x, y) {
-    m1[6] = x * m1[0] + y * m1[3] + m1[6];
-    m1[7] = x * m1[1] + y * m1[4] + m1[7];
-    m1[8] = x * m1[2] + y * m1[5] + m1[8];
-};
-exports.rotate = function rotate(m1, angle) {
-    var m10 = m1[0], m11 = m1[1], m12 = m1[2], m13 = m1[3], m14 = m1[4], m15 = m1[5];
-    var x = Math.cos(angle), y = Math.sin(angle);
-    m1[0] = x * m10 + y * m13;
-    m1[1] = x * m11 + y * m14;
-    m1[2] = x * m12 + y * m15;
-    m1[3] = x * m13 - y * m10;
-    m1[4] = x * m14 - y * m11;
-    m1[5] = x * m15 - y * m12;
-};
-exports.scale = function scale(m1, x, y) {
-    m1[0] *= x;
-    m1[1] *= x;
-    m1[2] *= x;
-    m1[3] *= y;
-    m1[4] *= y;
-    m1[5] *= y;
-};
-exports.transform = function transform(m1, m11, m12, m21, m22, dx, dy) {
-    m1[0] *= m11;
-    m1[1] *= m21;
-    m1[2] *= dx;
-    m1[3] *= m12;
-    m1[4] *= m22;
-    m1[5] *= dy;
-    m1[6] = 0;
-    m1[7] = 0;
-};
-exports.setTransform = function setTransform(m1, m11, m12, m21, m22, dx, dy) {
-    m1[0] = m11;
-    m1[1] = m12;
-    m1[3] = m21;
-    m1[4] = m22;
-    m1[6] = dx;
-    m1[7] = dy;
-};
-},{}],27:[function(require,module,exports){
+var color = require('../color/RGBA');
+var type = require('../constants').get('RENDERER_2D');
+var options = {
+        settings: {
+            color: color,
+            scale: 1
+        },
+        antialias: true,
+        blending: true,
+        degrees: false,
+        append: true,
+        alpha: true,
+        type: type
+    };
+module.exports = options;
+},{"../color/RGBA":8,"../constants":12}],32:[function(require,module,exports){
 'use strict';
-var settings = require('../settings');
-function AbstractVector() {
-}
-AbstractVector.prototype = {
-    normalize: function normalize() {
-        var mag = this.mag();
-        if (mag && mag !== 1) {
-            this.div(mag);
-        }
-        return this;
-    },
-    setAngle: function setAngle(angle) {
-        var mag = this.mag();
-        if (settings.degrees) {
-            angle *= Math.PI / 180;
-        }
-        this.x = mag * Math.cos(angle);
-        this.y = mag * Math.sin(angle);
-        return this;
-    },
-    setMag: function setMag(value) {
-        return this.normalize().mul(value);
-    },
-    rotate: function rotate(angle) {
-        var x = this.x, y = this.y;
-        var c, s;
-        if (settings.degrees) {
-            angle *= Math.PI / 180;
-        }
-        c = Math.cos(angle);
-        s = Math.sin(angle);
-        this.x = x * c - y * s;
-        this.y = x * s + y * c;
-        return this;
-    },
-    getAngle: function getAngle() {
-        if (settings.degrees) {
-            return Math.atan2(this.y, this.x) * 180 / Math.PI;
-        }
-        return Math.atan2(this.y, this.x);
-    },
-    limit: function limit(value) {
-        var mag = this.magSquare();
-        if (mag > value * value) {
-            this.div(Math.sqrt(mag)).mul(value);
-        }
-        return this;
-    },
-    mag: function mag() {
-        return Math.sqrt(this.magSquare());
-    },
-    constructor: AbstractVector
-};
-module.exports = AbstractVector;
-},{"../settings":90}],28:[function(require,module,exports){
+module.exports = { degress: false };
+},{}],33:[function(require,module,exports){
 'use strict';
-var settings = require('../settings');
-var AbstractVector = require('./AbstractVector');
-function Vector2D(x, y) {
-    this.set(x, y);
-}
-Vector2D.prototype = Object.create(AbstractVector.prototype);
-Vector2D.prototype.constructor = Vector2D;
-Vector2D.prototype.set = function set(x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
-    return this;
+var shaders = {
+        basic: {
+            vert: 'precision mediump float;attribute vec2 apos;uniform vec2 ures;uniform mat3 utransform;void main(){gl_Position=vec4(((utransform*vec3(apos,1.0)).xy/ures*2.0-1.0)*vec2(1,-1),0,1);}',
+            frag: 'precision mediump float;uniform vec4 ucolor;void main(){gl_FragColor=vec4(ucolor.rgb/255.0,ucolor.a);}'
+        },
+        background: {
+            vert: 'precision mediump float;attribute vec2 apos;void main(){gl_Position = vec4(apos,0,1);}',
+            frag: 'precision mediump float;uniform vec4 ucolor;void main(){gl_FragColor=ucolor;}'
+        }
+    };
+module.exports = shaders;
+},{}],34:[function(require,module,exports){
+'use strict';
+module.exports = function dist(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 };
-Vector2D.prototype.add = function add(x, y) {
-    this.x += x || 0;
-    this.y += y || 0;
-    return this;
-};
-Vector2D.prototype.sub = function sub(x, y) {
-    this.x -= x || 0;
-    this.y -= y || 0;
-    return this;
-};
-Vector2D.prototype.mul = function mul(value) {
-    this.x *= value;
-    this.y *= value;
-    return this;
-};
-Vector2D.prototype.div = function div(value) {
-    this.x /= value;
-    this.y /= value;
-    return this;
-};
-Vector2D.prototype.dot = function dot(x, y) {
-    return this.x * (x || 0) + this.y * (y || 0);
-};
-Vector2D.prototype.lerp = function (x, y, value) {
-    this.x += (x - this.x) * value || 0;
-    this.y += (y - this.y) * value || 0;
-    return this;
-};
-Vector2D.prototype.setVector = function setVector(vector) {
-    return this.set(vector.x, vector.y);
-};
-Vector2D.prototype.addVector = function addVector(vector) {
-    return this.add(vector.x, vector.y);
-};
-Vector2D.prototype.subVector = function subVector(vector) {
-    return this.sub(vector.x, vector.y);
-};
-Vector2D.prototype.mulVector = function mulVector(vector) {
-    return this.mul(vector.x, vector.y);
-};
-Vector2D.prototype.divVector = function divVector(vector) {
-    return this.div(vector.x, vector.y);
-};
-Vector2D.prototype.dotVector = function dotVector(vector) {
-    return this.dot(vector.x, vector.y);
-};
-Vector2D.prototype.lerpVector = function lerpVector(vector, value) {
-    return this.lerp(vector.x, vector.y, value);
-};
-Vector2D.prototype.magSquare = function magSquare() {
-    return this.x * this.x + this.y * this.y;
-};
-Vector2D.prototype.clone = function clone() {
-    return new Vector2D(this.x, this.y);
-};
-Vector2D.prototype.dist = function dist(vector) {
-    var x = vector.x - this.x;
-    var y = vector.y - this.y;
-    return Math.sqrt(x * x + y * y);
-};
-Vector2D.prototype.cross = function cross(vector) {
-    return this.x * vector.y - this.y * vector.x;
-};
-Vector2D.prototype.toString = function toString() {
-    return 'Vector2D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ' }';
-};
-Vector2D.random = function random() {
-    var value;
-    if (settings.degrees) {
-        value = 360;
-    } else {
-        value = Math.PI * 2;
+},{}],35:[function(require,module,exports){
+'use strict';
+var clamp = require('peako/clamp');
+module.exports = function map(value, currentStart, currentStop, newStart, newStop, doLimit) {
+    var result = (newStop - newStart) * (value - currentStart) / (currentStop - currentStart) + newStart;
+    if (doLimit) {
+        if (newStart < newStop) {
+            return clamp(result, newStart, newStop);
+        }
+        return clamp(result, newStop, newStart);
     }
-    return Vector2D.fromAngle(Math.random() * value);
+    return result;
 };
-Vector2D.fromAngle = function fromAngle(angle) {
-    if (settings.degrees) {
-        angle *= Math.PI / 180;
-    }
-    return new Vector2D(Math.cos(angle), Math.sin(angle));
-};
-module.exports = Vector2D;
-},{"../settings":90,"./AbstractVector":27}],29:[function(require,module,exports){
+},{"peako/clamp":53}],36:[function(require,module,exports){
 'use strict';
-var Vector2D = require('./Vector2D');
-var settings = require('../settings');
-function Vector3D(x, y, z) {
-    this.set(x, y, z);
+exports.AbstractRenderer = require('./core/renderer/AbstractRenderer');
+exports.Camera = require('./core/Camera');
+exports.CompoundedImage = require('./core/CompoundedImage');
+exports.HSLA = require('./core/color/HSLA');
+exports.Image = require('./core/Image');
+exports.RGBA = require('./core/color/RGBA');
+exports.Renderer2D = require('./core/renderer/Renderer2D');
+exports.RendererGL = require('./core/renderer/RendererGL');
+exports.ShaderProgram = require('./core/ShaderProgram');
+exports.Ticker = require('./core/Ticker');
+exports.Transform = require('./core/Transform');
+exports.Vector2D = require('./core/math/Vector2D');
+exports.Vector3D = require('./core/math/Vector3D');
+exports.color = require('./core/color');
+exports.constants = require('./core/constants');
+exports.createRenderer = require('./core/renderer');
+exports.options = require('./core/renderer/settings');
+exports.settings = require('./core/settings');
+exports.shaders = require('./core/shaders');
+exports.dist = require('./core/util/dist');
+exports.map = require('./core/util/map');
+if (typeof self !== 'undefined') {
+    self.v6 = exports;
 }
-Vector3D.prototype = {
-    set: function set(x, y, z) {
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
-        return this;
-    },
-    setVector: function setVector(vector) {
-        return this.set(vector.x, vector.y, vector.z);
-    },
-    lerp: function lerp(x, y, z, value) {
-        this.x += (x - this.x) * value || 0;
-        this.y += (y - this.y) * value || 0;
-        this.z += (z - this.z) * value || 0;
-        return this;
-    },
-    lerpVector: function lerpVector(vector, value) {
-        var x = vector.x || 0, y = vector.y || 0, z = vector.z || 0;
-        return this.lerp(x, y, z, value);
-    },
-    add: function add(x, y, z) {
-        this.x += x || 0;
-        this.y += y || 0;
-        this.z += z || 0;
-        return this;
-    },
-    addVector: function addVector(vector) {
-        return this.add(vector.x, vector.y, vector.z);
-    },
-    sub: function sub(x, y, z) {
-        this.x -= x || 0;
-        this.y -= y || 0;
-        this.z -= z || 0;
-        return this;
-    },
-    subVector: function subVector(vector) {
-        return this.sub(vector.x, vector.y, vector.z);
-    },
-    mul: function mul(value) {
-        this.x *= value || 0;
-        this.y *= value || 0;
-        this.z *= value || 0;
-        return this;
-    },
-    mulVector: function mulVector(vector) {
-        this.x *= vector.x || 0;
-        this.y *= vector.y || 0;
-        this.z *= vector.z || 0;
-        return this;
-    },
-    div: function div(value) {
-        this.x /= value || 0;
-        this.y /= value || 0;
-        this.z /= value || 0;
-        return this;
-    },
-    divVector: function divVector(vector) {
-        this.x /= vector.x || 0;
-        this.y /= vector.y || 0;
-        this.z /= vector.z || 0;
-        return this;
-    },
-    magSquare: function magSquare() {
-        return this.x * this.x + this.y * this.y + this.z * this.z;
-    },
-    dot: function dot(x, y, z) {
-        return this.x * x + this.y * y + this.z * z;
-    },
-    dotVector: function dotVector(vector) {
-        var x = vector.x || 0, y = vector.y || 0, z = vector.z || 0;
-        return this.dot(x, y, z);
-    },
-    copy: function copy() {
-        return new Vector3D(this.x, this.y, this.z);
-    },
-    dist: function dist(vector) {
-        var x = vector.x - this.x, y = vector.y - this.y, z = vector.z - this.z;
-        return Math.sqrt(x * x + y * y + z * z);
-    },
-    toString: function toString() {
-        return 'vec3(' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ', ' + this.z.toFixed(2) + ')';
-    },
-    normalize: Vector2D.prototype.normalize,
-    setAngle: Vector2D.prototype.setAngle,
-    setMag: Vector2D.prototype.setMag,
-    rotate: Vector2D.prototype.rotate,
-    angle: Vector2D.prototype.angle,
-    limit: Vector2D.prototype.limit,
-    mag: Vector2D.prototype.mag,
-    constructor: Vector3D
-};
-[
-    'normalize',
-    'setMag',
-    'rotate',
-    'limit',
-    'lerp',
-    'mul',
-    'div',
-    'add',
-    'sub',
-    'set'
-].forEach(function (method) {
-    Vector3D[method] = Vector2D[method];
-});
-Vector3D.random = function random() {
-    var theta = Math.random() * Math.PI * 2, z = Math.random() * 2 - 1, n = Math.root(1 - z * z);
-    return new Vector3D(n * Math.cos(theta), n * Math.sin(theta), z);
-};
-Vector3D.fromAngle = function fromAngle(angle) {
-    if (settings.degrees) {
-        angle *= Math.PI / 180;
-    }
-    return new Vector3D(Math.cos(angle), Math.sin(angle));
-};
-Vector3D.clone = function clone(vector) {
-    return new Vector3D(vector.x, vector.y, vector.z);
-};
-module.exports = Vector3D;
-},{"../settings":90,"./Vector2D":28}],30:[function(require,module,exports){
+},{"./core/Camera":1,"./core/CompoundedImage":2,"./core/Image":3,"./core/ShaderProgram":4,"./core/Ticker":5,"./core/Transform":6,"./core/color":9,"./core/color/HSLA":7,"./core/color/RGBA":8,"./core/constants":12,"./core/math/Vector2D":20,"./core/math/Vector3D":21,"./core/renderer":25,"./core/renderer/AbstractRenderer":22,"./core/renderer/Renderer2D":23,"./core/renderer/RendererGL":24,"./core/renderer/settings":31,"./core/settings":32,"./core/shaders":33,"./core/util/dist":34,"./core/util/map":35}],37:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2081,13 +2169,13 @@ function _getList ( self, type ) {
 
 module.exports = LightEmitter;
 
-},{}],31:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 module.exports = function _throwArgumentException(unexpected, expected) {
     throw Error('"' + toString.call(unexpected) + '" is not ' + expected);
 };
-},{}],32:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 var type = require('./type');
 var lastRes = 'undefined';
@@ -2098,12 +2186,12 @@ module.exports = function _type(val) {
     }
     return lastRes = type(lastVal = val);
 };
-},{"./type":87}],33:[function(require,module,exports){
+},{"./type":94}],40:[function(require,module,exports){
 'use strict';
 module.exports = function _unescape(string) {
     return string.replace(/\\(\\)?/g, '$1');
 };
-},{}],34:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 var isset = require('../isset');
 var undefined;
@@ -2138,7 +2226,7 @@ function baseDefineProperty(object, key, descriptor) {
     return object;
 }
 module.exports = baseDefineProperty;
-},{"../isset":71}],35:[function(require,module,exports){
+},{"../isset":78}],42:[function(require,module,exports){
 'use strict';
 module.exports = function baseExec(regexp, string) {
     var result = [], value;
@@ -2148,7 +2236,7 @@ module.exports = function baseExec(regexp, string) {
     }
     return result;
 };
-},{}],36:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 var callIteratee = require('../call-iteratee'), isset = require('../isset');
 module.exports = function baseForEach(arr, fn, ctx, fromRight) {
@@ -2165,7 +2253,7 @@ module.exports = function baseForEach(arr, fn, ctx, fromRight) {
     }
     return arr;
 };
-},{"../call-iteratee":44,"../isset":71}],37:[function(require,module,exports){
+},{"../call-iteratee":51,"../isset":78}],44:[function(require,module,exports){
 'use strict';
 var callIteratee = require('../call-iteratee');
 module.exports = function baseForIn(obj, fn, ctx, fromRight, keys) {
@@ -2182,7 +2270,7 @@ module.exports = function baseForIn(obj, fn, ctx, fromRight, keys) {
     }
     return obj;
 };
-},{"../call-iteratee":44}],38:[function(require,module,exports){
+},{"../call-iteratee":51}],45:[function(require,module,exports){
 'use strict';
 var isset = require('../isset');
 module.exports = function baseGet(obj, path, off) {
@@ -2197,7 +2285,7 @@ module.exports = function baseGet(obj, path, off) {
     }
     return obj;
 };
-},{"../isset":71}],39:[function(require,module,exports){
+},{"../isset":78}],46:[function(require,module,exports){
 'use strict';
 var baseToIndex = require('./base-to-index');
 var indexOf = Array.prototype.indexOf, lastIndexOf = Array.prototype.lastIndexOf;
@@ -2236,7 +2324,7 @@ function baseIndexOf(arr, search, fromIndex, fromRight) {
     return -1;
 }
 module.exports = baseIndexOf;
-},{"./base-to-index":42}],40:[function(require,module,exports){
+},{"./base-to-index":49}],47:[function(require,module,exports){
 'use strict';
 var baseIndexOf = require('./base-index-of');
 var support = require('../support/support-keys');
@@ -2275,7 +2363,7 @@ module.exports = function baseKeys(object) {
     }
     return fixKeys(keys, object);
 };
-},{"../support/support-keys":82,"./base-index-of":39}],41:[function(require,module,exports){
+},{"../support/support-keys":89,"./base-index-of":46}],48:[function(require,module,exports){
 'use strict';
 var get = require('./base-get');
 module.exports = function baseProperty(object, path) {
@@ -2286,7 +2374,7 @@ module.exports = function baseProperty(object, path) {
         return object[path[0]];
     }
 };
-},{"./base-get":38}],42:[function(require,module,exports){
+},{"./base-get":45}],49:[function(require,module,exports){
 'use strict';
 module.exports = function baseToIndex(v, l) {
     if (!l || !v) {
@@ -2297,7 +2385,7 @@ module.exports = function baseToIndex(v, l) {
     }
     return v || 0;
 };
-},{}],43:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 var _throwArgumentException = require('./_throw-argument-exception');
 var defaultTo = require('./default-to');
@@ -2314,7 +2402,7 @@ module.exports = function before(n, fn) {
         return value;
     };
 };
-},{"./_throw-argument-exception":31,"./default-to":53}],44:[function(require,module,exports){
+},{"./_throw-argument-exception":38,"./default-to":60}],51:[function(require,module,exports){
 'use strict';
 module.exports = function callIteratee(fn, ctx, val, key, obj) {
     if (typeof ctx === 'undefined') {
@@ -2322,7 +2410,7 @@ module.exports = function callIteratee(fn, ctx, val, key, obj) {
     }
     return fn.call(ctx, val, key, obj);
 };
-},{}],45:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 var baseExec = require('./base/base-exec'), _unescape = require('./_unescape'), isKey = require('./is-key'), toKey = require('./to-key'), _type = require('./_type');
 var rProperty = /(^|\.)\s*([_a-z]\w*)\s*|\[\s*((?:-)?(?:\d+|\d*\.\d+)|("|')(([^\\]\\(\\\\)*|[^\4])*)\4)\s*\]/gi;
@@ -2356,7 +2444,7 @@ function castPath(val) {
     return path;
 }
 module.exports = castPath;
-},{"./_type":32,"./_unescape":33,"./base/base-exec":35,"./is-key":63,"./to-key":85}],46:[function(require,module,exports){
+},{"./_type":39,"./_unescape":40,"./base/base-exec":42,"./is-key":70,"./to-key":92}],53:[function(require,module,exports){
 'use strict';
 module.exports = function clamp(value, lower, upper) {
     if (value >= upper) {
@@ -2367,7 +2455,7 @@ module.exports = function clamp(value, lower, upper) {
     }
     return value;
 };
-},{}],47:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 var create = require('./create'), getPrototypeOf = require('./get-prototype-of'), toObject = require('./to-object'), each = require('./each'), isObjectLike = require('./is-object-like');
 module.exports = function clone(deep, target, guard) {
@@ -2388,7 +2476,7 @@ module.exports = function clone(deep, target, guard) {
     }, cln);
     return cln;
 };
-},{"./create":49,"./each":56,"./get-prototype-of":59,"./is-object-like":65,"./to-object":86}],48:[function(require,module,exports){
+},{"./create":56,"./each":63,"./get-prototype-of":66,"./is-object-like":72,"./to-object":93}],55:[function(require,module,exports){
 'use strict';
 module.exports = {
     ERR: {
@@ -2406,7 +2494,7 @@ module.exports = {
     DEEP_KEEP_FN: 2,
     PLACEHOLDER: {}
 };
-},{}],49:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 var defineProperties = require('./define-properties');
 var setPrototypeOf = require('./set-prototype-of');
@@ -2429,7 +2517,7 @@ module.exports = Object.create || function create(prototype, descriptors) {
     }
     return object;
 };
-},{"./define-properties":55,"./is-primitive":68,"./set-prototype-of":80}],50:[function(require,module,exports){
+},{"./define-properties":62,"./is-primitive":75,"./set-prototype-of":87}],57:[function(require,module,exports){
 'use strict';
 var baseForEach = require('../base/base-for-each'), baseForIn = require('../base/base-for-in'), isArrayLike = require('../is-array-like'), toObject = require('../to-object'), iteratee = require('../iteratee').iteratee, keys = require('../keys');
 module.exports = function createEach(fromRight) {
@@ -2442,7 +2530,7 @@ module.exports = function createEach(fromRight) {
         return baseForIn(obj, fn, ctx, fromRight, keys(obj));
     };
 };
-},{"../base/base-for-each":36,"../base/base-for-in":37,"../is-array-like":61,"../iteratee":72,"../keys":73,"../to-object":86}],51:[function(require,module,exports){
+},{"../base/base-for-each":43,"../base/base-for-in":44,"../is-array-like":68,"../iteratee":79,"../keys":80,"../to-object":93}],58:[function(require,module,exports){
 'use strict';
 module.exports = function createGetElementDimension(name) {
     return function (e) {
@@ -2459,7 +2547,7 @@ module.exports = function createGetElementDimension(name) {
         return v;
     };
 };
-},{}],52:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 'use strict';
 var castPath = require('../cast-path'), noop = require('../noop');
 module.exports = function createProperty(baseProperty, useArgs) {
@@ -2476,7 +2564,7 @@ module.exports = function createProperty(baseProperty, useArgs) {
         };
     };
 };
-},{"../cast-path":45,"../noop":76}],53:[function(require,module,exports){
+},{"../cast-path":52,"../noop":83}],60:[function(require,module,exports){
 'use strict';
 module.exports = function defaultTo(value, defaultValue) {
     if (value != null && value === value) {
@@ -2484,7 +2572,7 @@ module.exports = function defaultTo(value, defaultValue) {
     }
     return defaultValue;
 };
-},{}],54:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 var mixin = require('./mixin'), clone = require('./clone');
 module.exports = function defaults(defaults, object) {
@@ -2493,7 +2581,7 @@ module.exports = function defaults(defaults, object) {
     }
     return mixin(true, clone(true, defaults), object);
 };
-},{"./clone":47,"./mixin":75}],55:[function(require,module,exports){
+},{"./clone":54,"./mixin":82}],62:[function(require,module,exports){
 'use strict';
 var support = require('./support/support-define-property');
 var defineProperties, baseDefineProperty, isPrimitive, each;
@@ -2526,16 +2614,16 @@ if (support !== 'full') {
     defineProperties = Object.defineProperties;
 }
 module.exports = defineProperties;
-},{"./base/base-define-property":34,"./each":56,"./is-primitive":68,"./support/support-define-property":81}],56:[function(require,module,exports){
+},{"./base/base-define-property":41,"./each":63,"./is-primitive":75,"./support/support-define-property":88}],63:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-each')();
-},{"./create/create-each":50}],57:[function(require,module,exports){
+},{"./create/create-each":57}],64:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-get-element-dimension')('Height');
-},{"./create/create-get-element-dimension":51}],58:[function(require,module,exports){
+},{"./create/create-get-element-dimension":58}],65:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-get-element-dimension')('Width');
-},{"./create/create-get-element-dimension":51}],59:[function(require,module,exports){
+},{"./create/create-get-element-dimension":58}],66:[function(require,module,exports){
 'use strict';
 var ERR = require('./constants').ERR;
 var toString = Object.prototype.toString;
@@ -2553,13 +2641,13 @@ module.exports = Object.getPrototypeOf || function getPrototypeOf(obj) {
     }
     return obj;
 };
-},{"./constants":48}],60:[function(require,module,exports){
+},{"./constants":55}],67:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like'), isLength = require('./is-length'), isWindowLike = require('./is-window-like');
 module.exports = function isArrayLikeObject(value) {
     return isObjectLike(value) && isLength(value.length) && !isWindowLike(value);
 };
-},{"./is-length":64,"./is-object-like":65,"./is-window-like":70}],61:[function(require,module,exports){
+},{"./is-length":71,"./is-object-like":72,"./is-window-like":77}],68:[function(require,module,exports){
 'use strict';
 var isLength = require('./is-length'), isWindowLike = require('./is-window-like');
 module.exports = function isArrayLike(value) {
@@ -2571,14 +2659,14 @@ module.exports = function isArrayLike(value) {
     }
     return typeof value === 'string';
 };
-},{"./is-length":64,"./is-window-like":70}],62:[function(require,module,exports){
+},{"./is-length":71,"./is-window-like":77}],69:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like'), isLength = require('./is-length');
 var toString = {}.toString;
 module.exports = Array.isArray || function isArray(value) {
     return isObjectLike(value) && isLength(value.length) && toString.call(value) === '[object Array]';
 };
-},{"./is-length":64,"./is-object-like":65}],63:[function(require,module,exports){
+},{"./is-length":71,"./is-object-like":72}],70:[function(require,module,exports){
 'use strict';
 var _type = require('./_type');
 var rDeepKey = /(^|[^\\])(\\\\)*(\.|\[)/;
@@ -2597,25 +2685,25 @@ function isKey(val) {
     return !rDeepKey.test(val);
 }
 module.exports = isKey;
-},{"./_type":32}],64:[function(require,module,exports){
+},{"./_type":39}],71:[function(require,module,exports){
 'use strict';
 var MAX_ARRAY_LENGTH = require('./constants').MAX_ARRAY_LENGTH;
 module.exports = function isLength(value) {
     return typeof value === 'number' && value >= 0 && value <= MAX_ARRAY_LENGTH && value % 1 === 0;
 };
-},{"./constants":48}],65:[function(require,module,exports){
+},{"./constants":55}],72:[function(require,module,exports){
 'use strict';
 module.exports = function isObjectLike(value) {
     return !!value && typeof value === 'object';
 };
-},{}],66:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like');
 var toString = {}.toString;
 module.exports = function isObject(value) {
     return isObjectLike(value) && toString.call(value) === '[object Object]';
 };
-},{"./is-object-like":65}],67:[function(require,module,exports){
+},{"./is-object-like":72}],74:[function(require,module,exports){
 'use strict';
 var getPrototypeOf = require('./get-prototype-of');
 var isObject = require('./is-object');
@@ -2637,24 +2725,24 @@ module.exports = function isPlainObject(v) {
     c = p.constructor;
     return typeof c === 'function' && toString.call(c) === OBJECT;
 };
-},{"./get-prototype-of":59,"./is-object":66}],68:[function(require,module,exports){
+},{"./get-prototype-of":66,"./is-object":73}],75:[function(require,module,exports){
 'use strict';
 module.exports = function isPrimitive(value) {
     return !value || typeof value !== 'object' && typeof value !== 'function';
 };
-},{}],69:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 'use strict';
 var type = require('./type');
 module.exports = function isSymbol(value) {
     return type(value) === 'symbol';
 };
-},{"./type":87}],70:[function(require,module,exports){
+},{"./type":94}],77:[function(require,module,exports){
 'use strict';
 var isObjectLike = require('./is-object-like');
 module.exports = function isWindowLike(value) {
     return isObjectLike(value) && value.window === value;
 };
-},{"./is-object-like":65}],71:[function(require,module,exports){
+},{"./is-object-like":72}],78:[function(require,module,exports){
 'use strict';
 module.exports = function isset(key, obj) {
     if (obj == null) {
@@ -2662,7 +2750,7 @@ module.exports = function isset(key, obj) {
     }
     return typeof obj[key] !== 'undefined' || key in obj;
 };
-},{}],72:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 'use strict';
 var isArrayLikeObject = require('./is-array-like-object'), matchesProperty = require('./matches-property'), property = require('./property');
 exports.iteratee = function iteratee(value) {
@@ -2674,7 +2762,7 @@ exports.iteratee = function iteratee(value) {
     }
     return property(value);
 };
-},{"./is-array-like-object":60,"./matches-property":74,"./property":79}],73:[function(require,module,exports){
+},{"./is-array-like-object":67,"./matches-property":81,"./property":86}],80:[function(require,module,exports){
 'use strict';
 var baseKeys = require('./base/base-keys');
 var toObject = require('./to-object');
@@ -2692,7 +2780,7 @@ if (support !== 'es2015') {
 } else {
     module.exports = Object.keys;
 }
-},{"./base/base-keys":40,"./support/support-keys":82,"./to-object":86}],74:[function(require,module,exports){
+},{"./base/base-keys":47,"./support/support-keys":89,"./to-object":93}],81:[function(require,module,exports){
 'use strict';
 var castPath = require('./cast-path'), get = require('./base/base-get'), ERR = require('./constants').ERR;
 module.exports = function matchesProperty(property) {
@@ -2710,7 +2798,7 @@ module.exports = function matchesProperty(property) {
         return object[path[0]] === value;
     };
 };
-},{"./base/base-get":38,"./cast-path":45,"./constants":48}],75:[function(require,module,exports){
+},{"./base/base-get":45,"./cast-path":52,"./constants":55}],82:[function(require,module,exports){
 'use strict';
 var isPlainObject = require('./is-plain-object');
 var toObject = require('./to-object');
@@ -2752,25 +2840,25 @@ module.exports = function mixin(deep, object) {
     }
     return object;
 };
-},{"./is-array":62,"./is-plain-object":67,"./keys":73,"./to-object":86}],76:[function(require,module,exports){
+},{"./is-array":69,"./is-plain-object":74,"./keys":80,"./to-object":93}],83:[function(require,module,exports){
 'use strict';
 module.exports = function noop() {
 };
-},{}],77:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 module.exports = Date.now || function now() {
     return new Date().getTime();
 };
-},{}],78:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 var before = require('./before');
 module.exports = function once(target) {
     return before(1, target);
 };
-},{"./before":43}],79:[function(require,module,exports){
+},{"./before":50}],86:[function(require,module,exports){
 'use strict';
 module.exports = require('./create/create-property')(require('./base/base-property'));
-},{"./base/base-property":41,"./create/create-property":52}],80:[function(require,module,exports){
+},{"./base/base-property":48,"./create/create-property":59}],87:[function(require,module,exports){
 'use strict';
 var isPrimitive = require('./is-primitive'), ERR = require('./constants').ERR;
 module.exports = Object.setPrototypeOf || function setPrototypeOf(target, prototype) {
@@ -2785,7 +2873,7 @@ module.exports = Object.setPrototypeOf || function setPrototypeOf(target, protot
     }
     return target;
 };
-},{"./constants":48,"./is-primitive":68}],81:[function(require,module,exports){
+},{"./constants":55,"./is-primitive":75}],88:[function(require,module,exports){
 'use strict';
 var support;
 function test(target) {
@@ -2805,7 +2893,7 @@ if (test({})) {
     support = 'not-supported';
 }
 module.exports = support;
-},{}],82:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 var support;
 if (Object.keys) {
@@ -2820,7 +2908,7 @@ if (Object.keys) {
     support = 'has-a-bug';
 }
 module.exports = support;
-},{}],83:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 'use strict';
 var timestamp = require('./timestamp');
 var requestAF, cancelAF;
@@ -2847,7 +2935,7 @@ if (noRequestAnimationFrame) {
         return cancelAF(id);
     };
 }
-},{"./timestamp":84}],84:[function(require,module,exports){
+},{"./timestamp":91}],91:[function(require,module,exports){
 'use strict';
 var now = require('./now');
 var navigatorStart;
@@ -2861,7 +2949,7 @@ if (typeof performance === 'undefined' || !performance.now) {
         return performance.now();
     };
 }
-},{"./now":77}],85:[function(require,module,exports){
+},{"./now":84}],92:[function(require,module,exports){
 'use strict';
 var _unescape = require('./_unescape'), isSymbol = require('./is-symbol');
 module.exports = function toKey(val) {
@@ -2878,7 +2966,7 @@ module.exports = function toKey(val) {
     }
     return _unescape(key);
 };
-},{"./_unescape":33,"./is-symbol":69}],86:[function(require,module,exports){
+},{"./_unescape":40,"./is-symbol":76}],93:[function(require,module,exports){
 'use strict';
 var ERR = require('./constants').ERR;
 module.exports = function toObject(value) {
@@ -2887,7 +2975,7 @@ module.exports = function toObject(value) {
     }
     return Object(value);
 };
-},{"./constants":48}],87:[function(require,module,exports){
+},{"./constants":55}],94:[function(require,module,exports){
 'use strict';
 var create = require('./create');
 var toString = {}.toString, types = create(null);
@@ -2906,100 +2994,4 @@ module.exports = function getType(value) {
     }
     return types[tag] = tag.slice(8, -1).toLowerCase();
 };
-},{"./create":49}],88:[function(require,module,exports){
-'use strict';
-var color = require('./colors/RGBA');
-var type = require('./constants').get('RENDERER_2D');
-var options = {
-        settings: {
-            color: color,
-            scale: 1
-        },
-        antialias: true,
-        blending: true,
-        degrees: false,
-        append: true,
-        alpha: true,
-        type: type
-    };
-module.exports = options;
-},{"./colors/RGBA":11,"./constants":15}],89:[function(require,module,exports){
-'use strict';
-var report, reported;
-if (typeof console !== 'undefined' && console.warn) {
-    reported = {};
-    report = function report(message) {
-        if (reported[message]) {
-            return;
-        }
-        console.warn(message);
-        reported[message] = true;
-    };
-} else {
-    report = require('peako/noop');
-}
-module.exports = report;
-},{"peako/noop":76}],90:[function(require,module,exports){
-'use strict';
-module.exports = { degress: false };
-},{}],91:[function(require,module,exports){
-'use strict';
-var shaders = {
-        basic: {
-            vert: 'precision mediump float;attribute vec2 apos;uniform vec2 ures;uniform mat3 utransform;void main(){gl_Position=vec4(((utransform*vec3(apos,1.0)).xy/ures*2.0-1.0)*vec2(1,-1),0,1);}',
-            frag: 'precision mediump float;uniform vec4 ucolor;void main(){gl_FragColor=vec4(ucolor.rgb/255.0,ucolor.a);}'
-        },
-        background: {
-            vert: 'precision mediump float;attribute vec2 apos;void main(){gl_Position = vec4(apos,0,1);}',
-            frag: 'precision mediump float;uniform vec4 ucolor;void main(){gl_FragColor=ucolor;}'
-        }
-    };
-module.exports = shaders;
-},{}],92:[function(require,module,exports){
-'use strict';
-module.exports = function dist(x1, y1, x2, y2) {
-    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-};
-},{}],93:[function(require,module,exports){
-'use strict';
-var clamp = require('peako/clamp');
-module.exports = function map(value, currentStart, currentStop, newStart, newStop, doLimit) {
-    var result = (newStop - newStart) * (value - currentStart) / (currentStop - currentStart) + newStart;
-    if (doLimit) {
-        if (newStart < newStop) {
-            return clamp(result, newStart, newStop);
-        }
-        return clamp(result, newStop, newStart);
-    }
-    return result;
-};
-},{"peako/clamp":46}],94:[function(require,module,exports){
-'use strict';
-var v6 = {
-        AbstractRenderer: require('./AbstractRenderer'),
-        Camera: require('./Camera'),
-        CompoundedImage: require('./CompoundedImage'),
-        HSLA: require('./colors/HSLA'),
-        Image: require('./Image'),
-        RGBA: require('./colors/RGBA'),
-        Renderer2D: require('./Renderer2D'),
-        RendererGL: require('./RendererGL'),
-        ShaderProgram: require('./ShaderProgram'),
-        Ticker: require('./Ticker'),
-        Transform: require('./Transform'),
-        Vector2D: require('./math/Vector2D'),
-        Vector3D: require('./math/Vector3D'),
-        color: require('./colors/color'),
-        constants: require('./constants'),
-        createRenderer: require('./create_renderer'),
-        options: require('./options'),
-        settings: require('./settings'),
-        shaders: require('./shaders'),
-        dist: require('./utils/dist'),
-        map: require('./utils/map')
-    };
-if (typeof self !== 'undefined') {
-    self.v6 = v6;
-}
-module.exports = v6;
-},{"./AbstractRenderer":1,"./Camera":2,"./CompoundedImage":3,"./Image":4,"./Renderer2D":5,"./RendererGL":6,"./ShaderProgram":7,"./Ticker":8,"./Transform":9,"./colors/HSLA":10,"./colors/RGBA":11,"./colors/color":12,"./constants":15,"./create_renderer":16,"./math/Vector2D":28,"./math/Vector3D":29,"./options":88,"./settings":90,"./shaders":91,"./utils/dist":92,"./utils/map":93}]},{},[94]);
+},{"./create":56}]},{},[36]);

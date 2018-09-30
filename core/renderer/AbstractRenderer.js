@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // eslint-disable-line lines-around-directive
 var isObjectLike = require( 'peako/is-object-like' );
 var getElementW = require( 'peako/get-element-w' );
 var getElementH = require( 'peako/get-element-h' );
@@ -17,64 +17,7 @@ var options = require( './settings' );
  * @param {object}   options {@link v6.options}
  * @param {constant} type    Тип рендерера: 2D (`RENDERER_2D`) или WebGL (`RENDERER_GL`).
  */
-function AbstractRenderer ( options, type ) {
-  var context;
-  /**
-   * @member {HTMLCanvasElement} v6.AbstractRenderer#canvas
-   */
-  if ( options.canvas ) {
-    this.canvas = options.canvas;
-  } else {
-    this.canvas = document.createElement( 'canvas' );
-    this.canvas.innerHTML = 'Unable to run this application.';
-  }
-  if ( typeof options.append === 'undefined' || options.append ) {
-    this.append();
-  }
-  if ( type === constants.get( 'RENDERER_2D' ) ) {
-    context = '2d';
-  } else if ( type !== constants.get( 'RENDERER_GL' ) ) {
-    throw Error( 'Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`' );
-  } else if ( ! ( context = getWebGL() ) ) {
-    throw Error( 'Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
-  }
-  /**
-   * @member {object} v6.AbstractRenderer#context
-   */
-  this.context = this.canvas.getContext( context, {
-    alpha: options.alpha
-  } );
-  /**
-   * @member {object} v6.AbstractRenderer#settings
-   */
-  this.settings = options.settings;
-  /**
-   * @member {constant} v6.AbstractRenderer#type
-   */
-  this.type = type;
-  /**
-   * @private
-   * @member {Array.<object>} v6.AbstractRenderer#_stack
-   */
-  this._stack = [];
-  /**
-   * @private
-   * @member {number} v6.AbstractRenderer#_stackIndex
-   */
-  this._stackIndex = -1;
-  /**
-   * Выглядит так: `[ x1, y1, x2, y2 ]`.
-   * @private
-   * @member {Array.<number>} v6.AbstractRenderer#_vertices
-   */
-  this._vertices = [];
-  if ( 'w' in options || 'h' in options ) {
-    this.resize( options.w, options.h );
-  } else {
-    this.resizeTo( window );
-  }
-  setDefaultDrawingSettings( this, this );
-}
+function AbstractRenderer () {} // eslint-disable-line no-empty-function, brace-rules/brace-on-same-line
 AbstractRenderer.prototype = {
   /**
    * Добавляет `canvas` в DOM.
@@ -83,7 +26,8 @@ AbstractRenderer.prototype = {
    *                                         должен быть добавлен.
    * @chainable
    */
-  append: function append ( parent ) {
+  append: function append ( parent )
+  {
     ( parent || document.body ).appendChild( this.canvas );
     return this;
   },
@@ -92,11 +36,13 @@ AbstractRenderer.prototype = {
    * @method v6.AbstractRenderer#destroy
    * @chainable
    */
-  destroy: function destroy () {
+  destroy: function destroy ()
+  {
     this.canvas.parentNode.removeChild( this.canvas );
     return this;
   },
-  push: function push () {
+  push: function push ()
+  {
     if ( this._stack[ ++this._stackIndex ] ) {
       copyDrawingSettings( this._stack[ this._stackIndex ], this );
     } else {
@@ -104,7 +50,8 @@ AbstractRenderer.prototype = {
     }
     return this;
   },
-  pop: function pop () {
+  pop: function pop ()
+  {
     if ( this._stackIndex >= 0 ) {
       copyDrawingSettings( this, this._stack[ this._stackIndex-- ] );
     } else {
@@ -116,22 +63,25 @@ AbstractRenderer.prototype = {
    * @param {number} w
    * @param {number} h
    */
-  resize: function resize ( w, h ) {
+  resize: function resize ( w, h )
+  {
     var canvas = this.canvas;
     var scale = this.settings.scale;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
-    canvas.width = this.w = Math.floor( w * scale );
-    canvas.height = this.h = Math.floor( h * scale );
+    canvas.width = this.w = Math.floor( w * scale ); // eslint-disable-line no-multi-assign
+    canvas.height = this.h = Math.floor( h * scale ); // eslint-disable-line no-multi-assign
     return this;
   },
   /**
    * @param {Element} element
    */
-  resizeTo: function resizeTo ( element ) {
+  resizeTo: function resizeTo ( element )
+  {
     return this.resize( getElementW( element ), getElementH( element ) );
   },
-  rescale: function rescale () {
+  rescale: function rescale ()
+  {
     return this.resizeTo( this.canvas );
   },
   /**
@@ -140,17 +90,19 @@ AbstractRenderer.prototype = {
    * @param {number} b B value (RGBA), L value (HSLA).
    * @param {number} a A value (RGBA or HSLA).
    */
-  background: function background ( r, g, b, a ) {
+  background: function background ( r, g, b, a )
+  {
     if ( isObjectLike( r ) ) {
       return this.backgroundImage( r );
     }
     return this.backgroundColor( r, g, b, a );
   },
-  _polygon: function _polygon ( x, y, rx, ry, n, a, degrees ) {
+  _polygon: function _polygon ( x, y, rx, ry, n, a, degrees )
+  {
     var polygon = polygons[ n ];
     var matrix = this.matrix;
     if ( ! polygon ) {
-      polygon = polygons[ n ] = createPolygon( n );
+      polygon = polygons[ n ] = createPolygon( n ); // eslint-disable-line no-multi-assign
     }
     if ( degrees ) {
       a *= Math.PI / 180;
@@ -173,18 +125,20 @@ AbstractRenderer.prototype = {
    *                     для поворота можно использовать этот параметр.
    * @chainable
    */
-  polygon: function polygon ( x, y, r, n, a ) {
+  polygon: function polygon ( x, y, r, n, a )
+  {
     if ( n % 1 ) {
       n = Math.floor( n * 100 ) * 0.01;
     }
-    if ( typeof a !== 'undefined' ) {
-      this._polygon( x, y, r, r, n, a, options.degrees );
-    } else {
+    if ( typeof a === 'undefined' ) {
       this._polygon( x, y, r, r, n, -Math.PI * 0.5 );
+    } else {
+      this._polygon( x, y, r, r, n, a, options.degrees );
     }
     return this;
   },
-  lineWidth: function lineWidth ( number ) {
+  lineWidth: function lineWidth ( number )
+  {
     this._lineWidth = number;
     return this;
   },
@@ -204,13 +158,13 @@ AbstractRenderer.prototype = {
    * renderer.stroke( 255, 0, 0, 0.5 );
    * renderer.noStroke().stroke( true );
    */
-  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r !== 'boolean' ) { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } else { this._doStroke = r; } return this; },
+  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
   /**
    * Устанавливает fill color.
    * @method v6.AbstractRenderer#fill
    * @see {@link v6.AbstractRenderer#stroke}
    */
-  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r !== 'boolean' ) { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } else { this._doFill = r; } return this; },
+  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
   /**
    * @method v6.AbstractRenderer#setTransform
    * @param {number|v6.Camera} m11
@@ -221,7 +175,8 @@ AbstractRenderer.prototype = {
    * @param {number}           [dy]
    * @chainable
    */
-  setTransform: function setTransform ( m11, m12, m21, m22, dx, dy ) {
+  setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
+  {
     var position, zoom;
     if ( typeof m11 === 'object' ) {
       position = m11.position;
@@ -230,20 +185,6 @@ AbstractRenderer.prototype = {
     } else {
       this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
     }
-    return this;
-  },
-  /**
-   * @method v6.AbstractRenderer#transform
-   * @param {number} m11
-   * @param {number} m12
-   * @param {number} m21
-   * @param {number} m22
-   * @param {number} dx
-   * @param {number} dy
-   * @chainable
-   */
-  transform: function transform ( m11, m12, m21, m22, dx, dy ) {
-    this.matrix.transform( m11, m12, m21, m22, dx, dy );
     return this;
   },
   /**
@@ -256,7 +197,7 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionX( renderer.w / 2 );
    */
-  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
   /**
    * @method v6.AbstractRenderer#backgroundPositionY
    * @param  {number}   value
@@ -267,7 +208,7 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionY( renderer.h / 2 );
    */
-  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; },
+  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
   /**
    * Отрисовывает картинку.
    * @method v6.AbstractRenderer#image
@@ -278,7 +219,8 @@ AbstractRenderer.prototype = {
    * @param {number}                      h
    * @chainable
    */
-  image: function image ( image, x, y, w, h ) {
+  image: function image ( image, x, y, w, h )
+  {
     if ( image.get().loaded ) {
       if ( typeof w === 'undefined' ) {
         w = image.dw;
@@ -290,7 +232,8 @@ AbstractRenderer.prototype = {
     }
     return this;
   },
-  closeShape: function closeShape () {
+  closeShape: function closeShape ()
+  {
     this._closeShape = true;
     return this;
   },
@@ -301,15 +244,16 @@ AbstractRenderer.prototype = {
    * @example
    * renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );
    */
-  beginShape: function beginShape ( options ) {
+  beginShape: function beginShape ( options )
+  {
     if ( ! options ) {
       options = {};
     }
     this._vertices.length = 0;
-    if ( typeof options.type !== 'undefined' ) {
-      this._shapeType = options.type;
-    } else {
+    if ( typeof options.type === 'undefined' ) {
       this._shapeType = null;
+    } else {
+      this._shapeType = options.type;
     }
     return this;
   },
@@ -319,7 +263,8 @@ AbstractRenderer.prototype = {
    * @param {number} y
    * @chainable
    */
-  vertex: function vertex ( x, y ) {
+  vertex: function vertex ( x, y )
+  {
     this._vertices.push( Math.floor( x ), Math.floor( y ) );
     return this;
   },
@@ -332,20 +277,128 @@ AbstractRenderer.prototype = {
    * @example
    * renderer.endShape( { close: true } );
    */
-  endShape: function endShape () {
+  endShape: function endShape ()
+  {
     throw Error( 'not impemented now' );
+  },
+  /**
+   * @method v6.AbstractRenderer#transform
+   * @param  {number}  m11 X scale.
+   * @param  {number}  m12 X skew.
+   * @param  {number}  m21 Y skew.
+   * @param  {number}  m22 Y scale.
+   * @param  {number}  dx  X translate.
+   * @param  {number}  dy  Y translate.
+   * @chainable
+   * @see v6.Transform#transform
+   * @see v6.mat3.transform
+   */
+  transform: function transform ( m11, m12, m21, m22, dx, dy )
+  {
+    this.matrix.transform( m11, m12, m21, m22, dx, dy );
+    return this;
+  },
+  /**
+   * @method v6.AbstractRenderer#translate
+   * @param  {number}  x - X translate.
+   * @param  {number}  y - Y translate.
+   * @chainable
+   * @see v6.Transform#translate
+   * @see v6.mat3.translate
+   */
+  translate: function translate ( x, y )
+  {
+    this.matrix.translate( x, y );
+    return this;
+  },
+  /**
+   * @method v6.AbstractRenderer#restore
+   * @chainable
+   * @see v6.Transform#restore
+   */
+  restore: function restore ()
+  {
+    this.matrix.restore();
+    return this;
   },
   constructor: AbstractRenderer
 };
 [
-  'transform',
-  'translate',
-  'restore',
   'scale',
   'save'
-].forEach( function ( name ) {
+].forEach( function ( name )
+{
   AbstractRenderer.prototype[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' ); // jshint ignore: line
 } );
+/**
+ * Инициализирует рендерер на `self`.
+ * @static
+ * @method v6.AbstractRenderer.create
+ * @param  {v6.AbstractRenderer} self    The renderer.
+ * @param  {object}              options {@link v6.options}
+ * @param  {constant}            type    Тип рендерера: 2D `RENDERER_2D` или WebGL `RENDERER_GL`.
+ *                                       Не может быть `RENDERER_AUTO`!.
+ * @return {void}
+ */
+AbstractRenderer.create = function create ( self, options, type )
+{
+  var context;
+  /**
+   * @member {HTMLCanvasElement} v6.AbstractRenderer#canvas
+   */
+  if ( options.canvas ) {
+    self.canvas = options.canvas;
+  } else {
+    self.canvas = document.createElement( 'canvas' );
+    self.canvas.innerHTML = 'Unable to run this application.';
+  }
+  if ( typeof options.append === 'undefined' || options.append ) {
+    self.append();
+  }
+  if ( type === constants.get( 'RENDERER_2D' ) ) {
+    context = '2d';
+  } else if ( type !== constants.get( 'RENDERER_GL' ) ) {
+    throw Error( 'Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`' );
+  } else if ( ! ( context = getWebGL() ) ) {
+    throw Error( 'Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
+  }
+  /**
+   * @member {object} v6.AbstractRenderer#context
+   */
+  self.context = self.canvas.getContext( context, {
+    alpha: options.alpha
+  } );
+  /**
+   * @member {object} v6.AbstractRenderer#settings
+   */
+  self.settings = options.settings;
+  /**
+   * @member {constant} v6.AbstractRenderer#type
+   */
+  self.type = type;
+  /**
+   * @private
+   * @member {Array.<object>} v6.AbstractRenderer#_stack
+   */
+  self._stack = [];
+  /**
+   * @private
+   * @member {number} v6.AbstractRenderer#_stackIndex
+   */
+  self._stackIndex = -1;
+  /**
+   * Выглядит так: `[ x1, y1, x2, y2 ]`.
+   * @private
+   * @member {Array.<number>} v6.AbstractRenderer#_vertices
+   */
+  self._vertices = [];
+  if ( 'w' in options || 'h' in options ) {
+    self.resize( options.w, options.h );
+  } else {
+    self.resizeTo( window );
+  }
+  setDefaultDrawingSettings( self, self );
+};
 /**
  * Заполняет фон цветом.
  * @virtual

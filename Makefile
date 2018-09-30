@@ -9,7 +9,7 @@ lint:
 	cd test && ../node_modules/.bin/eslint .
 
 mocha:
-	node_modules/.bin/mocha -r test/.register test/**.test.js
+	node_modules/.bin/mocha -r test/.register test/**/*.test.js
 
 karma:
 	node_modules/.bin/karma start .karma.conf.js

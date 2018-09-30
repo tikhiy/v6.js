@@ -1,16 +1,9 @@
 'use strict';
 
-var constants = require( '../../constants' );
+var constants              = require( '../../constants' );
 
-var copyDrawingSettings = require( './copy_drawing_settings' );
-
-var defaultDrawingSettings = {
-  _rectAlignX: constants.get( 'LEFT' ),
-  _rectAlignY: constants.get( 'TOP' ),
-  _lineWidth:  2,
-  _doStroke:   true,
-  _doFill:     true
-};
+var defaultDrawingSettings = require( './default_drawing_settings' );
+var copyDrawingSettings    = require( './copy_drawing_settings' );
 
 /**
  * Устанавливает drawing settings по умолчанию в `target`.

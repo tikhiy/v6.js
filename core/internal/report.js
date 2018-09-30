@@ -7,13 +7,13 @@ var report, reported;
 if ( typeof console !== 'undefined' && console.warn ) {
   reported = {};
 
-  report = function report ( message ) {
+  report = function report ( message )
+  {
     if ( reported[ message ] ) {
       return;
     }
 
-    console.warn( message );
-
+    console.warn( message ); // eslint-disable-line no-console
     reported[ message ] = true;
   };
 } else {

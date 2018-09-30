@@ -1,4 +1,4 @@
-'use strict'; // eslint-disable-line lines-around-directive
+'use strict';
 
 var isObjectLike              = require( 'peako/is-object-like' );
 var getElementW               = require( 'peako/get-element-w' );
@@ -24,55 +24,6 @@ var options                   = require( './settings' );
  * @param {constant} type    Тип рендерера: 2D (`RENDERER_2D`) или WebGL (`RENDERER_GL`).
  */
 function AbstractRenderer () {} // eslint-disable-line no-empty-function, brace-rules/brace-on-same-line
-
-#define backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT )                              \
-  backgroundPositionX: function backgroundPositionX ( value, type )                                     \
-  {                                                                                                     \
-    if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) {                           \
-      if ( type === constants.get( 'CONSTANT' ) ) {                                                     \
-        type = constants.get( 'PERCENTAGES' );                                                          \
-                                                                                                        \
-        if ( value === constants.get( 'LEFT' ) ) {                                                      \
-          value = 0;                                                                                    \
-        } else if ( value === constants.get( 'CENTER' ) ) {                                             \
-          value = 0.5;                                                                                  \
-        } else if ( value === constants.get( 'RIGHT' ) ) {                                              \
-          value = 1;                                                                                    \
-        } else {                                                                                        \
-          throw Error( 'Got unknown value. The known are: ' + #LEFT + ', ' + #CENTER + ', ' + #RIGHT ); \
-        }                                                                                               \
-      }                                                                                                 \
-                                                                                                        \
-      if ( type === constants.get( 'PERCENTAGES' ) ) {                                                  \
-        value *= this.w;                                                                                \
-      } else {                                                                                          \
-        throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' );         \
-      }                                                                                                 \
-    }                                                                                                   \
-                                                                                                        \
-    this._backgroundPositionX = value;                                                                  \
-    return this;                                                                                        \
-  }
-
-#define fill( fill, _doFill )                                                                 \
-  fill: function fill ( r, g, b, a )                                                          \
-  {                                                                                           \
-    if ( typeof r === 'undefined' ) {                                                         \
-      this._##fill();                                                                         \
-    } else if ( typeof r === 'boolean' ) {                                                    \
-      this._doFill = r;                                                                       \
-    } else {                                                                                  \
-      if ( typeof r === 'string' || this._##fill##Color.type !== this.settings.color.type ) { \
-        this._##fill##Color = new this.settings.color( r, g, b, a );                          \
-      } else {                                                                                \
-        this._##fill##Color.set( r, g, b, a );                                                \
-      }                                                                                       \
-                                                                                              \
-      this._doFill = true;                                                                    \
-    }                                                                                         \
-                                                                                              \
-    return this;                                                                              \
-  }
 
 AbstractRenderer.prototype = {
   /**
@@ -228,8 +179,8 @@ AbstractRenderer.prototype = {
   /**
    * Устанавливает stroke color.
    * @method v6.AbstractRenderer#stroke
-   * @param {number|object|boolean} [r] Может быть {@link v6.RGBA} или {@link v6.HSLA} чтобы
-   *                                    поставить stroke color. Если это boolean, то включит
+   * @param {number|object|boolean} [r] Может быть {@link v6.RGBA} или {@link v6.HSLA}
+   *                                    чтобы поставить stroke color. Если это boolean, то включит
    *                                    или отключит stroke color.
    * @param {number}                [g]
    * @param {number}                [b]
@@ -241,14 +192,14 @@ AbstractRenderer.prototype = {
    * renderer.stroke( 255, 0, 0, 0.5 );
    * renderer.noStroke().stroke( true );
    */
-  fill( stroke, _doStroke ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
+  fill( stroke, _doStroke ),
 
   /**
    * Устанавливает fill color.
    * @method v6.AbstractRenderer#fill
    * @see {@link v6.AbstractRenderer#stroke}
    */
-  fill( fill, _doFill ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
+  fill( fill, _doFill ),
 
   /**
    * @method v6.AbstractRenderer#setTransform
@@ -285,7 +236,7 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionX( renderer.w / 2 );
    */
-  backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
+  backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT ),
 
   /**
    * @method v6.AbstractRenderer#backgroundPositionY
@@ -297,7 +248,7 @@ AbstractRenderer.prototype = {
    * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
    * renderer.backgroundPositionY( renderer.h / 2 );
    */
-  backgroundPositionX( backgroundPositionY, h, TOP, MIDDLE, BOTTOM ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
+  backgroundPositionX( backgroundPositionY, h, TOP, MIDDLE, BOTTOM ),
 
   /**
    * Отрисовывает картинку.

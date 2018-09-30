@@ -10,32 +10,28 @@
  * @namespace v6
  */
 
-var v6 = {
-  AbstractRenderer: require( './AbstractRenderer' ),
-  Camera:           require( './Camera' ),
-  CompoundedImage:  require( './CompoundedImage' ),
-  HSLA:             require( './colors/HSLA' ),
-  Image:            require( './Image' ),
-  RGBA:             require( './colors/RGBA' ),
-  Renderer2D:       require( './Renderer2D' ),
-  RendererGL:       require( './RendererGL' ),
-  ShaderProgram:    require( './ShaderProgram' ),
-  Ticker:           require( './Ticker' ),
-  Transform:        require( './Transform' ),
-  Vector2D:         require( './math/Vector2D' ),
-  Vector3D:         require( './math/Vector3D' ),
-  color:            require( './colors/color' ),
-  constants:        require( './constants' ),
-  createRenderer:   require( './create_renderer' ),
-  options:          require( './options' ),
-  settings:         require( './settings' ),
-  shaders:          require( './shaders' ),
-  dist:             require( './utils/dist' ),
-  map:              require( './utils/map' )
-};
+exports.AbstractRenderer = require( './AbstractRenderer' );
+exports.Camera           = require( './Camera' );
+exports.CompoundedImage  = require( './CompoundedImage' );
+exports.HSLA             = require( './colors/HSLA' );
+exports.Image            = require( './Image' );
+exports.RGBA             = require( './colors/RGBA' );
+exports.Renderer2D       = require( './Renderer2D' );
+exports.RendererGL       = require( './RendererGL' );
+exports.ShaderProgram    = require( './ShaderProgram' );
+exports.Ticker           = require( './Ticker' );
+exports.Transform        = require( './Transform' );
+exports.Vector2D         = require( './math/Vector2D' );
+exports.Vector3D         = require( './math/Vector3D' );
+exports.color            = require( './colors/color' );
+exports.constants        = require( './constants' );
+exports.createRenderer   = require( './create_renderer' );
+exports.options          = require( './options' );
+exports.settings         = require( './settings' );
+exports.shaders          = require( './shaders' );
+exports.dist             = require( './utils/dist' );
+exports.map              = require( './utils/map' );
 
 if ( typeof self !== 'undefined' ) {
-  self.v6 = v6;
+  self.v6 = exports;
 }
-
-module.exports = v6;

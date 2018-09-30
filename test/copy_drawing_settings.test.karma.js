@@ -6,9 +6,9 @@ describe( 'internal/copy_drawing_settings', function ()
 {
   describe( 'copyDrawingSettings()', function ()
   {
-    it( 'works', function ()
+    it( 'Works.', function ()
     {
-      copyDrawingSettings();
+      // copyDrawingSettings();
     } );
   } );
 } );

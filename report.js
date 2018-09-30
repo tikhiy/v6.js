@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals console */
+var noop = require( 'peako/noop' );
 
 var report, reported;
 
@@ -17,7 +17,7 @@ if ( typeof console !== 'undefined' && console.warn ) {
     reported[ message ] = true;
   };
 } else {
-  report = require( 'peako/noop' );
+  report = noop;
 }
 
 module.exports = report;

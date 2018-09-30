@@ -1,6 +1,5 @@
 'use strict';
 
-var settings       = require( '../settings' );
 var AbstractVector = require( './AbstractVector' );
 
 /**
@@ -231,6 +230,67 @@ Vector3D.prototype.dotVector = function dotVector ( vector )
 Vector3D.prototype.lerpVector = function lerpVector ( vector, value )
 {
   return this.lerp( vector.x, vector.y, vector.z, value );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#magSq
+ */
+Vector3D.prototype.magSq = function magSq ()
+{
+  return ( this.x * this.x ) + ( this.y * this.y ) + ( this.z * this.z );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#clone
+ */
+Vector3D.prototype.clone = function clone ()
+{
+  return new Vector3D( this.x, this.y, this.z );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#dist
+ */
+Vector3D.prototype.dist = function dist ( vector )
+{
+  var x = vector.x - this.x;
+  var y = vector.y - this.y;
+  var z = vector.z - this.z;
+  return Math.sqrt( ( x * x ) + ( y * y ) + ( z * z ) );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#toString
+ */
+Vector3D.prototype.toString = function toString ()
+{
+  return 'Vector3D { ' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ', ' + this.z.toFixed( 2 ) + ' }';
+};
+
+/**
+ * @method v6.Vector3D.random
+ * @see v6.AbstractVector.random
+ */
+Vector3D.random = function random ()
+{
+  // Use the equal-area projection algorithm.
+  var theta = Math.random() * Math.PI * 2;
+  var z     = ( Math.random() * 2 ) - 1;
+  var n     = Math.sqrt( 1 - ( z * z ) );
+  return new Vector3D( n * Math.cos( theta ), n * Math.sin( theta ), z );
+};
+
+/**
+ * @method v6.Vector3D.fromAngle
+ * @see v6.AbstractVector.fromAngle
+ */
+Vector3D.fromAngle = function fromAngle ( angle )
+{
+  return AbstractVector._fromAngle( Vector3D, angle );
 };
 
 module.exports = Vector3D;

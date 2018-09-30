@@ -15,12 +15,21 @@ var options_         = require( './options' );
  * @inner
  * @var {Float32Array} square
  */
-var square = new Float32Array( [
-  0, 0,
-  1, 0,
-  1, 1,
-  0, 1
-] );
+var square = ( function ()
+{
+  var square = [
+    0, 0,
+    1, 0,
+    1, 1,
+    0, 1
+  ];
+
+  if ( typeof Float32Array === 'function' ) {
+    return new Float32Array( square ); // eslint-disable-line no-undef
+  }
+
+  return square;
+} )();
 
 /**
  * WebGL рендерер.
@@ -28,7 +37,8 @@ var square = new Float32Array( [
  * @extends v6.AbstractRenderer
  * @param {object} options {@link v6.options}
  */
-function RendererGL ( options ) {
+function RendererGL ( options )
+{
   AbstractRenderer.call( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_GL' ) );
 
   /**
@@ -71,7 +81,8 @@ RendererGL.prototype.constructor = RendererGL;
  * @param {number} h
  * @chainable
  */
-RendererGL.prototype.resize = function resize ( w, h ) {
+RendererGL.prototype.resize = function resize ( w, h )
+{
   AbstractRenderer.prototype.resize.call( this, w, h );
   this.context.viewport( 0, 0, this.w, this.h );
   return this;
@@ -82,7 +93,8 @@ RendererGL.prototype.resize = function resize ( w, h ) {
  * @param {boolean} blending
  * @chainable
  */
-RendererGL.prototype.blending = function blending ( blending ) {
+RendererGL.prototype.blending = function blending ( blending )
+{
   var gl = this.context;
 
   if ( blending ) {
@@ -109,17 +121,19 @@ RendererGL.prototype.blending = function blending ( blending ) {
  * @param  {number} a
  * @return {void}
  */
-RendererGL.prototype._clear = function _clear ( r, g, b, a ) {
+RendererGL.prototype._clear = function _clear ( r, g, b, a )
+{
   var gl = this.context;
   gl.clearColor( r, g, b, a );
-  gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+  gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT ); // eslint-disable-line no-bitwise
 };
 
 /**
  * @override
  * @method v6.RendererGL#backgroundColor
  */
-RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
+RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a )
+{
   var rgba = new this.settings.color( r, g, b, a ).rgba();
   this._clear( rgba[ 0 ] / 255, rgba[ 1 ] / 255, rgba[ 2 ] / 255, rgba[ 3 ] );
   return this;
@@ -129,7 +143,8 @@ RendererGL.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
  * @override
  * @method v6.RendererGL#clear
  */
-RendererGL.prototype.clear = function clear () {
+RendererGL.prototype.clear = function clear ()
+{
   this._clear( 0, 0, 0, 0 );
   return this;
 };
@@ -138,7 +153,8 @@ RendererGL.prototype.clear = function clear () {
  * @override
  * @method v6.RendererGL#drawArrays
  */
-RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx, _sy ) {
+RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx, _sy )
+{
   var program = this.programs.default;
   var gl      = this.context;
 
@@ -147,7 +163,7 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
   }
 
   if ( verts ) {
-    if ( mode == null ) {
+    if ( typeof mode === 'undefined' ) {
       mode = gl.STATIC_DRAW;
     }
 
@@ -155,7 +171,7 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
     gl.bufferData( gl.ARRAY_BUFFER, verts, mode );
   }
 
-  if ( _sx != null ) {
+  if ( typeof _sx !== 'undefined' ) {
     this.matrix.scale( _sx, _sy );
   }
 
@@ -171,14 +187,16 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
   return this;
 };
 
-RendererGL.prototype._fill = function _fill ( count ) {
+RendererGL.prototype._fill = function _fill ( count )
+{
   if ( this._doFill ) {
     this.program.setUniform( 'ucolor', this._fillColor.rgba() );
     this.context.drawArrays( this.context.TRIANGLE_FAN, 0, count );
   }
 };
 
-RendererGL.prototype._stroke = function _stroke ( count ) {
+RendererGL.prototype._stroke = function _stroke ( count )
+{
   if ( this._doStroke && this._lineWidth > 0 ) {
     this.program.setUniform( 'ucolor', this._strokeColor.rgba() );
     this.context.lineWidth( this._lineWidth );
@@ -190,7 +208,8 @@ RendererGL.prototype._stroke = function _stroke ( count ) {
  * @override
  * @method v6.RendererGL#arc
  */
-RendererGL.prototype.arc = function arc ( x, y, r ) {
+RendererGL.prototype.arc = function arc ( x, y, r )
+{
   return this._polygon( x, y, r, r, 24, 0 );
 };
 
@@ -198,7 +217,8 @@ RendererGL.prototype.arc = function arc ( x, y, r ) {
  * @override
  * @method v6.RendererGL#rect
  */
-RendererGL.prototype.rect = function rect ( x, y, w, h ) {
+RendererGL.prototype.rect = function rect ( x, y, w, h )
+{
   var alignedX = align( x, w, this._rectAlignX );
   var alignedY = align( y, h, this._rectAlignY );
   this.matrix.save();

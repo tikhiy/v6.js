@@ -54,7 +54,7 @@ function Ticker ()
         self.running = true;
       }
 
-      return this; // jshint ignore: line
+      return this; // eslint-disable-line no-invalid-this
     }
 
     if ( ! _now ) {
@@ -75,7 +75,7 @@ function Ticker ()
     self.lastRequestTime = _now;
     self.lastRequestAnimationFrameID = timer.request( start );
 
-    return this; // jshint ignore: line
+    return this; // eslint-disable-line no-invalid-this
   }
 
   this.start = start;

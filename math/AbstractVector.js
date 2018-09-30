@@ -101,7 +101,7 @@ AbstractVector.prototype = {
    */
   limit: function limit ( value )
   {
-    var mag = this.magSquare();
+    var mag = this.magSq();
 
     if ( mag > value * value ) {
       this.div( Math.sqrt( mag ) ).mul( value );
@@ -116,10 +116,72 @@ AbstractVector.prototype = {
    */
   mag: function mag ()
   {
-    return Math.sqrt( this.magSquare() );
+    return Math.sqrt( this.magSq() );
   },
+
+  /**
+   * @virtual
+   * @method v6.AbstractVector#magSq
+   * @return {number}
+   */
+
+  /**
+   * Создает клон вектора.
+   * @virtual
+   * @method v6.AbstractVector#clone
+   * @return {v6.AbstractVector}
+   */
+
+  /**
+   * @virtual
+   * @method v6.AbstractVector#toString
+   * @return {string}
+   */
+
+  /**
+   * Возвращает дистанцию между двумя векторами.
+   * @virtual
+   * @method v6.AbstractVector#dist
+   * @param  {v6.AbstractVector} vector
+   * @return {number}
+   */
 
   constructor: AbstractVector
 };
+
+
+/**
+ * @private
+ * @method v6.AbstractVector._fromAngle
+ * @param  {v6.AbstractVector} Vector {@link v6.Vector2D}, {@link v6.Vector3D}.
+ * @param  {number}            angle
+ * @return {v6.AbstractVector}
+ * @see v6.AbstractVector.fromAngle
+ */
+AbstractVector._fromAngle = function _fromAngle ( Vector, angle )
+{
+  if ( settings.degrees ) {
+    angle *= Math.PI / 180;
+  }
+
+  return new Vector( Math.cos( angle ), Math.sin( angle ) );
+};
+
+/**
+ * Создает рандомный вектор.
+ * @virtual
+ * @static
+ * @method v6.AbstractVector.random
+ * @return {v6.AbstractVector} Возвращает нормализованный вектор с рандомным направлением.
+ */
+
+/**
+ * Создает вектор с направлением равным `angle`.
+ * @virtual
+ * @static
+ * @method v6.AbstractVector.fromAngle
+ * @param  {number}            angle Направление вектора.
+ * @return {v6.AbstractVector}       Возвращает нормализованный вектор с направлением равным `angle`.
+ */
 
 module.exports = AbstractVector;

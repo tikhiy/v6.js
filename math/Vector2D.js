@@ -212,24 +212,27 @@ Vector2D.prototype.lerpVector = function lerpVector ( vector, value )
 };
 
 /**
- * @method v6.Vector2D#magSquare
- * @return {number}
+ * @override
+ * @method v6.Vector2D#magSq
  */
-Vector2D.prototype.magSquare = function magSquare ()
+Vector2D.prototype.magSq = function magSq ()
 {
   return ( this.x * this.x ) + ( this.y * this.y );
 };
 
 /**
- * Создает клон вектора.
+ * @override
  * @method v6.Vector2D#clone
- * @return {v6.Vector2D}
  */
 Vector2D.prototype.clone = function clone ()
 {
   return new Vector2D( this.x, this.y );
 };
 
+/**
+ * @override
+ * @method v6.Vector2D#dist
+ */
 Vector2D.prototype.dist = function dist ( vector )
 {
   var x = vector.x - this.x;
@@ -237,21 +240,18 @@ Vector2D.prototype.dist = function dist ( vector )
   return Math.sqrt( ( x * x ) + ( y * y ) );
 };
 
-Vector2D.prototype.cross = function cross ( vector )
-{
-  return ( this.x * vector.y ) - ( this.y * vector.x );
-};
-
+/**
+ * @override
+ * @method v6.Vector2D#toString
+ */
 Vector2D.prototype.toString = function toString ()
 {
   return 'Vector2D { ' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ' }';
 };
 
 /**
- * Создает рандомный вектор.
- * @static
  * @method v6.Vector2D.random
- * @return {v6.Vector2D} Возвращает нормализованный вектор с рандомным направлением.
+ * @see v6.AbstractVector.random
  */
 Vector2D.random = function random ()
 {
@@ -267,19 +267,12 @@ Vector2D.random = function random ()
 };
 
 /**
- * Создает вектор с направлением `angle`.
- * @static
  * @method v6.Vector2D.fromAngle
- * @param  {number}  angle Направление вектора.
- * @return {v6.Vector2D}        Возвращает нормализованный вектор с направлением `angle`.
+ * @see v6.AbstractVector.fromAngle
  */
 Vector2D.fromAngle = function fromAngle ( angle )
 {
-  if ( settings.degrees ) {
-    angle *= Math.PI / 180;
-  }
-
-  return new Vector2D( Math.cos( angle ), Math.sin( angle ) );
+  return AbstractVector._fromAngle( Vector2D, angle );
 };
 
 module.exports = Vector2D;

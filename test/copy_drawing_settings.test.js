@@ -8,12 +8,4 @@ describe( 'internal/copy_drawing_settings', function ()
   {
     copyDrawingSettings.should.be.a( 'function' );
   } );
-
-  describe( 'copyDrawingSettings()', function ()
-  {
-    it( 'works', function ()
-    {
-      copyDrawingSettings();
-    } );
-  } );
 } );

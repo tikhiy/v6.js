@@ -24,7 +24,7 @@ module.exports = {
             "always"
         ],
         "array-callback-return": "error",
-        "array-element-newline": "error",
+        "array-element-newline": "off",
         "arrow-body-style": "error",
         "arrow-parens": "error",
         "arrow-spacing": "error",
@@ -133,7 +133,7 @@ module.exports = {
         "max-params": "off",
         "max-statements": "off",
         "max-statements-per-line": "error",
-        "multiline-comment-style": "error",
+        "multiline-comment-style": "off",
         "multiline-ternary": "error",
         "new-parens": "error",
         "newline-after-var": "off",
@@ -158,7 +158,14 @@ module.exports = {
         "no-extend-native": "error",
         "no-extra-bind": "error",
         "no-extra-label": "error",
-        "no-extra-parens": "off",
+        "no-extra-parens": [
+            "warn",
+            "all",
+            {
+                "returnAssign": false,
+                "conditionalAssign": false
+            }
+        ],
         "no-floating-decimal": "error",
         "no-implicit-coercion": "error",
         "no-implicit-globals": "error",
@@ -173,7 +180,7 @@ module.exports = {
         "no-loop-func": "error",
         "no-magic-numbers": "off",
         "no-misleading-character-class": "error",
-        "no-mixed-operators": "error",
+        "no-mixed-operators": "warn",
         "no-mixed-requires": "error",
         "no-multi-assign": "error",
         "no-multi-spaces": "off",
@@ -206,7 +213,7 @@ module.exports = {
         "no-script-url": "error",
         "no-self-compare": "error",
         "no-sequences": "error",
-        "no-shadow": "error",
+        "no-shadow": "warn",
         "no-shadow-restricted-names": "error",
         "no-spaced-func": "error",
         "no-sync": "error",
@@ -290,7 +297,13 @@ module.exports = {
         "space-unary-ops": "off",
         "spaced-comment": [
             "error",
-            "always"
+            "always",
+            {
+                "markers": [
+                    "*",
+                    "!"
+                ]
+            }
         ],
         "strict": "error",
         "switch-colon-spacing": "error",
@@ -303,7 +316,10 @@ module.exports = {
         ],
         "valid-jsdoc": "off",
         "vars-on-top": "error",
-        "wrap-iife": "error",
+        "wrap-iife": [
+            "error",
+            "inside"
+        ],
         "wrap-regex": "error",
         "yield-star-spacing": "error",
         "yoda": [

@@ -4,11 +4,7 @@
   "description": "A rendering library; write the same code for both 2D and WebGL contexts.",
   "main": "v6.js",
   "scripts": {
-    "prepublish": "make min && npm run docs",
-    "test": "mocha -r test/.register ./test/**/*.test.js",
-    "posttest": "karma start .karma.conf.js",
-    "docs": "jsdoc -c .jsdoc.js",
-    "lint": "jshint ."
+    "prepublish": "make -B preprocess lint test min docs"
   },
   "repository": {
     "type": "git",
@@ -21,9 +17,9 @@
   },
   "homepage": "https://github.com/silent-tempest/v6.js#readme",
   "devDependencies": {
-    "browserify": "^16.2.2",
+    "browserify": "^16.2.3",
     "browserify-optional": "^1.0.1",
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-like": "^1.1.1",
     "eslint": "^5.6.1",
     "eslint-plugin-brace-rules": "^0.1.6",

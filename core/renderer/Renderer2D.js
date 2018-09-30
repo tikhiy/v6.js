@@ -1,7 +1,9 @@
 'use strict';
 
 var defaults         = require( 'peako/defaults' );
+
 var align            = require( './internal/align' );
+
 var AbstractRenderer = require( './AbstractRenderer' );
 var constants        = require( './constants' );
 var options_         = require( './options' );

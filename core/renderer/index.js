@@ -2,6 +2,7 @@
 
 var getRendererType = require( './internal/get_renderer_type' );
 var getWebGL        = require( './internal/get_webgl' );
+
 var RendererGL      = require( './RendererGL' );
 var Renderer2D      = require( './Renderer2D' );
 var constants       = require( './constants' );

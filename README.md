@@ -9,12 +9,12 @@
 ### Пример
 
 ```javascript
-// importing v6.js
-var createRenderer = require( 'v6.js/create_renderer' );
-var constants      = require( 'v6.js/constants' );
-var HSLA           = require( 'v6.js/colors/HSLA' );
-var Ticker         = require( 'v6.js/Ticker' );
-// creating v6.js renderer
+// Import the "v6.js".
+var createRenderer = require( 'v6.js/core/renderer' );
+var constants      = require( 'v6.js/core/constants' );
+var HSLA           = require( 'v6.js/core/color/HSLA' );
+var Ticker         = require( 'v6.js/core/Ticker' );
+// Create "v6.js" renderer.
 var renderer = createRenderer( {
   settings: {
     color: HSLA
@@ -23,7 +23,7 @@ var renderer = createRenderer( {
 } )
   .stroke( 'black' )
   .fill( 'white' );
-// creating v6.js ticker
+// Create "v6.js" ticker.
 var ticker = new Ticker()
   .on( 'render', function ()
   {
@@ -31,7 +31,7 @@ var ticker = new Ticker()
     renderer.polygon( renderer.w / 2, renderer.h / 2, 100, 5 );
   } )
   .start();
-// auto-resize the renderer
+// Auto-resize the renderer.
 self.addEventListener( 'resize', function ()
 {
   renderer.resizeTo( this );

@@ -4,7 +4,7 @@ preprocess: $(PRE)
 	cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -C $^ -o $(subst .preprocess,,$^)
 
 lint: preprocess
-								node_modules/.bin/jshint $(subst .preprocess,,$(PRE)) && \
+	              node_modules/.bin/jshint $(subst .preprocess,,$(PRE)) && \
 	              node_modules/.bin/eslint .                            && \
 	cd test && ../node_modules/.bin/eslint .
 

@@ -1,16 +1,17 @@
 'use strict';
 
 /**
- * @constructor module:"v6.js".CompoundedImage
- * @param {module:"v6.js".Image|module:"v6.js".CompoundedImage} image
- * @param {number}                                              x
- * @param {number}                                              y
- * @param {number}                                              w
- * @param {number}                                              h
- * @param {number}                                              dw
- * @param {number}                                              dh
+ * @constructor v6.CompoundedImage
+ * @param {v6.Image|v6.CompoundedImage} image
+ * @param {number}                      x
+ * @param {number}                      y
+ * @param {number}                      w
+ * @param {number}                      h
+ * @param {number}                      dw
+ * @param {number}                      dh
  */
-function CompoundedImage ( image, x, y, w, h, dw, dh ) {
+function CompoundedImage ( image, x, y, w, h, dw, dh )
+{
   this.image = image;
   this.x     = x;
   this.y     = y;
@@ -22,10 +23,11 @@ function CompoundedImage ( image, x, y, w, h, dw, dh ) {
 
 CompoundedImage.prototype = {
   /**
-   * @method module:"v6.js".CompoundedImage#get
-   * @return {module:"v6.js".Image}
+   * @method v6.CompoundedImage#get
+   * @return {v6.Image}
    */
-  get: function get () {
+  get: function get ()
+  {
     return this.image.get();
   },
 

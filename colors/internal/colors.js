@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+var colors = {
   aliceblue:       'f0f8ffff', antiquewhite:         'faebd7ff',
   aqua:            '00ffffff', aquamarine:           '7fffd4ff',
   azure:           'f0ffffff', beige:                'f5f5dcff',
@@ -74,3 +74,5 @@ module.exports = {
   whitesmoke:      'f5f5f5ff', yellow:               'ffff00ff',
   yellowgreen:     '9acd32ff', transparent:          '00000000'
 };
+
+module.exports = colors;

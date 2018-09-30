@@ -12,7 +12,8 @@ var _counter   = 0;
  * @param  {string} key
  * @return {void}
  */
-function add ( key ) {
+function add ( key )
+{
   if ( typeof _constants[ key ] !== 'undefined' ) {
     throw Error( 'Cannot re-set (add) existing constant: ' + key );
   }
@@ -25,7 +26,8 @@ function add ( key ) {
  * @param  {string}   key
  * @return {constant}
  */
-function get ( key ) {
+function get ( key )
+{
   if ( typeof _constants[ key ] === 'undefined' ) {
     throw ReferenceError( 'Cannot get unknown constant: ' + key );
   }

@@ -91,7 +91,7 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
     return this;
   }
 
-  if ( _sx == null ) {
+  if ( typeof _sx === 'undefined' ) {
     _sx = _sy = 1;
   }
 

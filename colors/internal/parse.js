@@ -1,7 +1,5 @@
 'use strict';
 
-module.exports = parse;
-
 var RGBA   = require( '../RGBA' );
 var HSLA   = require( '../HSLA' );
 var colors = require( './colors' );
@@ -19,6 +17,8 @@ var regexps = {
   hsl:  /^hsl\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*\)$|^\s*hsla\s*\(\s*(\d+|\d*\.\d+)\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\u0025\s*,\s*(\d+|\d*\.\d+)\s*\)$/
 };
 
+module.exports = parse;
+
 /**
  * @private
  * @method parse
@@ -32,7 +32,8 @@ var regexps = {
  * parse( 'hsl( 0, 100%, 50% )' );       // -> new HSLA( 0, 100, 50, 1 )
  * parse( 'hsla( 0, 100%, 50%, 0.5 )' ); // -> new HSLA( 0, 100, 50, 0.5 )
  */
-function parse ( string ) {
+function parse ( string )
+{
   var cache = parsed[ string ] || parsed[ string = string.trim().toLowerCase() ];
 
   if ( ! cache ) {
@@ -58,14 +59,14 @@ function parse ( string ) {
  * @private
  * @method formatHex
  * @param  {array<string?>} match
- * @param  {boolean}        shortSyntax
  * @return {string}
  * @example
  * formatHex( [ '#000000ff', '000000', 'ff' ] ); // -> '000000ff'
  * formatHex( [ '#0007', '0', '0', '0', '7' ] ); // -> '00000077'
  * formatHex( [ '#000', '0', '0', '0', null ] ); // -> '000000ff'
  */
-function formatHex ( match ) {
+function formatHex ( match )
+{
   var r, g, b, a;
 
   if ( match.length === 3 ) {
@@ -89,18 +90,23 @@ function formatHex ( match ) {
  * parseHex( '00000000' ); // -> [ 0, 0, 0, 0 ]
  * parseHex( 'ff00ffff' ); // -> [ 255, 0, 255, 1 ]
  */
-function parseHex ( hex ) {
-  if ( hex == 0 ) { // jshint ignore: line
+function parseHex ( hex )
+{
+  if ( hex == 0 ) { // eslint-disable-line eqeqeq
     return TRANSPARENT;
   }
 
   hex = parseInt( hex, 16 );
 
   return [
-    hex >> 24 & 255,    // r
-    hex >> 16 & 255,    // g
-    hex >> 8 & 255,     // b
-    ( hex & 255 ) / 255 // a
+    // R
+    hex >> 24 & 255,    // eslint-disable-line no-bitwise
+    // G
+    hex >> 16 & 255,    // eslint-disable-line no-bitwise
+    // B
+    hex >> 8  & 255,    // eslint-disable-line no-bitwise
+    // A
+    ( hex & 255 ) / 255 // eslint-disable-line no-bitwise
   ];
 }
 
@@ -110,12 +116,22 @@ function parseHex ( hex ) {
  * @param  {array<string?>} match
  * @return {array<number>}
  */
-function compactMatch ( match ) {
+function compactMatch ( match )
+{
   if ( match[ 7 ] ) {
-    return [ +match[ 4 ], +match[ 5 ], +match[ 6 ], +match[ 7 ] ];
+    return [
+      Number( match[ 4 ] ),
+      Number( match[ 5 ] ),
+      Number( match[ 6 ] ),
+      Number( match[ 7 ] )
+    ];
   }
 
-  return [ +match[ 1 ], +match[ 2 ], +match[ 3 ] ];
+  return [
+    Number( match[ 1 ] ),
+    Number( match[ 2 ] ),
+    Number( match[ 3 ] )
+  ];
 }
 
 /**
@@ -124,7 +140,8 @@ function compactMatch ( match ) {
  * @param {array<number>} match
  * @param {function}      color
  */
-function ColorData ( match, color ) {
+function ColorData ( match, color )
+{
   this[ 0 ] = match[ 0 ];
   this[ 1 ] = match[ 1 ];
   this[ 2 ] = match[ 2 ];

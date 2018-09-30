@@ -18,7 +18,10 @@ module.exports = {
     },
     "rules": {
         "accessor-pairs": "error",
-        "array-bracket-newline": "error",
+        "array-bracket-newline": [
+            "error",
+            "consistent"
+        ],
         "array-bracket-spacing": [
             "error",
             "always"
@@ -198,7 +201,7 @@ module.exports = {
         "no-octal-escape": "error",
         "no-param-reassign": "off",
         "no-path-concat": "error",
-        "no-plusplus": "error",
+        "no-plusplus": "off",
         "no-process-env": "off",
         "no-process-exit": "error",
         "no-proto": "error",
@@ -228,7 +231,14 @@ module.exports = {
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
-        "no-use-before-define": "error",
+        "no-use-before-define": [
+            "error",
+            {
+                "variables": true,
+                "functions": false,
+                "classes": true
+            }
+        ],
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
         "no-useless-concat": "error",
@@ -270,13 +280,15 @@ module.exports = {
         "quotes": [
             "error",
             "single",
-            { avoidEscape: true }
+            {
+                "avoidEscape": true
+            }
         ],
         "radix": "error",
         "require-atomic-updates": "error",
         "require-await": "error",
         "require-jsdoc": "off",
-        "require-unicode-regexp": "error",
+        "require-unicode-regexp": "off",
         "rest-spread-spacing": "error",
         "semi": "error",
         "semi-spacing": "error",
@@ -284,9 +296,9 @@ module.exports = {
             "error",
             "last"
         ],
-        "sort-imports": "error",
+        "sort-imports": "off",
         "sort-keys": "off",
-        "sort-vars": "error",
+        "sort-vars": "off",
         "space-before-blocks": "error",
         "space-before-function-paren": "error",
         "space-in-parens": [

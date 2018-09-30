@@ -4,10 +4,11 @@ var CompoundedImage = require( './CompoundedImage' );
 var report          = require( './report' );
 
 /**
- * @constructor module:"v6.js".Image
+ * @constructor v6.Image
  * @param {string|HTMLImageElement} url
  */
-function Image ( url ) {
+function Image ( url )
+{
 
   var self = this;
 
@@ -21,7 +22,8 @@ function Image ( url ) {
       if ( url.complete ) {
         this.onload();
       } else if ( url.addEventListener ) {
-        url.addEventListener( 'load', function onload () {
+        url.addEventListener( 'load', function onload ()
+        {
           url.removeEventListener( 'load', onload );
           self.onload();
         } );
@@ -47,35 +49,37 @@ function Image ( url ) {
 
 Image.prototype = {
   /**
-   * @method module:"v6.js".Image#onload
+   * @method v6.Image#onload
    * @return {void}
    */
-  onload: function onload ( _e ) {
+  onload: function onload ( _e )
+  {
 
     if ( _e ) {
       this.image.onload = null;
     }
 
-    this.w = this.dw = this.image.width;
-    this.h = this.dh = this.image.height;
+    this.w = this.dw = this.image.width;  // eslint-disable-line no-multi-assign
+    this.h = this.dh = this.image.height; // eslint-disable-line no-multi-assign
 
     this.loaded = true;
 
   },
 
   /**
-   * @method module:"v6.js".Image#load
+   * @method v6.Image#load
    * @param {string} [url]
    * @chainable
    * @example
    * var image = new Image( document.createElement( 'img' ) )
    *   .load( './assets/whatrudoing.png' );
    */
-  load: function load ( url ) {
+  load: function load ( url )
+  {
     if ( ! this.loaded ) {
 
       this.image.onload = this.onload.bind( this );
-      this.image.src = this.url = ( this.url || url || '' );
+      this.image.src = this.url = ( this.url || url || '' ); // eslint-disable-line no-multi-assign, no-extra-parens
 
     }
 
@@ -83,11 +87,12 @@ Image.prototype = {
   },
 
   /**
-   * @method module:"v6.js".Image#get
+   * @method v6.Image#get
    * @chainable
-   * @see module:"v6.js".CompoundedImage#get
+   * @see v6.CompoundedImage#get
    */
-  get: function get () {
+  get: function get ()
+  {
     return this;
   },
 
@@ -95,22 +100,23 @@ Image.prototype = {
 };
 
 /**
- * @method module:"v6.js".Image.stretch
- * @param  {module:"v6.js".Image|module:"v6.js".CompoundedImage} image
- * @param  {number}                                              w
- * @param  {number}                                              h
- * @return {module:"v6.js".CompoundedImage}
+ * @method v6.Image.stretch
+ * @param  {v6.Image|v6.CompoundedImage} image
+ * @param  {number}                      w
+ * @param  {number}                      h
+ * @return {v6.CompoundedImage}
  */
-Image.stretch = function stretch ( image, w, h ) {
+Image.stretch = function stretch ( image, w, h )
+{
 
   var x = h / image.h * image.w;
 
-  // stretch width (keep w, change h)
+  // Stretch width (keep w, change h).
 
   if ( x < w ) {
     h = w / image.w * image.h;
 
-  // stretch height (change w, keep h)
+  // Stretch height (change w, keep h).
 
   } else {
     w = x;
@@ -121,15 +127,16 @@ Image.stretch = function stretch ( image, w, h ) {
 };
 
 /**
- * @method module:"v6.js".Image.cut
- * @param  {module:"v6.js".Image|module:"v6.js".CompoundedImage} image
- * @param  {number}                                              x
- * @param  {number}                                              y
- * @param  {number}                                              dw
- * @param  {number}                                              dh
- * @return {module:"v6.js".CompoundedImage}
+ * @method v6.Image.cut
+ * @param  {v6.Image|v6.CompoundedImage} image
+ * @param  {number}                      x
+ * @param  {number}                      y
+ * @param  {number}                      dw
+ * @param  {number}                      dh
+ * @return {v6.CompoundedImage}
  */
-Image.cut = function cut ( image, x, y, dw, dh ) {
+Image.cut = function cut ( image, x, y, dw, dh )
+{
 
   var w = image.w / image.dw * dw;
   var h = image.h / image.dh * dh;

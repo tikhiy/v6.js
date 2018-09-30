@@ -22,7 +22,8 @@ var createShader  = require( './internal/create_shader' );
  * var gl      = canvas.getContext( 'webgl' );
  * var program = new ShaderProgram( shaders.basic, gl );
  */
-function ShaderProgram ( sources, gl ) {
+function ShaderProgram ( sources, gl )
+{
   var vert = createShader( sources.vert, gl.VERTEX_SHADER, gl );
   var frag = createShader( sources.frag, gl.FRAGMENT_SHADER, gl );
 
@@ -72,12 +73,14 @@ ShaderProgram.prototype = {
    * @example
    * program.use();
    */
-  use: function use () {
+  use: function use ()
+  {
     this._gl.useProgram( this._program );
     return this;
   },
 
-  pointer: function pointer ( name, size, type, normalized, stride, offset ) {
+  pointer: function pointer ( name, size, type, normalized, stride, offset )
+  {
     var location = this.getAttr( name ).location;
     this._gl.enableVertexAttribArray( location );
     this._gl.vertexAttribPointer( location, size, type, normalized, stride, offset );
@@ -91,9 +94,10 @@ ShaderProgram.prototype = {
    * @example
    * var { location } = program.getUniform( 'ucolor' );
    */
-  getUniform: function getUniform ( name ) {
+  getUniform: function getUniform ( name )
+  {
     var uniform = this._uniforms[ name ];
-    var info, index;
+    var index, info;
 
     if ( uniform ) {
       return uniform;
@@ -108,7 +112,7 @@ ShaderProgram.prototype = {
         type: info.type
       };
 
-      if ( info.size > 1 && ~ ( index = info.name.indexOf( '[' ) ) ) {
+      if ( info.size > 1 && ~ ( index = info.name.indexOf( '[' ) ) ) { // eslint-disable-line no-bitwise
         uniform.name = info.name.slice( 0, index );
       } else {
         uniform.name = info.name;
@@ -131,7 +135,8 @@ ShaderProgram.prototype = {
    * @example
    * var { location } = program.getAttr( 'apos' );
    */
-  getAttr: function getAttr ( name ) {
+  getAttr: function getAttr ( name )
+  {
     var attr = this._attrs[ name ];
 
     if ( attr ) {
@@ -162,7 +167,8 @@ ShaderProgram.prototype = {
  * @example
  * program.setUniform( 'ucolor', [ 255, 0, 0, 1 ] );
  */
-ShaderProgram.prototype.setUniform = function setUniform ( name, value ) {
+ShaderProgram.prototype.setUniform = function setUniform ( name, value )
+{
   var uniform = this.getUniform( name );
   var _gl     = this._gl;
 

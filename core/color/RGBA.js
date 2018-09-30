@@ -2,8 +2,9 @@
 
 module.exports = RGBA;
 
-var HSLA  = require( './HSLA' );
 var parse = require( './internal/parse' );
+
+var HSLA  = require( './HSLA' );
 
 function RGBA ( r, g, b, a ) {
   this.set( r, g, b, a );

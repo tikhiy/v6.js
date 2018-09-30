@@ -3,8 +3,10 @@
 module.exports = HSLA;
 
 var clamp = require( 'peako/clamp' );
-var RGBA  = require( './RGBA' );
+
 var parse = require( './internal/parse' );
+
+var RGBA  = require( './RGBA' );
 
 function HSLA ( h, s, l, a ) {
   this.set( h, s, l, a );

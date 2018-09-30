@@ -2,11 +2,12 @@
 
 var defaults         = require( 'peako/defaults' );
 
+var constants        = require( '../constants' );
+
 var align            = require( './internal/align' );
 
 var AbstractRenderer = require( './AbstractRenderer' );
-var constants        = require( './constants' );
-var options_         = require( './options' );
+var options_         = require( './settings' );
 
 /**
  * 2D рендерер.

@@ -2,14 +2,15 @@
 
 var defaults         = require( 'peako/defaults' );
 
+var ShaderProgram    = require( '../ShaderProgram' );
+var Transform        = require( '../Transform' );
+var constants        = require( '../constants' );
+var shaders          = require( '../shaders' );
+
 var align            = require( './internal/align' );
 
 var AbstractRenderer = require( './AbstractRenderer' );
-var ShaderProgram    = require( './ShaderProgram' );
-var Transform        = require( './Transform' );
-var constants        = require( './constants' );
-var shaders          = require( './shaders' );
-var options_         = require( './options' );
+var options_         = require( './settings' );
 
 /**
  * Массив вершин (vertices) квадрата.

@@ -2,7 +2,8 @@
 
 var clamp = require( 'peako/clamp' );
 
-module.exports = function map ( value, currentStart, currentStop, newStart, newStop, doLimit ) {
+module.exports = function map ( value, currentStart, currentStop, newStart, newStop, doLimit )
+{
   var result = ( newStop - newStart ) * ( value - currentStart ) / ( currentStop - currentStart ) + newStart;
 
   if ( doLimit ) {

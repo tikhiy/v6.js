@@ -1,18 +1,20 @@
 'use strict';
 
-var isObjectLike = require( 'peako/is-object-like' );
-var getElementW  = require( 'peako/get-element-w' );
-var getElementH  = require( 'peako/get-element-h' );
+var isObjectLike              = require( 'peako/is-object-like' );
+var getElementW               = require( 'peako/get-element-w' );
+var getElementH               = require( 'peako/get-element-h' );
+
+var constants                 = require( '../constants' );
+
+var createPolygon             = require( '../internal/create_polygon' );
+var polygons                  = require( '../internal/polygons' );
 
 var setDefaultDrawingSettings = require( './internal/set_default_drawing_settings' );
 var getWebGL                  = require( './internal/get_webgl' );
 var copyDrawingSettings       = require( './internal/copy_drawing_settings' );
-var createPolygon             = require( './internal/create_polygon' );
-var polygons                  = require( './internal/polygons' );
 var align                     = require( './internal/align' );
 
-var constants = require( './constants' );
-var options   = require( './options' );
+var options                   = require( './settings' );
 
 /**
  * Абстрактный класс AbstractRenderer - это основа для {@link v6.RendererGL} и {@link v6.Renderer2D}.

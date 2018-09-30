@@ -1,13 +1,15 @@
 'use strict';
 
+var constants       = require( '../constants' );
+
+var report          = require( '../internal/report' );
+
 var getRendererType = require( './internal/get_renderer_type' );
 var getWebGL        = require( './internal/get_webgl' );
 
 var RendererGL      = require( './RendererGL' );
 var Renderer2D      = require( './Renderer2D' );
-var constants       = require( './constants' );
-var report          = require( './report' );
-var type            = require( './options' ).type;
+var type            = require( './settings' ).type;
 
 /**
  * Создает новый рендерер.

@@ -1,7 +1,8 @@
 'use strict';
 
+var report          = require( './internal/report' );
+
 var CompoundedImage = require( './CompoundedImage' );
-var report          = require( './report' );
 
 /**
  * @constructor v6.Image

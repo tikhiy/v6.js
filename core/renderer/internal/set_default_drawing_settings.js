@@ -1,6 +1,7 @@
 'use strict';
 
-var constants           = require( '../constants' );
+var constants = require( '../../constants' );
+
 var copyDrawingSettings = require( './copy_drawing_settings' );
 
 var defaultDrawingSettings = {

@@ -1,7 +1,7 @@
 'use strict';
 
-var color = require( './colors/RGBA' );
-var type  = require( './constants' ).get( 'RENDERER_2D' );
+var color = require( '../color/RGBA' );
+var type  = require( '../constants' ).get( 'RENDERER_2D' );
 
 /**
  * Опции по умолчанию для создания {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, или {@link v6.createRenderer}.

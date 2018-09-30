@@ -10,14 +10,14 @@
  * @namespace v6
  */
 
-exports.AbstractRenderer = require( './core/AbstractRenderer' );
+exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
 exports.Camera           = require( './core/Camera' );
 exports.CompoundedImage  = require( './core/CompoundedImage' );
-exports.HSLA             = require( './core/colors/HSLA' );
+exports.HSLA             = require( './core/color/HSLA' );
 exports.Image            = require( './core/Image' );
-exports.RGBA             = require( './core/colors/RGBA' );
-exports.Renderer2D       = require( './core/Renderer2D' );
-exports.RendererGL       = require( './core/RendererGL' );
+exports.RGBA             = require( './core/color/RGBA' );
+exports.Renderer2D       = require( './core/renderer/Renderer2D' );
+exports.RendererGL       = require( './core/renderer/RendererGL' );
 exports.ShaderProgram    = require( './core/ShaderProgram' );
 exports.Ticker           = require( './core/Ticker' );
 exports.Transform        = require( './core/Transform' );
@@ -25,8 +25,8 @@ exports.Vector2D         = require( './core/math/Vector2D' );
 exports.Vector3D         = require( './core/math/Vector3D' );
 exports.color            = require( './core/color' );
 exports.constants        = require( './core/constants' );
-exports.createRenderer   = require( './core/create_renderer' );
-exports.options          = require( './core/options' );
+exports.createRenderer   = require( './core/renderer' );
+exports.options          = require( './core/renderer/settings' );
 exports.settings         = require( './core/settings' );
 exports.shaders          = require( './core/shaders' );
 exports.dist             = require( './core/util/dist' );

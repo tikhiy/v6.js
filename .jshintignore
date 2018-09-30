@@ -5,4 +5,3 @@ dist
 test
 v6-old.js
 **.preprocess.js
-core/AbstractRenderer.js

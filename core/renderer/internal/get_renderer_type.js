@@ -1,8 +1,8 @@
 'use strict';
 
-var once      = require( 'peako/once' );
+var once = require( 'peako/once' );
 
-var constants = require( '../constants' );
+var constants = require( '../../constants' );
 
 if ( typeof platform === 'undefined' ) {
   var platform;

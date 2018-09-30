@@ -1,10 +1,10 @@
 'use strict';
 
-var createRenderer   = require( '../create_renderer' );
-var AbstractRenderer = require( '../AbstractRenderer' );
-var RendererGL       = require( '../RendererGL' );
-var Renderer2D       = require( '../Renderer2D' );
-var constants        = require( '../constants' );
+var AbstractRenderer = require( '../core/renderer/AbstractRenderer' );
+var createRenderer   = require( '../core/renderer' );
+var RendererGL       = require( '../core/renderer/RendererGL' );
+var Renderer2D       = require( '../core/renderer/Renderer2D' );
+var constants        = require( '../core/constants' );
 
 describe( 'create_renderer', function ()
 {

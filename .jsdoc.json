@@ -1,0 +1,15 @@
+{
+  "source": {
+    "excludePattern": "\\.preprocess\\.js$",
+    "exclude": [ "node_modules", "docs", "dist", "test" ],
+    "include": [ "." ]
+  },
+  "opts": {
+    "destination": "docs",
+    "recurse": true,
+    "private": false
+  },
+  "plugins": [
+    "plugins/markdown"
+  ]
+}

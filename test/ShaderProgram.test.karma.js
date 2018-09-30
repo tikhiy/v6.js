@@ -1,7 +1,7 @@
 'use strict';
 
-var ShaderProgram = require( '../ShaderProgram' );
-var shaders       = require( '../shaders' );
+var ShaderProgram = require( '../core/ShaderProgram' );
+var shaders       = require( '../core/shaders' );
 
 describe( 'v6.ShaderProgram', function ()
 {

@@ -1,5 +1,11 @@
 {
-  "predef": [ "self", "describe", "it", "expect", "should", "console" ],
+  "predef": [
+    "describe",
+    "console",
+    "expect",
+    "self",
+    "it"
+  ],
   "browserify": true,
   "esversion": 5,
   "browser": true,

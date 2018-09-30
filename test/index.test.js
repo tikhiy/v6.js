@@ -1,8 +1,8 @@
 'use strict';
 
-var ShaderProgram       = require( '../ShaderProgram' );
-var constants           = require( '../constants' );
-var align               = require( '../internal/align' );
+var ShaderProgram       = require( '../core/ShaderProgram' );
+var constants           = require( '../core/constants' );
+var align               = require( '../core/renderer/internal/align' );
 
 describe( 'ShaderProgram', function ()
 {

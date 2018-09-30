@@ -15,7 +15,7 @@ karma:
 	node_modules/.bin/karma start .karma.conf.js
 
 docs:
-	node_modules/.bin/jsdoc -c .jsdoc.js
+	node_modules/.bin/jsdoc -c .jsdoc.json
 
 all:
 	./node_modules/.bin/browserify -o dist/v6.js index.js -x platform -x qs

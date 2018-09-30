@@ -1,6 +1,6 @@
 /*!
  * Copyright (c) 2017-2018 SILENT
- * Released under the MIT License.
+ * Released under the GPL-3.0 license.
  * https://github.com/silent-tempest/v6.js/
  */
 

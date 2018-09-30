@@ -40,4 +40,4 @@ self.addEventListener( 'resize', function ()
 
 ### License
 
-Released under the [MIT License](LICENSE).
+Released under the [GPL-3.0](LICENSE) license.

@@ -1,7 +1,10 @@
 docs
 test
+.eslintignore
+.eslintrc.json
 .gitignore
-.jshintrc
-.jshintignore
 .jsdoc.js
-Makefile
+.jshintignore
+.jshintrc
+.karma.conf.js
+.npmignore

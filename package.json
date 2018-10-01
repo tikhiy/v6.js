@@ -4,7 +4,7 @@
   "description": "A rendering library; write the same code for both 2D and WebGL contexts.",
   "main": "index.js",
   "scripts": {
-    "prepublish": "make -B preprocess lint mocha karma min docs"
+    "prepublish": "make preprocess lint mocha karma min docs"
   },
   "repository": {
     "type": "git",

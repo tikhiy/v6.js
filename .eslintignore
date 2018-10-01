@@ -1,7 +1,6 @@
+core/renderer/AbstractRenderer.js
+**/*.preprocess.js
 node_modules
 docs
 dist
 test
-v6-old.js
-**/*.preprocess.js
-core/renderer/AbstractRenderer.js

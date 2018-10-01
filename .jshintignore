@@ -1,7 +1,4 @@
+**/*.preprocess.js
 node_modules
-.temp
 docs
 dist
-test
-v6-old.js
-**.preprocess.js

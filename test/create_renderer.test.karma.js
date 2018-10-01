@@ -17,9 +17,8 @@ describe( 'create_renderer', function ()
   {
     it( 'works', function ()
     {
-      createRenderer( { type: constants.get( 'RENDERER_GL' ) } )
-        .should
-          .instanceof( RendererGL );
+      createRenderer( { type: constants.get( 'RENDERER_GL' ) } ).should
+        .instanceof( RendererGL );
     } );
   } );
 
@@ -27,9 +26,8 @@ describe( 'create_renderer', function ()
   {
     it( 'works', function ()
     {
-      createRenderer( { type: constants.get( 'RENDERER_2D' ) } )
-        .should
-          .instanceof( Renderer2D );
+      createRenderer( { type: constants.get( 'RENDERER_2D' ) } ).should
+        .instanceof( Renderer2D );
     } );
   } );
 
@@ -37,9 +35,8 @@ describe( 'create_renderer', function ()
   {
     it( 'works', function ()
     {
-      createRenderer( { type: constants.get( 'RENDERER_AUTO' ) } )
-        .should
-          .instanceof( AbstractRenderer );
+      createRenderer( { type: constants.get( 'RENDERER_AUTO' ) } ).should
+        .instanceof( AbstractRenderer );
     } );
   } );
 } );

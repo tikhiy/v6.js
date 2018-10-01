@@ -15,7 +15,8 @@ var options_         = require( './settings' );
  * @extends v6.AbstractRenderer
  * @param {object} options {@link v6.options}
  */
-function Renderer2D ( options ) {
+function Renderer2D ( options )
+{
   AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_2D' ) );
 
   /**
@@ -37,8 +38,8 @@ Renderer2D.prototype.constructor = Renderer2D;
  * @override
  * @method v6.Renderer2D#backgroundColor
  */
-Renderer2D.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
-
+Renderer2D.prototype.backgroundColor = function backgroundColor ( r, g, b, a )
+{
   var settings = this.settings;
   var context  = this.context;
 
@@ -49,15 +50,14 @@ Renderer2D.prototype.backgroundColor = function backgroundColor ( r, g, b, a ) {
   context.restore();
 
   return this;
-
 };
 
 /**
  * @override
  * @method v6.Renderer2D#backgroundImage
  */
-Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
-
+Renderer2D.prototype.backgroundImage = function backgroundImage ( image )
+{
   var _rectAlignX = this._rectAlignX;
   var _rectAlignY = this._rectAlignY;
 
@@ -70,14 +70,14 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image ) {
   this._rectAlignY = _rectAlignY;
 
   return this;
-
 };
 
 /**
  * @override
  * @method v6.Renderer2D#clear
  */
-Renderer2D.prototype.clear = function clear () {
+Renderer2D.prototype.clear = function clear ()
+{
   this.context.clear( 0, 0, this.w, this.h );
   return this;
 };
@@ -86,7 +86,8 @@ Renderer2D.prototype.clear = function clear () {
  * @override
  * @method v6.Renderer2D#drawArrays
  */
-Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx, _sy ) {
+Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx, _sy )
+{
   var context = this.context;
   var i;
 
@@ -95,7 +96,7 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
   }
 
   if ( typeof _sx === 'undefined' ) {
-    _sx = _sy = 1;
+    _sx = _sy = 1; // eslint-disable-line no-multi-assign
   }
 
   context.beginPath();
@@ -120,12 +121,13 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
  * @override
  * @method v6.Renderer2D#drawImage
  */
-Renderer2D.prototype.drawImage = function drawImage ( image, x, y, w, h ) {
+Renderer2D.prototype.drawImage = function drawImage ( image, x, y, w, h )
+{
   this.context.drawImage( image.get().image, image.x, image.y, image.w, image.h, x, y, w, h );
 };
 
-Renderer2D.prototype.rect = function rect ( x, y, w, h ) {
-
+Renderer2D.prototype.rect = function rect ( x, y, w, h )
+{
   x = Math.floor( align( x, w, this._rectAlignX ) );
   y = Math.floor( align( y, h, this._rectAlignY ) );
 
@@ -145,11 +147,10 @@ Renderer2D.prototype.rect = function rect ( x, y, w, h ) {
   }
 
   return this;
-
 };
 
-Renderer2D.prototype.arc = function arc ( x, y, r ) {
-
+Renderer2D.prototype.arc = function arc ( x, y, r )
+{
   if ( this._beginPath ) {
     this.context.arc( x, y, r, 0, Math.PI * 2, false );
   } else {
@@ -166,34 +167,29 @@ Renderer2D.prototype.arc = function arc ( x, y, r ) {
   }
 
   return this;
-
 };
 
-// var defaults  = require( 'peako/defaults' );
-// var constants = require( './constants' );
-// var AbstractRenderer  = require( './AbstractRenderer' );
-// var _options  = require( './options' );
-// var align     = require( './internal/align' );
+Renderer2D.prototype._fill = function _fill ()
+{
+  this.context.fillStyle = this._fillColor;
+  this.context.fill();
+};
 
-// Renderer2D.prototype._fill = function _fill () {
-//   this.context.fillStyle = this._fillColor;
-//   this.context.fill();
-// };
+Renderer2D.prototype._stroke = function ( close )
+{
+  var context = this.context;
 
-// Renderer2D.prototype._stroke = function ( close ) {
-//   var context = this.context;
+  if ( close ) {
+    context.closePath();
+  }
 
-//   if ( close ) {
-//     context.closePath();
-//   }
+  context.strokeStyle = this._strokeColor;
 
-//   context.strokeStyle = this._strokeColor;
+  if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
+    context.stroke();
+  }
 
-//   if ( ( context.lineWidth = this._lineWidth ) <= 1 ) {
-//     context.stroke();
-//   }
-
-//   context.stroke();
-// };
+  context.stroke();
+};
 
 module.exports = Renderer2D;

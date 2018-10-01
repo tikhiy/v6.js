@@ -1,18 +1,22 @@
 'use strict';
 
-var once = require( 'peako/once' );
+var once      = require( 'peako/once' );
 
 var constants = require( '../../constants' );
 
-if ( typeof platform === 'undefined' ) {
-  var platform;
+// "platform" not included using <script /> tag.
+if ( typeof platform === 'undefined' ) { // eslint-disable-line no-use-before-define
+  var platform; // eslint-disable-line vars-on-top
 
   try {
-    platform = require( 'platform' );
-  } catch ( error ) {}
+    platform = require( 'platform' ); // eslint-disable-line global-require
+  } catch ( error ) {
+    // "platform" not installed using NPM.
+  }
 }
 
-function getRendererType () {
+function getRendererType ()
+{
   var safari, touchable;
 
   if ( platform ) {

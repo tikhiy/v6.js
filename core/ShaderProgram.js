@@ -70,6 +70,7 @@ ShaderProgram.prototype = {
   /**
    * @method v6.ShaderProgram#use
    * @chainable
+   * @see [WebGLRenderingContext#useProgram](https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/useProgram)
    * @example
    * program.use();
    */
@@ -79,7 +80,15 @@ ShaderProgram.prototype = {
     return this;
   },
 
-  pointer: function pointer ( name, size, type, normalized, stride, offset )
+  /**
+   * @method v6.ShaderProgram#setAttr
+   * @chainable
+   * @see [WebGLRenderingContext#enableVertexAttribArray](https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/enableVertexAttribArray)
+   * @see [WebGLRenderingContext#vertexAttribPointer](https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/vertexAttribPointer)
+   * @example
+   * program.setAttr( 'apos', 2, gl.FLOAT, false, 0, 0 );
+   */
+  setAttr: function setAttr ( name, size, type, normalized, stride, offset )
   {
     var location = this.getAttr( name ).location;
     this._gl.enableVertexAttribArray( location );

@@ -9,7 +9,8 @@
  * @param  {WebGLRenderingContext} gl     WebGL контекст.
  * @return {WebGLShader}
  */
-function createShader ( source, type, gl ) {
+function createShader ( source, type, gl )
+{
   var shader = gl.createShader( type );
 
   gl.shaderSource( shader, source );

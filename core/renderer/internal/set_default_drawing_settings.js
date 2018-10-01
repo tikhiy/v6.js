@@ -1,7 +1,5 @@
 'use strict';
 
-var constants              = require( '../../constants' );
-
 var defaultDrawingSettings = require( './default_drawing_settings' );
 var copyDrawingSettings    = require( './copy_drawing_settings' );
 
@@ -15,7 +13,8 @@ var copyDrawingSettings    = require( './copy_drawing_settings' );
  *                                                    установки _strokeColor, _fillColor.
  * @return {object}                                   Возвращает `target`.
  */
-function setDefaultDrawingSettings ( target, renderer ) {
+function setDefaultDrawingSettings ( target, renderer )
+{
 
   copyDrawingSettings( target, defaultDrawingSettings );
 

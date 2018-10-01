@@ -1,3 +1,6 @@
 'use strict';
 
-// TODO: Write a documentation.
+/**
+ * @private
+ * @member {object} polygons
+ */

@@ -23,7 +23,10 @@ var options                   = require( './settings' );
  * @param {object}   options {@link v6.options}
  * @param {constant} type    Тип рендерера: 2D (`RENDERER_2D`) или WebGL (`RENDERER_GL`).
  */
-function AbstractRenderer () {} // eslint-disable-line no-empty-function, brace-rules/brace-on-same-line
+function AbstractRenderer ()
+{
+throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractRenderer)' );
+}
 
 #define backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT )                              \
   backgroundPositionX: function backgroundPositionX ( value, type )                                     \

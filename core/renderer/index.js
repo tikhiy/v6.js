@@ -17,8 +17,9 @@ var type            = require( './settings' ).type;
  * @param  {object}              options {@link v6.options}.
  * @return {v6.AbstractRenderer}
  */
-function createRenderer ( options ) {
-  var type_ = options && options.type || type;
+function createRenderer ( options )
+{
+  var type_ = ( options && options.type ) || type;
 
   if ( type_ === constants.get( 'RENDERER_AUTO' ) ) {
     type_ = getRendererType();

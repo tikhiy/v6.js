@@ -10,7 +10,8 @@
  * @param  {boolean} [deep] Если `true`, то будет также копировать _fillColor, _strokeColor и т.д.
  * @return {object}         Возвращает `target`.
  */
-function copyDrawingSettings ( target, source, deep ) {
+function copyDrawingSettings ( target, source, deep )
+{
   if ( deep ) {
     target._fillColor[ 0 ]   = source._fillColor[ 0 ];
     target._fillColor[ 1 ]   = source._fillColor[ 1 ];

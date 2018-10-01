@@ -8,7 +8,8 @@ var once = require( 'peako/once' );
  * @method getWebGL
  * @return {string?} В случае неудачи (WebGL не поддерживается) - вернет `null`.
  */
-function getWebGL () {
+function getWebGL ()
+{
   var canvas = document.createElement( 'canvas' );
   var name   = null;
 
@@ -18,7 +19,7 @@ function getWebGL () {
     name = 'experimental-webgl';
   }
 
-  // fixing possible memory leak
+  // Fixing possible memory leak.
   canvas = null;
   return name;
 }

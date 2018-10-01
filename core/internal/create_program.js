@@ -9,7 +9,8 @@
  * @param  {WebGLRenderingContext} gl   WebGL контекст.
  * @return {WebGLProgram}
  */
-function createProgram ( vert, frag, gl ) {
+function createProgram ( vert, frag, gl )
+{
   var program = gl.createProgram();
 
   gl.attachShader( program, vert );

@@ -9,7 +9,10 @@ var settings = require( '../settings' );
  * @see v6.Vector2D
  * @see v6.Vector3D
  */
-function AbstractVector () {} // eslint-disable-line no-empty-function, brace-rules/brace-on-same-line
+function AbstractVector ()
+{
+  throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractVector)' );
+}
 
 AbstractVector.prototype = {
   /**

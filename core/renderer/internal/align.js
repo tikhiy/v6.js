@@ -14,14 +14,15 @@ var constants = require( '../../constants' );
  * align( 100, 200, constants.get( 'LEFT' ) );   // -> 100
  * align( 100, 200, constants.get( 'CENTER' ) ); // -> 0
  */
-function align ( value, width, align ) {
-  switch ( align ) {
+function align ( value, width, constant )
+{
+  switch ( constant ) {   // eslint-disable-line default-case
     case constants.get( 'LEFT' ):
     case constants.get( 'TOP' ):
       return value;
     case constants.get( 'CENTER' ):
     case constants.get( 'MIDDLE' ):
-      return value - width * 0.5;
+      return value - width * 0.5; // eslint-disable-line no-mixed-operators
     case constants.get( 'RIGHT' ):
     case constants.get( 'BOTTOM' ):
       return value - width;

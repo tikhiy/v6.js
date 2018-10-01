@@ -1,5 +1,13 @@
 'use strict';
 
+var _Float32Array;
+
+if ( typeof Float32Array === 'function' ) {
+  _Float32Array = Float32Array; // eslint-disable-line no-undef
+} else {
+  _Float32Array = Array;
+}
+
 /**
  * Создает массив с координатами всех точек нужного полигона.
  * @private
@@ -8,10 +16,11 @@
  * @return {Float32Array}       Возвращает массив (Float32Array) который выглядит так: `[ x1, y1, x2, y2 ]`.
  *                              Все значения которого нормализованны.
  */
-function createPolygon ( sides ) {
+function createPolygon ( sides )
+{
   var i        = Math.floor( sides );
   var step     = Math.PI * 2 / sides;
-  var vertices = new Float32Array( i * 2 + 2 );
+  var vertices = new _Float32Array( i * 2 + 2 );
 
   for ( ; i >= 0; --i ) {
     vertices[     i * 2 ] = Math.cos( step * i );

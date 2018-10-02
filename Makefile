@@ -11,8 +11,14 @@ lint:
 mocha:
 	node_modules/.bin/mocha -r test/.register test/**/*.test.js
 
+karma\:start:
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js --no-single-run
+
+karma\:run:
+	node_modules/.bin/karma run .karma.conf.js
+
 karma:
-	node_modules/.bin/karma start .karma.conf.js
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js
 
 docs:
 	node_modules/.bin/jsdoc -c .jsdoc.json

@@ -1,8 +1,9 @@
 {
   "extends": "../.eslintrc.json",
+  "env": {
+    "mocha": true
+  },
   "globals": {
-    "describe": false,
-    "expect": false,
-    "it": false
+    "expect": false
   }
 }

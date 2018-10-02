@@ -90,7 +90,7 @@ HSLA.prototype = {
     switch ( true ) {
       case typeof h === 'string':
         h = parse( h );
-        /* falls through */
+        // falls through
       case typeof h === 'object' && h != null: // eslint-disable-line eqeqeq
         if ( h.type !== this.type ) {
           h = h[ this.type ]();
@@ -119,7 +119,7 @@ HSLA.prototype = {
             break;
           case a:
             a = 1;
-            /* falls through */
+            // falls through
           default:
             h = Math.floor( h );
             s = Math.floor( s );
@@ -145,13 +145,13 @@ HSLA.prototype = {
   {
     var rgba = new RGBA();
 
-    var h = this[ 0 ] % 360 / 360,
-        s = this[ 1 ] * 0.01,
-        l = this[ 2 ] * 0.01;
+    var h = this[ 0 ] % 360 / 360;
+    var s = this[ 1 ] * 0.01;
+    var l = this[ 2 ] * 0.01;
 
-    var tr = h + 1 / 3,
-        tg = h,
-        tb = h - 1 / 3;
+    var tr = h + 1 / 3;
+    var tg = h;
+    var tb = h - 1 / 3;
 
     var q;
 

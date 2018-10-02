@@ -4,7 +4,7 @@
 
 ### Установка
 
-Установка для [Node.js](https://nodejs.org/en/about/) или [Browserify](http://browserify.org/) через [npm](https://www.npmjs.com/): `$ npm install --save v6.js`.
+Установка для [Node.js](https://nodejs.org/en/about/) или [Browserify](http://browserify.org/) через [npm](https://www.npmjs.com/): `$ npm install --save github:silent-tempest/v6.js#dev`.
 
 ### Пример
 

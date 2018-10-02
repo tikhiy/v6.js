@@ -1,82 +1,58 @@
-// Karma configuration
-// Generated on Sun Sep 23 2018 11:36:41 GMT+0700 (+07)
+'use strict';
 
-module.exports = function(config) {
-  config.set({
-
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
-
-
+/**
+ * @method setup
+ * @param  {object} config
+ * @return {void}
+ */
+function setup ( config )
+{
+  config.set( {
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'browserify'],
-
+    frameworks: [ 'browserify', 'mocha', 'chai' ],
 
     // list of files / patterns to load in the browser
     files: [
-      'test/.register.js',
-      { pattern: 'test/**/*.test.js', included: true },
+      { pattern: 'test/.register.js',       included: true },
+      { pattern: 'test/**/*.test.js',       included: true },
       { pattern: 'test/**/*.test.karma.js', included: true }
     ],
-
-
-    // list of files / patterns to exclude
-    exclude: [
-    ],
-
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/**/*.test.js': ['browserify'],
-      'test/**/*.test.karma.js': ['browserify'],
-      'test/.register.js': ['browserify']
+      'test/.register.js':       [ 'browserify' ],
+      'test/**/*.test.js':       [ 'browserify' ],
+      'test/**/*.test.karma.js': [ 'browserify' ]
     },
-
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: [ 'mocha' ],
 
-
-    // web server port
-    port: 9876,
-
-
-    // enable / disable colors in the output (reporters and logs)
-    colors: true,
-
-
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
-
-
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
-
+    // plugins to use
     plugins: [
-        'karma-browserify',
-        'karma-chai',
-        'karma-chrome-launcher',
-        'karma-firefox-launcher',
-        'karma-mocha'
+      'karma-firefox-launcher',
+      'karma-chrome-launcher',
+      'karma-mocha-reporter',
+      'karma-browserify',
+      'karma-mocha',
+      'karma-chai'
     ],
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox'],
-    // browsers: ['Chrome', 'ChromeCanary', 'Firefox', 'Safari', 'PhantomJS', 'Opera', 'IE'],
+    browsers: [ 'Chrome', 'Chromium', 'Firefox', 'FirefoxDeveloper' ],
 
+    // enable / disable watching file and executing tests whenever any file changes
+    autoWatch: false,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
-
-    // Concurrency level
-    // how many browser should be started simultaneous
-    concurrency: Infinity
-  })
+    singleRun: true
+  } );
 }
+
+module.exports = setup;

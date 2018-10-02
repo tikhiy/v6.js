@@ -66,8 +66,8 @@ AbstractVector.prototype = {
    */
   rotate: function rotate ( angle )
   {
-    var x = this.x,
-        y = this.y;
+    var x = this.x;
+    var y = this.y;
 
     var c, s;
 

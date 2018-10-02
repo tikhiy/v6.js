@@ -63,17 +63,6 @@ RGBA.prototype = {
     return 'rgba(' + this[ 0 ] + ', ' + this[ 1 ] + ', ' + this[ 2 ] + ', ' + this[ 3 ] + ')';
   },
 
-  // new RGBA()
-  //   .set( 'magenta' )                    // -> 255, 0, 255, 1
-  //   .set( '#ff00ff' )                    // -> 255, 0, 255, 1
-  //   .set( '#f007' )                      // -> 255, 0, 0, 0.47
-  //   .set( 'hsla( 0, 100%, 50%, 0.47 )' ) // -> 255, 0, 0, 0.47
-  //   .set( 'rgb( 0, 0, 0 )' )             // -> 0, 0, 0, 1
-  //   .set( 0 )                            // -> 0, 0, 0, 1
-  //   .set( 0, 0, 0 )                      // -> 0, 0, 0, 1
-  //   .set( 0, 0 )                         // -> 0, 0, 0, 0
-  //   .set( 0, 0, 0, 0 );                  // -> 0, 0, 0, 0
-
   /**
    * @method v6.RGBA#set
    * @param {number|string|v6.RGBA|v6.HSLA} [r]
@@ -100,7 +89,7 @@ RGBA.prototype = {
     switch ( true ) {
       case typeof r === 'string':
         r = parse( r );
-        /* falls through */
+        // falls through
       case typeof r === 'object' && r != null: // eslint-disable-line eqeqeq
         if ( r.type !== this.type ) {
           r = r[ this.type ]();
@@ -127,7 +116,7 @@ RGBA.prototype = {
             break;
           case a:
             a = 1;
-            /* falls through */
+            // falls through
           default:
             r = Math.floor( r );
             g = Math.floor( g );
@@ -153,15 +142,15 @@ RGBA.prototype = {
   {
     var hsla = new HSLA();
 
-    var r = this[ 0 ] / 255,
-        g = this[ 1 ] / 255,
-        b = this[ 2 ] / 255;
+    var r = this[ 0 ] / 255;
+    var g = this[ 1 ] / 255;
+    var b = this[ 2 ] / 255;
 
-    var max = Math.max( r, g, b ),
-        min = Math.min( r, g, b );
+    var max = Math.max( r, g, b );
+    var min = Math.min( r, g, b );
 
-    var l = ( max + min ) * 50,
-        h, s;
+    var l = ( max + min ) * 50;
+    var h, s;
 
     var diff = max - min;
 

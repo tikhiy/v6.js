@@ -476,8 +476,12 @@ HSLA.prototype = {
     },
     rgba: function rgba() {
         var rgba = new RGBA();
-        var h = this[0] % 360 / 360, s = this[1] * 0.01, l = this[2] * 0.01;
-        var tr = h + 1 / 3, tg = h, tb = h - 1 / 3;
+        var h = this[0] % 360 / 360;
+        var s = this[1] * 0.01;
+        var l = this[2] * 0.01;
+        var tr = h + 1 / 3;
+        var tg = h;
+        var tb = h - 1 / 3;
         var q;
         if (l < 0.5) {
             q = l * (1 + s);
@@ -609,9 +613,13 @@ RGBA.prototype = {
     },
     hsla: function hsla() {
         var hsla = new HSLA();
-        var r = this[0] / 255, g = this[1] / 255, b = this[2] / 255;
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var l = (max + min) * 50, h, s;
+        var r = this[0] / 255;
+        var g = this[1] / 255;
+        var b = this[2] / 255;
+        var max = Math.max(r, g, b);
+        var min = Math.min(r, g, b);
+        var l = (max + min) * 50;
+        var h, s;
         var diff = max - min;
         if (diff) {
             if (l > 50) {
@@ -1066,8 +1074,14 @@ exports.translate = function translate(m1, x, y) {
     m1[8] = x * m1[2] + y * m1[5] + m1[8];
 };
 exports.rotate = function rotate(m1, angle) {
-    var m10 = m1[0], m11 = m1[1], m12 = m1[2], m13 = m1[3], m14 = m1[4], m15 = m1[5];
-    var x = Math.cos(angle), y = Math.sin(angle);
+    var m10 = m1[0];
+    var m11 = m1[1];
+    var m12 = m1[2];
+    var m13 = m1[3];
+    var m14 = m1[4];
+    var m15 = m1[5];
+    var x = Math.cos(angle);
+    var y = Math.sin(angle);
     m1[0] = x * m10 + y * m13;
     m1[1] = x * m11 + y * m14;
     m1[2] = x * m12 + y * m15;
@@ -1128,7 +1142,8 @@ AbstractVector.prototype = {
         return this.normalize().mul(value);
     },
     rotate: function rotate(angle) {
-        var x = this.x, y = this.y;
+        var x = this.x;
+        var y = this.y;
         var c, s;
         if (settings.degrees) {
             angle *= Math.PI / 180;

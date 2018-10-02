@@ -59,15 +59,15 @@ exports.translate = function translate ( m1, x, y )
 
 exports.rotate = function rotate ( m1, angle )
 {
-  var m10 = m1[ 0 ],
-      m11 = m1[ 1 ],
-      m12 = m1[ 2 ],
-      m13 = m1[ 3 ],
-      m14 = m1[ 4 ],
-      m15 = m1[ 5 ];
+  var m10 = m1[ 0 ];
+  var m11 = m1[ 1 ];
+  var m12 = m1[ 2 ];
+  var m13 = m1[ 3 ];
+  var m14 = m1[ 4 ];
+  var m15 = m1[ 5 ];
 
-  var x = Math.cos( angle ),
-      y = Math.sin( angle );
+  var x = Math.cos( angle );
+  var y = Math.sin( angle );
 
   m1[ 0 ] = ( x * m10 ) + ( y * m13 );
   m1[ 1 ] = ( x * m11 ) + ( y * m14 );

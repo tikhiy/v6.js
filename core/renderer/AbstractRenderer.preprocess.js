@@ -25,7 +25,7 @@ var options                   = require( './settings' );
  */
 function AbstractRenderer ()
 {
-throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractRenderer)' );
+  throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractRenderer)' );
 }
 
 #define backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT )                              \

@@ -1,6 +1,6 @@
 'use strict';
 
-var AbstractVector = require( '../core/math/AbstractVector' );
+var AbstractVector = require( '../../core/math/AbstractVector' );
 
 describe( 'v6.AbstractVector', function ()
 {

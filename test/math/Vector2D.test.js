@@ -1,6 +1,6 @@
 'use strict';
 
-var Vector2D = require( '../core/math/Vector2D' );
+var Vector2D = require( '../../core/math/Vector2D' );
 
 describe( 'v6.Vector2D', function ()
 {

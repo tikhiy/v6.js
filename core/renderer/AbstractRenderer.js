@@ -19,7 +19,7 @@ var options = require( './settings' );
  */
 function AbstractRenderer ()
 {
-throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractRenderer)' );
+  throw Error( 'Cannot create an instance of the abstract class (new v6.AbstractRenderer)' );
 }
 AbstractRenderer.prototype = {
   /**

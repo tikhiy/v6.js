@@ -15,6 +15,7 @@ function setup ( config )
     // list of files / patterns to load in the browser
     files: [
       { pattern: 'test/.register.js',       included: true },
+      // { pattern: 'test/renderer/*.js', included: true },
       { pattern: 'test/**/*.test.js',       included: true },
       { pattern: 'test/**/*.test.karma.js', included: true }
     ],
@@ -22,9 +23,8 @@ function setup ( config )
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/.register.js':       [ 'browserify' ],
-      'test/**/*.test.js':       [ 'browserify' ],
-      'test/**/*.test.karma.js': [ 'browserify' ]
+      'test/**/.register.js': [ 'browserify' ],
+      'test/**/*.js':         [ 'browserify' ]
     },
 
     // test results reporter to use

@@ -1,10 +1,10 @@
 'use strict';
 
-var Vector3D = require( '../../core/math/Vector3D' );
+var Vector3D = require( '../../../core/math/Vector3D' );
 
 describe( 'v6.Vector3D', function ()
 {
-  it( 'Successfully required.', function ()
+  it( 'successfully required', function ()
   {
     Vector3D
       .should
@@ -13,7 +13,7 @@ describe( 'v6.Vector3D', function ()
 
   describe( 'new v6.Vector3D', function ()
   {
-    it( 'Works.', function ()
+    it( 'works', function ()
     {
       new Vector3D()
         .should
@@ -26,7 +26,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.set', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().set( 4, 2, 6 )
           .should
@@ -36,7 +36,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.add', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().add( 4, 2, 6 )
           .should
@@ -46,7 +46,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.sub', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().sub( 4, 2, 6 )
           .should
@@ -56,7 +56,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.mul', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).mul( 2 )
           .should
@@ -66,7 +66,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.div', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).div( 2 )
           .should
@@ -76,7 +76,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.dot', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).dot( 2, 3, 4 )
           .should
@@ -86,7 +86,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.lerp', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).lerp( 8, 4, 12, 0.5 )
           .should
@@ -96,7 +96,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.setVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().setVector( new Vector3D( 4, 2, 6 ) )
           .should
@@ -106,7 +106,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.addVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().addVector( new Vector3D( 4, 2, 6 ) )
           .should
@@ -116,7 +116,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.subVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D().subVector( new Vector3D( 4, 2, 6 ) )
           .should
@@ -126,7 +126,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.mulVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).mulVector( new Vector3D( 2, 3, 4 ) )
           .should
@@ -136,7 +136,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.divVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).divVector( new Vector3D( 2, 3, 4 ) )
           .should
@@ -146,7 +146,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.dotVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).dotVector( new Vector3D( 2, 3, 4 ) )
           .should
@@ -156,7 +156,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.lerpVector', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).lerpVector( new Vector3D( 8, 4, 12 ), 0.5 )
           .should
@@ -166,7 +166,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.magSq', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).magSq()
           .should
@@ -176,7 +176,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.mag', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4, 2, 6 ).mag()
           .should
@@ -186,7 +186,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.clone', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         var vector = new Vector3D( 4, 2, 6 );
 
@@ -198,7 +198,7 @@ describe( 'v6.Vector3D', function ()
 
     describe( 'new v6.Vector3D.toString', function ()
     {
-      it( 'Works.', function ()
+      it( 'works', function ()
       {
         new Vector3D( 4.321, 2.345, 6.543 ).toString()
           .should
@@ -209,7 +209,7 @@ describe( 'v6.Vector3D', function ()
 
   describe( 'v6.Vector3D.random', function ()
   {
-    it( 'Works.', function ()
+    it( 'works', function ()
     {
       Vector3D.random().mag()
         .should
@@ -219,7 +219,7 @@ describe( 'v6.Vector3D', function ()
 
   describe( 'v6.Vector3D.fromAngle', function ()
   {
-    it( 'Works.', function ()
+    it( 'works', function ()
     {
       var angle = Math.PI / 180 * 45;
 

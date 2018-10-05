@@ -23,12 +23,6 @@ function Renderer2D ( options )
    * @alias v6.Renderer2D#context
    */
   this.matrix = this.context;
-
-  /**
-   * @private
-   * @member {boolean} v6.Renderer2D#_beginPath
-   */
-  this._beginPath = false;
 }
 
 Renderer2D.prototype = Object.create( AbstractRenderer.prototype );
@@ -131,19 +125,15 @@ Renderer2D.prototype.rect = function rect ( x, y, w, h )
   x = Math.floor( align( x, w, this._rectAlignX ) );
   y = Math.floor( align( y, h, this._rectAlignY ) );
 
-  if ( this._beginPath ) {
-    this.context.rect( x, y, w, h );
-  } else {
-    this.context.beginPath();
-    this.context.rect( x, y, w, h );
+  this.context.beginPath();
+  this.context.rect( x, y, w, h );
 
-    if ( this._doFill ) {
-      this._fill();
-    }
+  if ( this._doFill ) {
+    this._fill();
+  }
 
-    if ( this._doStroke ) {
-      this._stroke();
-    }
+  if ( this._doStroke ) {
+    this._stroke();
   }
 
   return this;
@@ -151,19 +141,15 @@ Renderer2D.prototype.rect = function rect ( x, y, w, h )
 
 Renderer2D.prototype.arc = function arc ( x, y, r )
 {
-  if ( this._beginPath ) {
-    this.context.arc( x, y, r, 0, Math.PI * 2, false );
-  } else {
-    this.context.beginPath();
-    this.context.arc( x, y, r, 0, Math.PI * 2, false );
+  this.context.beginPath();
+  this.context.arc( x, y, r, 0, Math.PI * 2 );
 
-    if ( this._doFill ) {
-      this._fill();
-    }
+  if ( this._doFill ) {
+    this._fill();
+  }
 
-    if ( this._doStroke ) {
-      this._stroke( true );
-    }
+  if ( this._doStroke ) {
+    this._stroke( true );
   }
 
   return this;

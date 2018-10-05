@@ -1,5 +1,4 @@
 'use strict'; // eslint-disable-line lines-around-directive
-var isObjectLike = require( 'peako/is-object-like' );
 var getElementW = require( 'peako/get-element-w' );
 var getElementH = require( 'peako/get-element-h' );
 var constants = require( '../constants' );
@@ -24,14 +23,18 @@ function AbstractRenderer ()
 AbstractRenderer.prototype = {
   /**
    * Добавляет `canvas` в DOM.
-   * @method v6.AbstractRenderer#append
+   * @method v6.AbstractRenderer#appendTo
    * @param {Element} [parent=document.body] Элемент, в который {@link v6.AbstractRenderer#canvas}
    *                                         должен быть добавлен.
    * @chainable
    */
-  append: function append ( parent )
+  appendTo: function appendTo ( parent )
   {
-    ( parent || document.body ).appendChild( this.canvas );
+    if ( ! parent ) {
+      parent = document.body;
+    }
+    parent.appendChild( this.canvas );
+    this.resizeTo( parent );
     return this;
   },
   /**
@@ -86,19 +89,6 @@ AbstractRenderer.prototype = {
   rescale: function rescale ()
   {
     return this.resizeTo( this.canvas );
-  },
-  /**
-   * @param {number|string|v6.Image|v6.CompoundedImage} r R value (RGBA), H value (HSLA), an image, or a string color.
-   * @param {number} g G value (RGBA), S value (HSLA).
-   * @param {number} b B value (RGBA), L value (HSLA).
-   * @param {number} a A value (RGBA or HSLA).
-   */
-  background: function background ( r, g, b, a )
-  {
-    if ( isObjectLike( r ) ) {
-      return this.backgroundImage( r );
-    }
-    return this.backgroundColor( r, g, b, a );
   },
   _polygon: function _polygon ( x, y, rx, ry, n, a, degrees )
   {
@@ -355,9 +345,6 @@ AbstractRenderer.create = function create ( self, options, type )
     self.canvas = document.createElement( 'canvas' );
     self.canvas.innerHTML = 'Unable to run this application.';
   }
-  if ( typeof options.append === 'undefined' || options.append ) {
-    self.append();
-  }
   if ( type === constants.get( 'RENDERER_2D' ) ) {
     context = '2d';
   } else if ( type !== constants.get( 'RENDERER_GL' ) ) {
@@ -395,10 +382,16 @@ AbstractRenderer.create = function create ( self, options, type )
    * @member {Array.<number>} v6.AbstractRenderer#_vertices
    */
   self._vertices = [];
+  // if ( 'w' in options || 'h' in options ) {
+  //   self.resize( options.w, options.h );
+  // } else if ( ! options.canvas && self.canvas.parentNode ) {
+  //   self.resizeTo( self.canvas.parentNode );
+  // }
+  if ( typeof options.appendTo === 'undefined' || options.appendTo ) {
+    self.appendTo( options.appendTo );
+  }
   if ( 'w' in options || 'h' in options ) {
     self.resize( options.w, options.h );
-  } else {
-    self.resizeTo( window );
   }
   setDefaultDrawingSettings( self, self );
 };

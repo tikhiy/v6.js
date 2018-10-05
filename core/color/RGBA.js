@@ -6,6 +6,25 @@ var parse = require( './internal/parse' ); // eslint-disable-line vars-on-top
 
 var HSLA  = require( './HSLA' );           // eslint-disable-line vars-on-top
 
+/**
+ * RGBA цвет.
+ * @constructor v6.RGBA
+ * @param {number|string|v6.RGBA|v6.HSLA} [r] Red, [CSS color](https://www.w3schools.com/cssref/css_colors_legal.asp), or {@link v6.HSLA} / {@link v6.RGBA}.
+ * @param {number}                        [g] Green.
+ * @param {number}                        [b] Blue.
+ * @param {number}                        [a] Alpha.
+ * @see v6.RGBA#set
+ * @see v6.HSLA
+ * @example
+ * var RGBA = require( 'v6.js/core/color/RGBA' );
+ *
+ * var transparent = new RGBA( 'transparent' );
+ * var magenta     = new RGBA( 'magenta' );
+ * var fuchsia     = new RGBA( 255, 0, 255 );
+ * var ghost       = new RGBA( 255, 0.1 );
+ * var white       = new RGBA( 255 );
+ * var black       = new RGBA();
+ */
 function RGBA ( r, g, b, a )
 {
   this.set( r, g, b, a );

@@ -1374,7 +1374,6 @@ Vector3D.fromAngle = function fromAngle(angle) {
 module.exports = Vector3D;
 },{"./AbstractVector":19}],22:[function(require,module,exports){
 'use strict';
-var isObjectLike = require('peako/is-object-like');
 var getElementW = require('peako/get-element-w');
 var getElementH = require('peako/get-element-h');
 var constants = require('../constants');
@@ -1389,8 +1388,12 @@ function AbstractRenderer() {
     throw Error('Cannot create an instance of the abstract class (new v6.AbstractRenderer)');
 }
 AbstractRenderer.prototype = {
-    append: function append(parent) {
-        (parent || document.body).appendChild(this.canvas);
+    appendTo: function appendTo(parent) {
+        if (!parent) {
+            parent = document.body;
+        }
+        parent.appendChild(this.canvas);
+        this.resizeTo(parent);
         return this;
     },
     destroy: function destroy() {
@@ -1427,12 +1430,6 @@ AbstractRenderer.prototype = {
     },
     rescale: function rescale() {
         return this.resizeTo(this.canvas);
-    },
-    background: function background(r, g, b, a) {
-        if (isObjectLike(r)) {
-            return this.backgroundImage(r);
-        }
-        return this.backgroundColor(r, g, b, a);
     },
     _polygon: function _polygon(x, y, rx, ry, n, a, degrees) {
         var polygon = polygons[n];
@@ -1615,9 +1612,6 @@ AbstractRenderer.create = function create(self, options, type) {
         self.canvas = document.createElement('canvas');
         self.canvas.innerHTML = 'Unable to run this application.';
     }
-    if (typeof options.append === 'undefined' || options.append) {
-        self.append();
-    }
     if (type === constants.get('RENDERER_2D')) {
         context = '2d';
     } else if (type !== constants.get('RENDERER_GL')) {
@@ -1631,15 +1625,16 @@ AbstractRenderer.create = function create(self, options, type) {
     self._stack = [];
     self._stackIndex = -1;
     self._vertices = [];
+    if (typeof options.appendTo === 'undefined' || options.appendTo) {
+        self.appendTo(options.appendTo);
+    }
     if ('w' in options || 'h' in options) {
         self.resize(options.w, options.h);
-    } else {
-        self.resizeTo(window);
     }
     setDefaultDrawingSettings(self, self);
 };
 module.exports = AbstractRenderer;
-},{"../constants":12,"../internal/create_polygon":13,"../internal/polygons":16,"./internal/align":26,"./internal/copy_drawing_settings":27,"./internal/get_webgl":30,"./internal/set_default_drawing_settings":31,"./settings":32,"peako/get-element-h":65,"peako/get-element-w":66,"peako/is-object-like":73}],23:[function(require,module,exports){
+},{"../constants":12,"../internal/create_polygon":13,"../internal/polygons":16,"./internal/align":26,"./internal/copy_drawing_settings":27,"./internal/get_webgl":30,"./internal/set_default_drawing_settings":31,"./settings":32,"peako/get-element-h":65,"peako/get-element-w":66}],23:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var constants = require('../constants');
@@ -1649,7 +1644,6 @@ var options_ = require('./settings');
 function Renderer2D(options) {
     AbstractRenderer.create(this, options = defaults(options_, options), constants.get('RENDERER_2D'));
     this.matrix = this.context;
-    this._beginPath = false;
 }
 Renderer2D.prototype = Object.create(AbstractRenderer.prototype);
 Renderer2D.prototype.constructor = Renderer2D;
@@ -1705,32 +1699,24 @@ Renderer2D.prototype.drawImage = function drawImage(image, x, y, w, h) {
 Renderer2D.prototype.rect = function rect(x, y, w, h) {
     x = Math.floor(align(x, w, this._rectAlignX));
     y = Math.floor(align(y, h, this._rectAlignY));
-    if (this._beginPath) {
-        this.context.rect(x, y, w, h);
-    } else {
-        this.context.beginPath();
-        this.context.rect(x, y, w, h);
-        if (this._doFill) {
-            this._fill();
-        }
-        if (this._doStroke) {
-            this._stroke();
-        }
+    this.context.beginPath();
+    this.context.rect(x, y, w, h);
+    if (this._doFill) {
+        this._fill();
+    }
+    if (this._doStroke) {
+        this._stroke();
     }
     return this;
 };
 Renderer2D.prototype.arc = function arc(x, y, r) {
-    if (this._beginPath) {
-        this.context.arc(x, y, r, 0, Math.PI * 2, false);
-    } else {
-        this.context.beginPath();
-        this.context.arc(x, y, r, 0, Math.PI * 2, false);
-        if (this._doFill) {
-            this._fill();
-        }
-        if (this._doStroke) {
-            this._stroke(true);
-        }
+    this.context.beginPath();
+    this.context.arc(x, y, r, 0, Math.PI * 2);
+    if (this._doFill) {
+        this._fill();
+    }
+    if (this._doStroke) {
+        this._stroke(true);
     }
     return this;
 };
@@ -1849,13 +1835,13 @@ RendererGL.prototype.drawArrays = function drawArrays(verts, count, mode, _sx, _
 };
 RendererGL.prototype._fill = function _fill(count) {
     if (this._doFill) {
-        this.program.setUniform('ucolor', this._fillColor.rgba());
+        this.programs.default.setUniform('ucolor', this._fillColor.rgba());
         this.context.drawArrays(this.context.TRIANGLE_FAN, 0, count);
     }
 };
 RendererGL.prototype._stroke = function _stroke(count) {
     if (this._doStroke && this._lineWidth > 0) {
-        this.program.setUniform('ucolor', this._strokeColor.rgba());
+        this.programs.default.setUniform('ucolor', this._strokeColor.rgba());
         this.context.lineWidth(this._lineWidth);
         this.context.drawArrays(this.context.LINE_LOOP, 0, count);
     }
@@ -2014,7 +2000,6 @@ var options = {
         antialias: true,
         blending: true,
         degrees: false,
-        append: true,
         alpha: true,
         type: type
     };

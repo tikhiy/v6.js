@@ -9,10 +9,10 @@ lint:
 	cd test && ../node_modules/.bin/eslint .
 
 mocha:
-	node_modules/.bin/mocha -r test/.register test/**/*.test.js
+	node_modules/.bin/mocha -r test/internal/register test/**/*.test.js
 
 karma\:start:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js --no-single-run
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js --no-single-run --browsers=FirefoxDeveloper
 
 karma\:run:
 	node_modules/.bin/karma run .karma.conf.js

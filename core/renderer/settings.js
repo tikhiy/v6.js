@@ -12,7 +12,7 @@ var type  = require( '../constants' ).get( 'RENDERER_2D' );
  * @property {boolean}  [antialias=true]         Пока не сделано.
  * @property {boolean}  [blending=true]          Пока не сделано.
  * @property {boolean}  [degrees=false]          Использовать градусы вместо радианов.
- * @property {boolean}  [append=true]            Автоматически добавить `canvas` в DOM.
+ * @property {Element?} [appendTo]               В этот элемент будет добавлен `canvas`.
  * @property {boolean}  [alpha=true]             Использовать прозрачный (вместо черного) контекст.
  * @property {constant} [type=RENDERER_2D]       Тип контекста (2D, GL, AUTO).
  */
@@ -25,7 +25,6 @@ var options = {
   antialias: true,
   blending:  true,
   degrees:   false,
-  append:    true,
   alpha:     true,
   type:      type
 };

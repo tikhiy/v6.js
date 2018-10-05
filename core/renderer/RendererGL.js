@@ -193,7 +193,7 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
 RendererGL.prototype._fill = function _fill ( count )
 {
   if ( this._doFill ) {
-    this.program.setUniform( 'ucolor', this._fillColor.rgba() );
+    this.programs.default.setUniform( 'ucolor', this._fillColor.rgba() );
     this.context.drawArrays( this.context.TRIANGLE_FAN, 0, count );
   }
 };
@@ -201,7 +201,7 @@ RendererGL.prototype._fill = function _fill ( count )
 RendererGL.prototype._stroke = function _stroke ( count )
 {
   if ( this._doStroke && this._lineWidth > 0 ) {
-    this.program.setUniform( 'ucolor', this._strokeColor.rgba() );
+    this.programs.default.setUniform( 'ucolor', this._strokeColor.rgba() );
     this.context.lineWidth( this._lineWidth );
     this.context.drawArrays( this.context.LINE_LOOP, 0, count );
   }

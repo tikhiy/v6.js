@@ -1,17 +1,17 @@
 'use strict';
 
-var AbstractVector = require( '../../core/math/AbstractVector' );
+var AbstractVector = require( '../../../core/math/AbstractVector' );
 
 describe( 'v6.AbstractVector', function ()
 {
-  it( 'Successfully required.', function ()
+  it( 'successfully required', function ()
   {
     AbstractVector.should.be.a( 'function' );
   } );
 
   describe( 'new v6.AbstractVector', function ()
   {
-    it( 'Throws on attempt to create an instance.', function ()
+    it( 'throws on attempt to create an instance', function ()
     {
       ( function ()
       {
@@ -22,7 +22,7 @@ describe( 'v6.AbstractVector', function ()
 
   describe( 'v6.AbstractVector._fromAngle', function ()
   {
-    it( 'Works.', function ()
+    it( 'works', function ()
     {
       function Vector4D ( x, y, z, w )
       {

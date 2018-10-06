@@ -1,7 +1,7 @@
 'use strict';
 
 var color = require( '../color/RGBA' );
-var type  = require( '../constants' ).get( 'RENDERER_2D' );
+var type  = require( '../constants' ).get( '2D' );
 
 /**
  * Опции по умолчанию для создания {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, или {@link v6.createRenderer}.
@@ -14,7 +14,7 @@ var type  = require( '../constants' ).get( 'RENDERER_2D' );
  * @property {boolean}  [degrees=false]          Использовать градусы вместо радианов.
  * @property {Element?} [appendTo]               В этот элемент будет добавлен `canvas`.
  * @property {boolean}  [alpha=true]             Использовать прозрачный (вместо черного) контекст.
- * @property {constant} [type=RENDERER_2D]       Тип контекста (2D, GL, AUTO).
+ * @property {constant} [type=2D]                Тип контекста (2D, GL, AUTO).
  */
 var options = {
   settings: {

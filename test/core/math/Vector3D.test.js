@@ -202,7 +202,7 @@ describe( 'v6.Vector3D', function ()
       {
         new Vector3D( 4.321, 2.345, 6.543 ).toString()
           .should
-            .equal( 'Vector3D { 4.32, 2.35, 6.54 }' );
+            .equal( 'v6.Vector3D { x: 4.32, y: 2.35, z: 6.54 }' );
       } );
     } );
   } );

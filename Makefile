@@ -1,7 +1,7 @@
 PRE=core/renderer/AbstractRenderer.preprocess.js
 
 preprocess: $(PRE)
-	cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -C $^ -o $(subst .preprocess,,$^)
+	cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -CC $^ -o $(subst .preprocess,,$^)
 
 lint\:test:
 	cd test && ../node_modules/.bin/eslint .

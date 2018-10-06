@@ -928,9 +928,9 @@ function get(key) {
     return _constants[key];
 }
 [
-    'RENDERER_AUTO',
-    'RENDERER_GL',
-    'RENDERER_2D',
+    'AUTO',
+    'GL',
+    '2D',
     'LEFT',
     'TOP',
     'CENTER',
@@ -1247,7 +1247,7 @@ Vector2D.prototype.dist = function dist(vector) {
     return Math.sqrt(x * x + y * y);
 };
 Vector2D.prototype.toString = function toString() {
-    return 'Vector2D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ' }';
+    return 'v6.Vector2D { x: ' + this.x.toFixed(2) + ', y: ' + this.y.toFixed(2) + ' }';
 };
 Vector2D.random = function random() {
     var value;
@@ -1349,7 +1349,7 @@ Vector3D.prototype.dist = function dist(vector) {
     return Math.sqrt(x * x + y * y + z * z);
 };
 Vector3D.prototype.toString = function toString() {
-    return 'Vector3D { ' + this.x.toFixed(2) + ', ' + this.y.toFixed(2) + ', ' + this.z.toFixed(2) + ' }';
+    return 'v6.Vector3D { x: ' + this.x.toFixed(2) + ', y: ' + this.y.toFixed(2) + ', z: ' + this.z.toFixed(2) + ' }';
 };
 Vector3D.random = function random() {
     var theta = Math.random() * Math.PI * 2;
@@ -1378,11 +1378,7 @@ function AbstractRenderer() {
 }
 AbstractRenderer.prototype = {
     appendTo: function appendTo(parent) {
-        if (!parent) {
-            parent = document.body;
-        }
         parent.appendChild(this.canvas);
-        this.resizeTo(parent);
         return this;
     },
     destroy: function destroy() {
@@ -1483,7 +1479,7 @@ AbstractRenderer.prototype = {
     },
     setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
         var position, zoom;
-        if (typeof m11 === 'object') {
+        if (typeof m11 === 'object' && m11 !== null) {
             position = m11.position;
             zoom = m11.zoom;
             this.matrix.setTransform(zoom, 0, 0, zoom, position[0] * zoom, position[1] * zoom);
@@ -1585,14 +1581,16 @@ AbstractRenderer.prototype = {
         this.matrix.restore();
         return this;
     },
+    save: function save() {
+        this.matrix.save();
+        return this;
+    },
+    scale: function scale(x, y) {
+        this.matrix.scale(x, y);
+        return this;
+    },
     constructor: AbstractRenderer
 };
-[
-    'scale',
-    'save'
-].forEach(function (name) {
-    AbstractRenderer.prototype[name] = Function('a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;');
-});
 AbstractRenderer.create = function create(self, options, type) {
     var context;
     if (options.canvas) {
@@ -1601,12 +1599,12 @@ AbstractRenderer.create = function create(self, options, type) {
         self.canvas = document.createElement('canvas');
         self.canvas.innerHTML = 'Unable to run this application.';
     }
-    if (type === constants.get('RENDERER_2D')) {
+    if (type === constants.get('2D')) {
         context = '2d';
-    } else if (type !== constants.get('RENDERER_GL')) {
-        throw Error('Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`');
+    } else if (type !== constants.get('GL')) {
+        throw Error('Got unknown renderer type. The known are: `2D` and `GL`');
     } else if (!(context = getWebGL())) {
-        throw Error('Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`');
+        throw Error('Cannot get WebGL context. Try to use `2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`');
     }
     self.context = self.canvas.getContext(context, { alpha: options.alpha });
     self.settings = options.settings;
@@ -1614,11 +1612,17 @@ AbstractRenderer.create = function create(self, options, type) {
     self._stack = [];
     self._stackIndex = -1;
     self._vertices = [];
-    if (typeof options.appendTo === 'undefined' || options.appendTo) {
+    if (typeof options.appendTo === 'undefined') {
+        self.appendTo(document.body);
+    } else if (options.appendTo !== null) {
         self.appendTo(options.appendTo);
     }
     if ('w' in options || 'h' in options) {
-        self.resize(options.w, options.h);
+        self.resize(options.w || 0, options.h || 0);
+    } else if (options.appendTo !== null) {
+        self.resizeTo(options.appendTo || document.body);
+    } else {
+        self.resize(600, 400);
     }
     setDefaultDrawingSettings(self, self);
 };
@@ -1631,7 +1635,7 @@ var align = require('./internal/align');
 var AbstractRenderer = require('./AbstractRenderer');
 var options_ = require('./settings');
 function Renderer2D(options) {
-    AbstractRenderer.create(this, options = defaults(options_, options), constants.get('RENDERER_2D'));
+    AbstractRenderer.create(this, options = defaults(options_, options), constants.get('2D'));
     this.matrix = this.context;
 }
 Renderer2D.prototype = Object.create(AbstractRenderer.prototype);
@@ -1752,7 +1756,7 @@ var square = function () {
         return square;
     }();
 function RendererGL(options) {
-    AbstractRenderer.create(this, options = defaults(options_, options), constants.get('RENDERER_GL'));
+    AbstractRenderer.create(this, options = defaults(options_, options), constants.get('GL'));
     this.matrix = new Transform();
     this.buffers = {
         default: this.context.createBuffer(),
@@ -1861,19 +1865,19 @@ var Renderer2D = require('./Renderer2D');
 var type = require('./settings').type;
 function createRenderer(options) {
     var type_ = options && options.type || type;
-    if (type_ === constants.get('RENDERER_AUTO')) {
+    if (type_ === constants.get('AUTO')) {
         type_ = getRendererType();
     }
-    if (type_ === constants.get('RENDERER_GL')) {
+    if (type_ === constants.get('GL')) {
         if (getWebGL()) {
             return new RendererGL(options);
         }
         report('Cannot create WebGL context. Falling back to 2D.');
     }
-    if (type_ === constants.get('RENDERER_2D') || type_ === constants.get('RENDERER_GL')) {
+    if (type_ === constants.get('2D') || type_ === constants.get('GL')) {
         return new Renderer2D(options);
     }
-    throw Error('Got unknown renderer type. The known are: RENDERER_2D and RENDERER_GL');
+    throw Error('Got unknown renderer type. The known are: `2D` and `GL`');
 }
 module.exports = createRenderer;
 },{"../constants":11,"../internal/report":16,"./Renderer2D":22,"./RendererGL":23,"./internal/get_renderer_type":28,"./internal/get_webgl":29,"./settings":31}],25:[function(require,module,exports){
@@ -1946,9 +1950,9 @@ function getRendererType() {
         touchable = 'ontouchend' in window;
     }
     if (touchable && !safari) {
-        return constants.get('RENDERER_GL');
+        return constants.get('GL');
     }
-    return constants.get('RENDERER_2D');
+    return constants.get('2D');
 }
 module.exports = once(getRendererType);
 },{"../../constants":11,"peako/once":83,"platform":"platform"}],29:[function(require,module,exports){
@@ -1980,7 +1984,7 @@ module.exports = setDefaultDrawingSettings;
 },{"./copy_drawing_settings":26,"./default_drawing_settings":27}],31:[function(require,module,exports){
 'use strict';
 var color = require('../color/RGBA');
-var type = require('../constants').get('RENDERER_2D');
+var type = require('../constants').get('2D');
 var options = {
         settings: {
             color: color,

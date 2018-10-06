@@ -4,6 +4,12 @@ var settings = require( '../settings' );
 
 /**
  * Абстрактный класс вектора с базовыми методами.
+ *
+ * Чтобы использовать грудусы вместо радианов надо написать следующее:
+ * ```javascript
+ * var settings = require( 'v6.js/core/settings' );
+ * settings.degrees = true;
+ * ```
  * @abstract
  * @constructor v6.AbstractVector
  * @see v6.Vector2D
@@ -16,8 +22,11 @@ function AbstractVector ()
 
 AbstractVector.prototype = {
   /**
+   * Нормализует вектор.
    * @method v6.AbstractVector#normalize
    * @chainable
+   * @example
+   * new Vector2D( 4, 2 ).normalize(); // Vector2D { x: 0.8944271909999159, y: 0.4472135954999579 }
    */
   normalize: function normalize ()
   {
@@ -31,9 +40,14 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Изменяет направление вектора на `"angle"` с сохранением длины.
    * @method v6.AbstractVector#setAngle
-   * @param {number} angle
+   * @param {number} angle Новое направление.
    * @chainable
+   * @example
+   * new Vector2D( 4, 2 ).setAngle( 45 * Math.PI / 180 ); // Vector2D { x: 3.1622776601683795, y: 3.162277660168379 }
+   * @example <caption>Используя грудусы</caption>
+   * new Vector2D( 4, 2 ).setAngle( 45 ); // Vector2D { x: 3.1622776601683795, y: 3.162277660168379 }
    */
   setAngle: function setAngle ( angle )
   {
@@ -50,9 +64,12 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Изменяет длину вектора на `"value"` с сохранением направления.
    * @method v6.AbstractVector#setMag
-   * @param {number} value
+   * @param {number} value Новая длина.
    * @chainable
+   * @example
+   * new Vector2D( 4, 2 ).setMag( 42 ); // Vector2D { x: 37.56594202199646, y: 18.78297101099823 }
    */
   setMag: function setMag ( value )
   {
@@ -60,9 +77,14 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Поворачивает вектор на `"angle"` угол с сохранением длины.
    * @method v6.AbstractVector#rotate
-   * @param  {number} angle
+   * @param {number} angle
    * @chainable
+   * @example
+   * new Vector2D( 4, 2 ).rotate( 5 * Math.PI / 180 ); // Vector2D { x: 3.810467306871666, y: 2.3410123671741236 }
+   * @example <caption>Используя грудусы</caption>
+   * new Vector2D( 4, 2 ).rotate( 5 ); // Vector2D { x: 3.810467306871666, y: 2.3410123671741236 }
    */
   rotate: function rotate ( angle )
   {
@@ -85,8 +107,13 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Возвращает текущее направление вектора.
    * @method v6.AbstractVector#getAngle
-   * @return {number}
+   * @return {number} Направление (угол) в градусах или радианах.
+   * @example
+   * new Vector2D( 1, 1 ).getAngle(); // -> 0.7853981633974483
+   * @example <caption>Используя грудусы</caption>
+   * new Vector2D( 1, 1 ).getAngle(); // -> 45
    */
   getAngle: function getAngle ()
   {
@@ -98,9 +125,12 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Ограничивает длину вектора до `"value"`.
    * @method v6.AbstractVector#limit
-   * @param  {number} value
+   * @param {number} value Максимальная длина вектора.
    * @chainable
+   * @example
+   * new Vector2D( 1, 1 ).limit( 1 ); // Vector2D { x: 0.7071067811865475, y: 0.7071067811865475 }
    */
   limit: function limit ( value )
   {
@@ -114,8 +144,11 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Возвращает длину вектора.
    * @method v6.AbstractVector#mag
-   * @return {number}
+   * @return {number} Длина вектора.
+   * @example
+   * new Vector2D( 2, 2 ).mag(); // -> 2.8284271247461903
    */
   mag: function mag ()
   {
@@ -123,35 +156,44 @@ AbstractVector.prototype = {
   },
 
   /**
+   * Возвращает длину вектора в квадрате.
    * @virtual
    * @method v6.AbstractVector#magSq
-   * @return {number}
+   * @return {number} Длина вектора в квадрате.
+   * @example
+   * new Vector2D( 2, 2 ).magSq(); // -> 8
    */
 
   /**
    * Создает клон вектора.
    * @virtual
    * @method v6.AbstractVector#clone
-   * @return {v6.AbstractVector}
+   * @return {v6.AbstractVector} Клон вектора.
+   * @example
+   * new Vector2D( 4, 2 ).clone();
    */
 
   /**
+   * Возвращает строковое представление вектора (prettified).
    * @virtual
    * @method v6.AbstractVector#toString
    * @return {string}
+   * @example
+   * new Vector2D( 4.321, 2.345 ).toString(); // -> "v6.Vector2D { x: 4.32, y: 2.35 }"
    */
 
   /**
    * Возвращает дистанцию между двумя векторами.
    * @virtual
    * @method v6.AbstractVector#dist
-   * @param  {v6.AbstractVector} vector
+   * @param  {v6.AbstractVector} vector Другой (второй) вектор.
    * @return {number}
+   * @example
+   * new Vector2D( 3, 3 ).dist( new Vector2D( 1, 1 ) ); // -> 2.8284271247461903
    */
 
   constructor: AbstractVector
 };
-
 
 /**
  * @private
@@ -179,7 +221,7 @@ AbstractVector._fromAngle = function _fromAngle ( Vector, angle )
  */
 
 /**
- * Создает вектор с направлением равным `angle`.
+ * Создает вектор с направлением равным `"angle"`.
  * @virtual
  * @static
  * @method v6.AbstractVector.fromAngle

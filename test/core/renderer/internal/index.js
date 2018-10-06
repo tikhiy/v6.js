@@ -26,9 +26,9 @@ var constants = require( '../../../../core/constants' );
   {
     renderer[ key ]( value );
 
-    if ( renderer.type === constants.get( 'RENDERER_GL' ) ) {
+    if ( renderer.type === constants.get( 'GL' ) ) {
       throw Error( 'Not implemented' );
-    } else if ( renderer.type === constants.get( 'RENDERER_2D' ) ) {
+    } else if ( renderer.type === constants.get( '2D' ) ) {
       sandbox.replaceSetter( renderer.context, key + 'Style', function ( value )
       {
         value.toString().should.equal( renderer[ '_' + key + 'Color' ].toString() );

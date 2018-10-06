@@ -11,7 +11,7 @@ var AbstractVector = require( './AbstractVector' );
  * @param {number} [z=0] Z координата вектора.
  * @example
  * var Vector3D = require( 'v6.js/math/Vector3D' );
- * var position = new Vector3D( 4, 2, 3 );
+ * var position = new Vector3D( 4, 2, 3 ); // Vector3D { x: 4, y: 2, z: 3 }
  */
 function Vector3D ( x, y, z )
 {
@@ -49,6 +49,8 @@ Vector3D.prototype.constructor = Vector3D;
  * @param {number} [y=0] Новая Y координата.
  * @param {number} [z=0] Новая Z координата.
  * @chainable
+ * @example
+ * new Vector3D().set( 4, 2, 6 ); // Vector3D { x: 4, y: 2, z: 6 }
  */
 Vector3D.prototype.set = function set ( x, y, z )
 {
@@ -65,6 +67,8 @@ Vector3D.prototype.set = function set ( x, y, z )
  * @param {number} [y=0] Число, которое должно быть добавлено.
  * @param {number} [z=0] Число, которое должно быть добавлено.
  * @chainable
+ * @example
+ * new Vector3D().add( 4, 2, 6 ); // Vector3D { x: 4, y: 2, z: 6 }
  */
 Vector3D.prototype.add = function add ( x, y, z )
 {
@@ -81,6 +85,8 @@ Vector3D.prototype.add = function add ( x, y, z )
  * @param {number} [y=0] Число, которое должно быть вычтено.
  * @param {number} [z=0] Число, которое должно быть вычтено.
  * @chainable
+ * @example
+ * new Vector3D().sub( 4, 2, 6 ); // Vector3D { x: -4, y: -2, z: -6 }
  */
 Vector3D.prototype.sub = function sub ( x, y, z )
 {
@@ -95,6 +101,8 @@ Vector3D.prototype.sub = function sub ( x, y, z )
  * @method v6.Vector3D#mul
  * @param {number} value Число, на которое надо умножить.
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).mul( 2 ); // Vector3D { x: 8, y: 4, z: 12 }
  */
 Vector3D.prototype.mul = function mul ( value )
 {
@@ -109,6 +117,8 @@ Vector3D.prototype.mul = function mul ( value )
  * @method v6.Vector3D#div
  * @param {number} value Число, на которое надо разделить.
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).div( 2 ); // Vector3D { x: 2, y: 1, z: 3 }
  */
 Vector3D.prototype.div = function div ( value )
 {
@@ -124,6 +134,8 @@ Vector3D.prototype.div = function div ( value )
  * @param  {number} [y=0]
  * @param  {number} [z=0]
  * @return {number}
+ * @example
+ * new Vector3D( 4, 2, 6 ).dot( 2, 3, 4 ); // -> 38, потому что: "(4 * 2) + (2 * 3) + (6 * 4) = 8 + 6 + 24 = 38"
  */
 Vector3D.prototype.dot = function dot ( x, y, z )
 {
@@ -140,6 +152,8 @@ Vector3D.prototype.dot = function dot ( x, y, z )
  * @param {number} z
  * @param {number} value
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).lerp( 8, 4, 12, 0.5 ); // Vector3D { x: 6, y: 3, z: 9 }
  */
 Vector3D.prototype.lerp = function ( x, y, z, value )
 {
@@ -154,6 +168,8 @@ Vector3D.prototype.lerp = function ( x, y, z, value )
  * @method v6.Vector3D#setVector
  * @param {v6.AbstractVector} vector Вектор, который надо скопировать.
  * @chainable
+ * @example
+ * new Vector3D().setVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: 4, y: 2, z: 6 }
  */
 Vector3D.prototype.setVector = function setVector ( vector )
 {
@@ -165,6 +181,8 @@ Vector3D.prototype.setVector = function setVector ( vector )
  * @method v6.Vector3D#addVector
  * @param {v6.AbstractVector} vector Вектор, который надо добавить.
  * @chainable
+ * @example
+ * new Vector3D().addVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: 4, y: 2, z: 6 }
  */
 Vector3D.prototype.addVector = function addVector ( vector )
 {
@@ -176,6 +194,8 @@ Vector3D.prototype.addVector = function addVector ( vector )
  * @method v6.Vector3D#subVector
  * @param {v6.AbstractVector} vector Вектор, который надо вычесть.
  * @chainable
+ * @example
+ * new Vector3D().subVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: -4, y: -2, z: -6 }
  */
 Vector3D.prototype.subVector = function subVector ( vector )
 {
@@ -187,6 +207,8 @@ Vector3D.prototype.subVector = function subVector ( vector )
  * @method v6.Vector3D#mulVector
  * @param {v6.AbstractVector} vector Вектор для умножения.
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).mulVector( new Vector3D( 2, 3, 4 ) ); // Vector3D { x: 8, y: 6, z: 24 }
  */
 Vector3D.prototype.mulVector = function mulVector ( vector )
 {
@@ -201,6 +223,8 @@ Vector3D.prototype.mulVector = function mulVector ( vector )
  * @method v6.Vector3D#divVector
  * @param {v6.AbstractVector} vector Вектор, на который надо делить.
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).divVector( new Vector3D( 2, 0.5, 4 ) ); // Vector3D { x: 2, y: 4, z: 1.5 }
  */
 Vector3D.prototype.divVector = function divVector ( vector )
 {
@@ -214,6 +238,8 @@ Vector3D.prototype.divVector = function divVector ( vector )
  * @method v6.Vector3D#dotVector
  * @param  {v6.AbstractVector} vector
  * @return {number}
+ * @example
+ * new Vector3D( 4, 2, 6 ).dotVector( new Vector3D( 2, 3, -2 ) ); // -> 2
  */
 Vector3D.prototype.dotVector = function dotVector ( vector )
 {
@@ -226,6 +252,8 @@ Vector3D.prototype.dotVector = function dotVector ( vector )
  * @param {v6.AbstractVector} vector
  * @param {number}            value
  * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).lerpVector( new Vector3D( 8, 4, 12 ), 0.5 ); // Vector3D { x: 6, y: 3, z: 9 }
  */
 Vector3D.prototype.lerpVector = function lerpVector ( vector, value )
 {
@@ -268,7 +296,7 @@ Vector3D.prototype.dist = function dist ( vector )
  */
 Vector3D.prototype.toString = function toString ()
 {
-  return 'Vector3D { ' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ', ' + this.z.toFixed( 2 ) + ' }';
+  return 'v6.Vector3D { x: ' + this.x.toFixed( 2 ) + ', y: ' + this.y.toFixed( 2 ) + ', z: ' + this.z.toFixed( 2 ) + ' }';
 };
 
 /**

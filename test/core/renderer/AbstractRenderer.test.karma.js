@@ -30,8 +30,8 @@ describe( 'v6.AbstractRenderer', function ()
   describe( 'v6.AbstractRenderer.create', function ()
   {
     [
-      [ 'creates Renderer2D', Renderer2D, 'RENDERER_2D', CanvasRenderingContext2D ],
-      [ 'creates RendererGL', RendererGL, 'RENDERER_GL', WebGLRenderingContext ]
+      [ 'creates Renderer2D', Renderer2D, '2D', CanvasRenderingContext2D ],
+      [ 'creates RendererGL', RendererGL, 'GL', WebGLRenderingContext ]
     ].forEach( function ( values )
     {
       it( values[ 0 ], function ()

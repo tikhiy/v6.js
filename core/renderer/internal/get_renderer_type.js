@@ -30,10 +30,10 @@ function getRendererType ()
   }
 
   if ( touchable && ! safari ) {
-    return constants.get( 'RENDERER_GL' );
+    return constants.get( 'GL' );
   }
 
-  return constants.get( 'RENDERER_2D' );
+  return constants.get( '2D' );
 }
 
 module.exports = once( getRendererType );

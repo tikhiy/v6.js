@@ -11,7 +11,7 @@ var AbstractVector = require( './AbstractVector' );
  * @param {number} [y=0] Y координата вектора.
  * @example
  * var Vector2D = require( 'v6.js/math/Vector2D' );
- * var position = new Vector2D( 4, 2 );
+ * var position = new Vector2D( 4, 2 ); // Vector2D { x: 4, y: 2 }
  */
 function Vector2D ( x, y )
 {
@@ -41,6 +41,8 @@ Vector2D.prototype.constructor = Vector2D;
  * @param {number} [x=0] Новая X координата.
  * @param {number} [y=0] Новая Y координата.
  * @chainable
+ * @example
+ * new Vector2D().set( 4, 2 ); // Vector2D { x: 4, y: 2 }
  */
 Vector2D.prototype.set = function set ( x, y )
 {
@@ -55,6 +57,8 @@ Vector2D.prototype.set = function set ( x, y )
  * @param {number} [x=0] Число, которое должно быть добавлено.
  * @param {number} [y=0] Число, которое должно быть добавлено.
  * @chainable
+ * @example
+ * new Vector2D().add( 4, 2 ); // Vector2D { x: 4, y: 2 }
  */
 Vector2D.prototype.add = function add ( x, y )
 {
@@ -69,6 +73,8 @@ Vector2D.prototype.add = function add ( x, y )
  * @param {number} [x=0] Число, которое должно быть вычтено.
  * @param {number} [y=0] Число, которое должно быть вычтено.
  * @chainable
+ * @example
+ * new Vector2D().sub( 4, 2 ); // Vector2D { x: -4, y: -2 }
  */
 Vector2D.prototype.sub = function sub ( x, y )
 {
@@ -82,6 +88,8 @@ Vector2D.prototype.sub = function sub ( x, y )
  * @method v6.Vector2D#mul
  * @param {number} value Число, на которое надо умножить.
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).mul( 2 ); // Vector2D { x: 8, y: 4 }
  */
 Vector2D.prototype.mul = function mul ( value )
 {
@@ -95,6 +103,8 @@ Vector2D.prototype.mul = function mul ( value )
  * @method v6.Vector2D#div
  * @param {number} value Число, на которое надо разделить.
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).div( 2 ); // Vector2D { x: 2, y: 1 }
  */
 Vector2D.prototype.div = function div ( value )
 {
@@ -108,6 +118,8 @@ Vector2D.prototype.div = function div ( value )
  * @param  {number} [x=0]
  * @param  {number} [y=0]
  * @return {number}
+ * @example
+ * new Vector2D( 4, 2 ).div( 2, 3 ); // 14, потому что: "(4 * 2) + (2 * 3) = 8 + 6 = 14"
  */
 Vector2D.prototype.dot = function dot ( x, y )
 {
@@ -122,6 +134,8 @@ Vector2D.prototype.dot = function dot ( x, y )
  * @param {number} y
  * @param {number} value
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).lerp( 8, 4, 0.5 ); // Vector2D { x: 6, y: 3 }
  */
 Vector2D.prototype.lerp = function ( x, y, value )
 {
@@ -135,6 +149,8 @@ Vector2D.prototype.lerp = function ( x, y, value )
  * @method v6.Vector2D#setVector
  * @param {v6.AbstractVector} vector Вектор, который надо скопировать.
  * @chainable
+ * @example
+ * new Vector2D().setVector( new Vector2D( 4, 2 ) ); // Vector2D { x: 4, y: 2 }
  */
 Vector2D.prototype.setVector = function setVector ( vector )
 {
@@ -146,6 +162,8 @@ Vector2D.prototype.setVector = function setVector ( vector )
  * @method v6.Vector2D#addVector
  * @param {v6.AbstractVector} vector Вектор, который надо добавить.
  * @chainable
+ * @example
+ * new Vector2D().addVector( new Vector2D( 4, 2 ) ); // Vector2D { x: 4, y: 2 }
  */
 Vector2D.prototype.addVector = function addVector ( vector )
 {
@@ -157,6 +175,8 @@ Vector2D.prototype.addVector = function addVector ( vector )
  * @method v6.Vector2D#subVector
  * @param {v6.AbstractVector} vector Вектор, который надо вычесть.
  * @chainable
+ * @example
+ * new Vector2D().subVector( new Vector2D( 4, 2 ) ); // Vector2D { x: -4, y: -2 }
  */
 Vector2D.prototype.subVector = function subVector ( vector )
 {
@@ -168,6 +188,8 @@ Vector2D.prototype.subVector = function subVector ( vector )
  * @method v6.Vector2D#mulVector
  * @param {v6.AbstractVector} vector Вектор для умножения.
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).mulVector( new Vector2D( 2, 3 ) ); // Vector2D { x: 8, y: 6 }
  */
 Vector2D.prototype.mulVector = function mulVector ( vector )
 {
@@ -181,6 +203,8 @@ Vector2D.prototype.mulVector = function mulVector ( vector )
  * @method v6.Vector2D#divVector
  * @param {v6.AbstractVector} vector Вектор, на который надо делить.
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).divVector( new Vector2D( 2, 0.5 ) ); // Vector2D { x: 2, y: 4 }
  */
 Vector2D.prototype.divVector = function divVector ( vector )
 {
@@ -193,6 +217,8 @@ Vector2D.prototype.divVector = function divVector ( vector )
  * @method v6.Vector2D#dotVector
  * @param  {v6.AbstractVector} vector
  * @return {number}
+ * @example
+ * new Vector2D( 4, 2 ).dotVector( new Vector2D( 3, 5 ) ); // -> 22
  */
 Vector2D.prototype.dotVector = function dotVector ( vector )
 {
@@ -205,6 +231,8 @@ Vector2D.prototype.dotVector = function dotVector ( vector )
  * @param {v6.AbstractVector} vector
  * @param {number}            value
  * @chainable
+ * @example
+ * new Vector2D( 4, 2 ).lerpVector( new Vector2D( 2, 1 ), 0.5 ); // Vector2D { x: 3, y: 1.5 }
  */
 Vector2D.prototype.lerpVector = function lerpVector ( vector, value )
 {
@@ -246,7 +274,7 @@ Vector2D.prototype.dist = function dist ( vector )
  */
 Vector2D.prototype.toString = function toString ()
 {
-  return 'Vector2D { ' + this.x.toFixed( 2 ) + ', ' + this.y.toFixed( 2 ) + ' }';
+  return 'v6.Vector2D { x: ' + this.x.toFixed( 2 ) + ', y: ' + this.y.toFixed( 2 ) + ' }';
 };
 
 /**

@@ -8,7 +8,7 @@ describe( 'v6.Renderer2D', function ()
 {
   it( 'successfully required', function ()
   {
-    Renderer2D.should.be.a( 'function' );
+    Renderer2D.should.a( 'function' );
   } );
 
   describe( 'new v6.Renderer2D', function ()
@@ -16,6 +16,24 @@ describe( 'v6.Renderer2D', function ()
     it( 'works without options', function ()
     {
       var renderer = new Renderer2D(); // eslint-disable-line no-unused-vars
+    } );
+
+    describe( 'new v6.Renderer2D @param options.appendTo', function ()
+    {
+      it( 'works', function ()
+      {
+        internal.div( function ( div )
+        {
+          new Renderer2D( { appendTo: div } ).should.as( {
+            canvas: {
+              parentNode: div
+            },
+
+            w: 600,
+            h: 400
+          } );
+        } );
+      } );
     } );
 
     describe( 'new v6.Renderer2D.appendTo', function ()
@@ -31,10 +49,7 @@ describe( 'v6.Renderer2D', function ()
           renderer.should.as( {
             canvas: {
               parentNode: div
-            },
-
-            w: 600,
-            h: 400
+            }
           } );
         } );
       } );

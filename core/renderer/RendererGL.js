@@ -42,7 +42,7 @@ var square = ( function ()
  */
 function RendererGL ( options )
 {
-  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_GL' ) );
+  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'GL' ) );
 
   /**
    * Эта матрица используется для таких методов как {@link v6.RendererGL#rotate}, {@link v6.RendererGL#transform}, и т.п.

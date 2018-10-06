@@ -202,7 +202,7 @@ describe( 'v6.Vector2D', function ()
       {
         new Vector2D( 4.321, 2.345 ).toString()
           .should
-            .equal( 'Vector2D { 4.32, 2.35 }' );
+            .equal( 'v6.Vector2D { x: 4.32, y: 2.35 }' );
       } );
     } );
   } );

@@ -17,7 +17,7 @@ var options_         = require( './settings' );
  */
 function Renderer2D ( options )
 {
-  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_2D' ) );
+  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( '2D' ) );
 
   /**
    * @alias v6.Renderer2D#context

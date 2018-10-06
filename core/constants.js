@@ -36,9 +36,9 @@ function get ( key )
 }
 
 [
-  'RENDERER_AUTO',
-  'RENDERER_GL',
-  'RENDERER_2D',
+  'AUTO',
+  'GL',
+  '2D',
   'LEFT',
   'TOP',
   'CENTER',

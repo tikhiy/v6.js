@@ -1,3 +1,5 @@
+/* eslint lines-around-comment: off */
+
 'use strict'; // eslint-disable-line lines-around-directive
 
 var getElementW               = require( 'peako/get-element-w' );
@@ -20,7 +22,7 @@ var options                   = require( './settings' );
  * @abstract
  * @constructor v6.AbstractRenderer
  * @param {object}   options {@link v6.options}
- * @param {constant} type    Тип рендерера: 2D (`RENDERER_2D`) или WebGL (`RENDERER_GL`).
+ * @param {constant} type    Тип рендерера: `2D` или `GL`.
  */
 function AbstractRenderer ()
 {
@@ -80,18 +82,12 @@ AbstractRenderer.prototype = {
   /**
    * Добавляет `canvas` в DOM.
    * @method v6.AbstractRenderer#appendTo
-   * @param {Element} [parent=document.body] Элемент, в который {@link v6.AbstractRenderer#canvas}
-   *                                         должен быть добавлен.
+   * @param {Element} parent Элемент, в который {@link v6.AbstractRenderer#canvas} должен быть добавлен.
    * @chainable
    */
   appendTo: function appendTo ( parent )
   {
-    if ( ! parent ) {
-      parent = document.body;
-    }
-
     parent.appendChild( this.canvas );
-    this.resizeTo( parent );
     return this;
   },
 
@@ -256,7 +252,7 @@ AbstractRenderer.prototype = {
   {
     var position, zoom;
 
-    if ( typeof m11 === 'object' ) {
+    if ( typeof m11 === 'object' && m11 !== null ) {
       position = m11.position;
       zoom     = m11.zoom;
       this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
@@ -384,7 +380,6 @@ AbstractRenderer.prototype = {
    * @param  {number}  dy  Y translate.
    * @chainable
    * @see v6.Transform#transform
-   * @see v6.mat3.transform
    */
   transform: function transform ( m11, m12, m21, m22, dx, dy )
   {
@@ -398,7 +393,6 @@ AbstractRenderer.prototype = {
    * @param  {number}  y - Y translate.
    * @chainable
    * @see v6.Transform#translate
-   * @see v6.mat3.translate
    */
   translate: function translate ( x, y )
   {
@@ -417,26 +411,41 @@ AbstractRenderer.prototype = {
     return this;
   },
 
+  /**
+   * @method v6.AbstractRenderer#save
+   * @chainable
+   * @see v6.Transform#save
+   */
+  save: function save ()
+  {
+    this.matrix.save();
+    return this;
+  },
+
+  /**
+   * @method v6.AbstractRenderer#scale
+   * @param {number} x
+   * @param {number} y
+   * @chainable
+   * @see v6.Transform#scale
+   */
+  scale: function scale ( x, y )
+  {
+    this.matrix.scale( x, y );
+    return this;
+  },
+
   constructor: AbstractRenderer
 
 };
 
-[
-  'scale',
-  'save'
-].forEach( function ( name )
-{
-  AbstractRenderer.prototype[ name ] = Function( 'a, b, c, d, e, f', 'return this.matrix.' + name + '( a, b, c, d, e, f ), this;' ); // jshint ignore: line
-} );
-
 /**
- * Инициализирует рендерер на `self`.
+ * Инициализирует рендерер на `"self"`.
  * @static
  * @method v6.AbstractRenderer.create
- * @param  {v6.AbstractRenderer} self    The renderer.
+ * @param  {v6.AbstractRenderer} self    Рендерер.
  * @param  {object}              options {@link v6.options}
- * @param  {constant}            type    Тип рендерера: 2D `RENDERER_2D` или WebGL `RENDERER_GL`.
- *                                       Не может быть `RENDERER_AUTO`!.
+ * @param  {constant}            type    Тип рендерера: `2D` или `GL`. Не может быть `AUTO`!.
  * @return {void}
  */
 AbstractRenderer.create = function create ( self, options, type )
@@ -454,12 +463,12 @@ AbstractRenderer.create = function create ( self, options, type )
     self.canvas.innerHTML = 'Unable to run this application.';
   }
 
-  if ( type === constants.get( 'RENDERER_2D' ) ) {
+  if ( type === constants.get( '2D' ) ) {
     context = '2d';
-  } else if ( type !== constants.get( 'RENDERER_GL' ) ) {
-    throw Error( 'Got unknown renderer type. The known are: `RENDERER_2D` and `RENDERER_GL`' );
+  } else if ( type !== constants.get( 'GL' ) ) {
+    throw Error( 'Got unknown renderer type. The known are: `2D` and `GL`' );
   } else if ( ! ( context = getWebGL() ) ) {
-    throw Error( 'Cannot get WebGL context. Try to use `RENDERER_2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
+    throw Error( 'Cannot get WebGL context. Try to use `2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
   }
 
   /**
@@ -498,18 +507,18 @@ AbstractRenderer.create = function create ( self, options, type )
    */
   self._vertices = [];
 
-  // if ( 'w' in options || 'h' in options ) {
-  //   self.resize( options.w, options.h );
-  // } else if ( ! options.canvas && self.canvas.parentNode ) {
-  //   self.resizeTo( self.canvas.parentNode );
-  // }
-
-  if ( typeof options.appendTo === 'undefined' || options.appendTo ) {
+  if ( typeof options.appendTo === 'undefined' ) {
+    self.appendTo( document.body );
+  } else if ( options.appendTo !== null ) {
     self.appendTo( options.appendTo );
   }
 
   if ( 'w' in options || 'h' in options ) {
-    self.resize( options.w, options.h );
+    self.resize( options.w || 0, options.h || 0 );
+  } else if ( options.appendTo !== null ) {
+    self.resizeTo( options.appendTo || document.body );
+  } else {
+    self.resize( 600, 400 );
   }
 
   setDefaultDrawingSettings( self, self );

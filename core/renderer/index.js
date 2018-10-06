@@ -12,10 +12,19 @@ var Renderer2D      = require( './Renderer2D' );
 var type            = require( './settings' ).type;
 
 /**
- * Создает новый рендерер.
+ * Создает новый рендерер. Если создать WebGL контекст не получится, то будет использован 2D.
  * @method v6.createRenderer
  * @param  {object}              options {@link v6.options}.
- * @return {v6.AbstractRenderer}
+ * @return {v6.AbstractRenderer}         Новый рендерер (2D, GL).
+ * @example
+ * var createRenderer = require( 'v6.js/core/renderer' );
+ * var constants      = require( 'v6.js/core/constants' );
+ * @example <caption>Creating WebGL or 2D renderer based on platform and browser</caption>
+ * var renderer = createRenderer( { type: constants.get( 'AUTO' ) } );
+ * @example <caption>Creating WebGL renderer</caption>
+ * var renderer = createRenderer( { type: constants.get( 'GL' ) } );
+ * @example <caption>Creating 2D renderer</caption>
+ * var renderer = createRenderer( { type: constants.get( '2D' ) } );
  */
 function createRenderer ( options )
 {

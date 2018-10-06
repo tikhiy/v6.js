@@ -1,16 +1,31 @@
 'use strict';
 
 /**
- * @member v6.constants
+ * Стандартные константы:
+ * * `"AUTO"`
+ * * `"GL"`
+ * * `"2D"`
+ * * `"LEFT"`
+ * * `"TOP"`
+ * * `"CENTER"`
+ * * `"MIDDLE"`
+ * * `"RIGHT"`
+ * * `"BOTTOM"`
+ * @namespace {object} v6.constants
+ * @example
+ * var constants = require( 'v6.js/core/constants' );
  */
 
 var _constants = {};
 var _counter   = 0;
 
 /**
+ * Добавляет константу.
  * @method v6.constants.add
- * @param  {string} key
- * @return {void}
+ * @param  {string} key Имя константы.
+ * @return {void}       Ничего не возвращает.
+ * @example
+ * constants.add( 'CUSTOM_CONSTANT' );
  */
 function add ( key )
 {
@@ -22,9 +37,12 @@ function add ( key )
 }
 
 /**
+ * Возвращает константу.
  * @method v6.constants.get
- * @param  {string}   key
- * @return {constant}
+ * @param  {string}   key Имя константы.
+ * @return {constant}     Возвращает константу.
+ * @example
+ * constants.get( 'CUSTOM_CONSTANT' );
  */
 function get ( key )
 {

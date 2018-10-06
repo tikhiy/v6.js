@@ -11,12 +11,11 @@ var RGBA  = require( './RGBA' );           // eslint-disable-line vars-on-top
 /**
  * HSLA цвет.
  * @constructor v6.HSLA
- * @param {number|string|v6.RGBA|v6.HSLA} [h] Hue, [CSS color](https://www.w3schools.com/cssref/css_colors_legal.asp), or {@link v6.HSLA} / {@link v6.RGBA}.
- * @param {number}                        [s] Saturation.
- * @param {number}                        [l] Lightness.
- * @param {number}                        [a] Alpha.
+ * @param {number|TColor} [h] Hue value.
+ * @param {number}        [s] Saturation value.
+ * @param {number}        [l] Lightness value.
+ * @param {number}        [a] Alpha value.
  * @see v6.HSLA#set
- * @see v6.RGBA
  * @example
  * var HSLA = require( 'v6.js/core/color/HSLA' );
  *
@@ -29,11 +28,28 @@ var RGBA  = require( './RGBA' );           // eslint-disable-line vars-on-top
  */
 function HSLA ( h, s, l, a )
 {
+  /**
+   * @member {number} v6.HSLA#0 "hue" value.
+   */
+
+  /**
+   * @member {number} v6.HSLA#1 "saturation" value.
+   */
+
+  /**
+   * @member {number} v6.HSLA#2 "lightness" value.
+   */
+
+  /**
+   * @member {number} v6.HSLA#3 "alpha" value.
+   */
+
   this.set( h, s, l, a );
 }
 
 HSLA.prototype = {
   /**
+   * Возвращает воспринимаемую яркость (perceived brightness) цвета.
    * @method v6.HSLA#perceivedBrightness
    * @return {number}
    * @example
@@ -45,8 +61,10 @@ HSLA.prototype = {
   },
 
   /**
+   * Возвращает относительную яркость цвета.
    * @method v6.HSLA#luminance
    * @return {number}
+   * @see https://en.wikipedia.org/wiki/Relative_luminance
    * @example
    * new HSLA( 'magenta' ).luminance(); // -> 72.624
    */
@@ -56,8 +74,10 @@ HSLA.prototype = {
   },
 
   /**
+   * Возвращает яркость цвета.
    * @method v6.HSLA#brightness
    * @return {number}
+   * @see https://www.w3.org/TR/AERT/#color-contrast
    * @example
    * new HSLA( 'magenta' ).brightness(); // -> 105.315
    */
@@ -67,6 +87,7 @@ HSLA.prototype = {
   },
 
   /**
+   * Возвращает CSS-color строку.
    * @method v6.HSLA#toString
    * @return {string}
    * @example
@@ -78,12 +99,16 @@ HSLA.prototype = {
   },
 
   /**
+   * Устанавливает H, S, L, A значения.
    * @method v6.HSLA#set
-   * @param {number|string|v6.RGBA|v6.HSLA} [h]
-   * @param {number}                        [s]
-   * @param {number}                        [l]
-   * @param {number}                        [a]
+   * @param {number|TColor} [h] Hue value.
+   * @param {number}        [s] Saturation value.
+   * @param {number}        [l] Lightness value.
+   * @param {number}        [a] Alpha value.
+   * @chainable
    * @see v6.HSLA
+   * @example
+   * new HSLA().set( 100, 0.5 ); // -> 0, 0, 100, 0.5
    */
   set: function set ( h, s, l, a )
   {
@@ -136,6 +161,7 @@ HSLA.prototype = {
   },
 
   /**
+   * Конвертирует в {@link v6.RGBA}.
    * @method v6.HSLA#rgba
    * @return {v6.RGBA}
    * @example
@@ -204,26 +230,29 @@ HSLA.prototype = {
    * @param  {number}  value
    * @return {v6.HSLA}
    * @see v6.HSLA#lerpColor
+   * @example
+   * new HSLA( 50, 0.25 ).lerp( 0, 0, 100, 0.5 ); // -> new HSLA( 0, 0, 75, 0.25 )
    */
   lerp: function lerp ( h, s, l, value )
   {
-
     var color = new HSLA();
-
     color[ 0 ] = h;
     color[ 1 ] = s;
     color[ 2 ] = l;
-
     return this.lerpColor( color, value );
-
   },
 
   /**
+   * Создает новый {@link v6.HSLA} - интерполированный между `color`.
    * @method v6.HSLA#lerpColor
-   * @param  {string|v6.RGBA|v6.HSLA} color
-   * @param  {number}                 value
+   * @param  {TColor}  color
+   * @param  {number}  value
    * @return {v6.HSLA}
    * @see v6.HSLA#lerp
+   * @example
+   * var a = new HSLA( 50, 0.25 );
+   * var b = new HSLA( 100, 0 );
+   * var c = a.lerpColor( b, 0.5 ); // -> new HSLA( 0, 0, 75, 0.25 )
    */
   lerpColor: function lerpColor ( color, value )
   {
@@ -231,32 +260,28 @@ HSLA.prototype = {
   },
 
   /**
-   * Создает новый {@link v6.HSLA} - затемненный или засветленный на `value` процентов.
+   * Создает новый {@link v6.HSLA} - затемненный или засветленный на `percentage` процентов.
    * @method v6.HSLA#shade
-   * @param  {number}  value
+   * @param  {number}  percentage
    * @return {v6.HSLA}
    * @example
    * new HSLA( 0, 100, 75, 1 ).shade( -10 ); // -> new HSLA( 0, 100, 65, 1 )
    */
-  shade: function shade ( value )
+  shade: function shade ( percentage )
   {
-
     var hsla = new HSLA();
-
     hsla[ 0 ] = this[ 0 ];
     hsla[ 1 ] = this[ 1 ];
-    hsla[ 2 ] = clamp( this[ 2 ] + value, 0, 100 );
+    hsla[ 2 ] = clamp( this[ 2 ] + percentage, 0, 100 );
     hsla[ 3 ] = this[ 3 ];
-
     return hsla;
-
   },
 
   constructor: HSLA
 };
 
 /**
- * @member {string} v6.HSLA#type
+ * @member {string} v6.HSLA#type `"hsla"`. Это свойство используется для конвертирования между {@link v6.RGBA} и {@link v6.HSLA}.
  */
 HSLA.prototype.type = 'hsla';
 

@@ -9,12 +9,11 @@ var HSLA  = require( './HSLA' );           // eslint-disable-line vars-on-top
 /**
  * RGBA цвет.
  * @constructor v6.RGBA
- * @param {number|string|v6.RGBA|v6.HSLA} [r] Red, [CSS color](https://www.w3schools.com/cssref/css_colors_legal.asp), or {@link v6.HSLA} / {@link v6.RGBA}.
- * @param {number}                        [g] Green.
- * @param {number}                        [b] Blue.
- * @param {number}                        [a] Alpha.
+ * @param {number|TColor} [r] Red channel value.
+ * @param {number}        [g] Green channel value.
+ * @param {number}        [b] Blue channel value.
+ * @param {number}        [a] Alpha channel value.
  * @see v6.RGBA#set
- * @see v6.HSLA
  * @example
  * var RGBA = require( 'v6.js/core/color/RGBA' );
  *
@@ -27,11 +26,28 @@ var HSLA  = require( './HSLA' );           // eslint-disable-line vars-on-top
  */
 function RGBA ( r, g, b, a )
 {
+  /**
+   * @member {number} v6.RGBA#0 "red" channel value.
+   */
+
+  /**
+   * @member {number} v6.RGBA#1 "green" channel value.
+   */
+
+  /**
+   * @member {number} v6.RGBA#2 "blue" channel value.
+   */
+
+  /**
+   * @member {number} v6.RGBA#3 "alpha" channel value.
+   */
+
   this.set( r, g, b, a );
 }
 
 RGBA.prototype = {
   /**
+   * Возвращает воспринимаемую яркость (perceived brightness) цвета.
    * @method v6.RGBA#perceivedBrightness
    * @return {number}
    * @see https://stackoverflow.com/a/596243
@@ -48,6 +64,7 @@ RGBA.prototype = {
   },
 
   /**
+   * Возвращает относительную яркость цвета.
    * @method v6.RGBA#luminance
    * @return {number}
    * @see https://en.wikipedia.org/wiki/Relative_luminance
@@ -60,6 +77,7 @@ RGBA.prototype = {
   },
 
   /**
+   * Возвращает яркость цвета.
    * @method v6.RGBA#brightness
    * @return {number}
    * @see https://www.w3.org/TR/AERT/#color-contrast
@@ -72,6 +90,7 @@ RGBA.prototype = {
   },
 
   /**
+   * Возвращает CSS-color строку.
    * @method v6.RGBA#toString
    * @return {string}
    * @example
@@ -83,11 +102,13 @@ RGBA.prototype = {
   },
 
   /**
+   * Устанавливает R, G, B, A значения.
    * @method v6.RGBA#set
-   * @param {number|string|v6.RGBA|v6.HSLA} [r]
-   * @param {number}                        [g]
-   * @param {number}                        [b]
-   * @param {number}                        [a]
+   * @param {number|TColor} [r] Red channel value.
+   * @param {number}        [g] Green channel value.
+   * @param {number}        [b] Blue channel value.
+   * @param {number}        [a] Alpha channel value.
+   * @chainable
    * @see v6.RGBA
    * @example
    * new RGBA()
@@ -123,15 +144,15 @@ RGBA.prototype = {
         switch ( void 0 ) {
           case r:
             a = 1;
-            b = g = r = 0; // eslint-disable-line no-multi-assign
+            b = g = r = 0;
             break;
           case g:
             a = 1;
-            b = g = r = Math.floor( r ); // eslint-disable-line no-multi-assign
+            b = g = r = Math.floor( r );
             break;
           case b:
             a = g;
-            b = g = r = Math.floor( r ); // eslint-disable-line no-multi-assign
+            b = g = r = Math.floor( r );
             break;
           case a:
             a = 1;
@@ -152,6 +173,7 @@ RGBA.prototype = {
   },
 
   /**
+   * Конвертирует в {@link v6.HSLA}.
    * @method v6.RGBA#hsla
    * @return {v6.HSLA}
    * @example
@@ -199,7 +221,7 @@ RGBA.prototype = {
       h = Math.round( h * 360 / 6.2832 );
       s = Math.round( s * 100 );
     } else {
-      h = s = 0; // eslint-disable-line no-multi-assign
+      h = s = 0;
     }
 
     hsla[ 0 ] = h;
@@ -210,6 +232,12 @@ RGBA.prototype = {
     return hsla;
   },
 
+  /**
+   * @private
+   * @method v6.RGBA#rgba
+   * @see v6.RendererGL#vertices
+   * @chainable
+   */
   rgba: function rgba ()
   {
     return this;
@@ -225,29 +253,27 @@ RGBA.prototype = {
    * @return {v6.RGBA}
    * @see v6.RGBA#lerpColor
    * @example
-   * new RGBA( 100, 0.25 ).lerp( 200, 200, 200, 0.5 ); // -> new RGBA( 150, 150, 150, 0.25 );
+   * new RGBA( 100, 0.25 ).lerp( 200, 200, 200, 0.5 ); // -> new RGBA( 150, 150, 150, 0.25 )
    */
   lerp: function lerp ( r, g, b, value )
   {
-
-    r = lerp( this[ 0 ], r, value );
-    g = lerp( this[ 0 ], g, value );
-    b = lerp( this[ 0 ], b, value );
-
+    r = this[ 0 ] + ( r - this[ 0 ] ) * value;
+    g = this[ 0 ] + ( g - this[ 0 ] ) * value;
+    b = this[ 0 ] + ( b - this[ 0 ] ) * value;
     return new RGBA( r, g, b, this[ 3 ] );
-
   },
 
   /**
+   * Создает новый {@link v6.RGBA} - интерполированный между `color`.
    * @method v6.RGBA#lerpColor
-   * @param  {string|v6.RGBA|v6.HSLA} color
-   * @param  {number}                 value
+   * @param  {TColor}  color
+   * @param  {number}  value
    * @return {v6.RGBA}
    * @see v6.RGBA#lerp
    * @example
    * var a = new RGBA( 100, 0.25 );
    * var b = new RGBA( 200, 0 );
-   * var c = a.lerpColor( b, 0.5 ); // -> new RGBA( 150, 150, 150, 0.25 );
+   * var c = a.lerpColor( b, 0.5 ); // -> new RGBA( 150, 150, 150, 0.25 )
    */
   lerpColor: function lerpColor ( color, value )
   {
@@ -269,21 +295,23 @@ RGBA.prototype = {
   },
 
   /**
-   * Создает новый {@link v6.RGBA} - затемненный или засветленный на `value` процентов.
+   * Создает новый {@link v6.RGBA} - затемненный или засветленный на `percentages` процентов.
    * @method v6.RGBA#shade
-   * @param  {number}  value
+   * @param  {number}  percentage
    * @return {v6.RGBA}
    * @see v6.HSLA#shade
+   * @example
+   * new RGBA().shade( 50 ); // -> new RGBA( 128 )
    */
-  shade: function shade ( value )
+  shade: function shade ( percentages )
   {
-    return this.hsla().shade( value ).rgba();
+    return this.hsla().shade( percentages ).rgba();
   },
 
   constructor: RGBA
 };
 
 /**
- * @member {string} v6.RGBA#type
+ * @member {string} v6.RGBA#type `"rgba"`. Это свойство используется для конвертирования между {@link v6.HSLA} и {@link v6.RGBA}.
  */
 RGBA.prototype.type = 'rgba';

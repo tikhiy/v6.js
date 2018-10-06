@@ -184,7 +184,7 @@ AbstractVector._fromAngle = function _fromAngle ( Vector, angle )
  * @static
  * @method v6.AbstractVector.fromAngle
  * @param  {number}            angle Направление вектора.
- * @return {v6.AbstractVector}       Возвращает нормализованный вектор с направлением равным `angle`.
+ * @return {v6.AbstractVector}       Возвращает нормализованный вектор.
  */
 
 module.exports = AbstractVector;

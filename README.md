@@ -1,6 +1,6 @@
 # v6.js
 
-A JavaScript (ES5) library for rendering. The main feature is one API for 2D and WebGL contexts.
+A JavaScript (ES5) library for rendering. The main feature is one API for WebGL and 2D contexts.
 
 ### Installing
 

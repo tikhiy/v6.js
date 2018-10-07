@@ -922,8 +922,18 @@ Image.stretch = function stretch(image, dw, dh) {
     }
     return new CompoundedImage(image.get(), image.sx, image.sy, image.sw, image.sh, dw, dh);
 };
-Image.cut = function cut(image, sx, sy, sw, sh) {
-    return new CompoundedImage(image, sx + image.sx, sy + image.sy, sw, sh, image.dw, image.dh);
+Image.cut = function cut(image, sx, sy, dw, dh) {
+    var sw = image.sw / image.dw * dw;
+    var sh = image.sh / image.dh * dh;
+    sx += image.sx;
+    if (sx + sw > image.sx + image.sw) {
+        throw Error('Cannot cut the image because the new image X or W is out of bounds (v6.Image.cut)');
+    }
+    sy += image.sy;
+    if (sy + sh > image.sy + image.sh) {
+        throw Error('Cannot cut the image because the new image Y or H is out of bounds (v6.Image.cut)');
+    }
+    return new CompoundedImage(image.get(), sx, sy, sw, sh, dw, dh);
 };
 module.exports = Image;
 },{"./AbstractImage":10,"./CompoundedImage":11}],13:[function(require,module,exports){
@@ -1674,6 +1684,7 @@ Renderer2D.prototype.drawArrays = function drawArrays(verts, count, _mode, _sx, 
 };
 Renderer2D.prototype.drawImage = function drawImage(image, x, y, w, h) {
     this.context.drawImage(image.get().image, image.x, image.y, image.w, image.h, x, y, w, h);
+    return this;
 };
 Renderer2D.prototype.rect = function rect(x, y, w, h) {
     x = Math.floor(align(x, w, this._rectAlignX));

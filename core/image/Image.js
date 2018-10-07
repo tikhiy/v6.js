@@ -160,9 +160,24 @@ Image.stretch = function stretch ( image, dw, dh )
  * @example
  * Image.cut( image, 10, 20, 30, 40 );
  */
-Image.cut = function cut ( image, sx, sy, sw, sh )
+Image.cut = function cut ( image, sx, sy, dw, dh )
 {
-  return new CompoundedImage( image, sx + image.sx, sy + image.sy, sw, sh, image.dw, image.dh );
+  var sw = image.sw / image.dw * dw;
+  var sh = image.sh / image.dh * dh;
+
+  sx += image.sx;
+
+  if ( sx + sw > image.sx + image.sw ) {
+    throw Error( 'Cannot cut the image because the new image X or W is out of bounds (v6.Image.cut)' );
+  }
+
+  sy += image.sy;
+
+  if ( sy + sh > image.sy + image.sh ) {
+    throw Error( 'Cannot cut the image because the new image Y or H is out of bounds (v6.Image.cut)' );
+  }
+
+  return new CompoundedImage( image.get(), sx, sy, sw, sh, dw, dh );
 };
 
 module.exports = Image;

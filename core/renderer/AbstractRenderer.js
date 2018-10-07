@@ -204,8 +204,8 @@ AbstractRenderer.prototype = {
    * @param {v6.Image|v6.CompoundedImage} image
    * @param {number}                      x
    * @param {number}                      y
-   * @param {number}                      w
-   * @param {number}                      h
+   * @param {number}                      [w]
+   * @param {number}                      [h]
    * @chainable
    */
   image: function image ( image, x, y, w, h )
@@ -454,14 +454,19 @@ AbstractRenderer.create = function create ( self, options, type )
  * renderer.drawArrays( vertices, 3 );
  */
 /**
+ * Рисует картинку.
  * @virtual
  * @method v6.AbstractRenderer#drawImage
- * @param {v6.Image|v6.CompoundedImage} image
- * @param {number}                      x
- * @param {number}                      y
- * @param {number}                      w
- * @param {number}                      h
+ * @param {v6.AbstractImage} image Картинка которую надо отрисовать.
+ * @param {number}           x     "Destination X". X координата картинки.
+ * @param {number}           y     "Destination Y". Y координата картинки.
+ * @param {number}           w     "Destination Width". Ширина картинки.
+ * @param {number}           h     "Destination Height". Высота картинки.
  * @chainable
+ * @example
+ * var image = Image.fromURL( 'assets/300x200.png' );
+ * @example <caption>...</caption>
+ * renderer.drawImage( image, 0, 0, 600, 400 );
  */
 /**
  * Рисует прямоугольник.

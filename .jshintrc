@@ -6,6 +6,7 @@
     "self",
     "it"
   ],
+
   "browserify": true,
   "esversion": 5,
   "browser": true,

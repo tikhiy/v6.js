@@ -1,6 +1,7 @@
 core/renderer/AbstractRenderer.js
 **/*.preprocess.js
 node_modules
+coverage
 docs
 dist
 test

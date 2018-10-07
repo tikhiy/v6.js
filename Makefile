@@ -21,13 +21,13 @@ karma\:start_static_server:
 	node test/internal/server
 
 karma\:start:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js --no-single-run --browsers=FirefoxDeveloper
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-single-run --browsers=FirefoxDeveloper
 
 karma\:run:
-	node_modules/.bin/karma run .karma.conf.js --log-level info
+	node_modules/.bin/karma run
 
 karma:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start
 
 docs:
 	node_modules/.bin/jsdoc -c .jsdoc.json

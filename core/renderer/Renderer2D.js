@@ -118,6 +118,7 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
 Renderer2D.prototype.drawImage = function drawImage ( image, x, y, w, h )
 {
   this.context.drawImage( image.get().image, image.x, image.y, image.w, image.h, x, y, w, h );
+  return this;
 };
 
 Renderer2D.prototype.rect = function rect ( x, y, w, h )

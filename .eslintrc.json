@@ -1,107 +1,13 @@
 {
-  "extends": "jquery",
-  "parserOptions": {
-    "ecmaVersion": 5
-  },
   "env": {
     "commonjs": true,
     "browser": true,
     "node": true
   },
-  "plugins": [
-    "brace-rules"
-  ],
-  "rules": {
-    "quotes": [
-      "error",
-      "single",
-      {
-        "avoidEscape": true
-      }
-    ],
-    "brace-rules/brace-on-same-line": [
-      "error",
-      {
-        "FunctionDeclaration": "never",
-        "FunctionExpression": "never",
-        "ArrowFunctionExpression": "always",
-        "IfStatement": "always",
-        "TryStatement": "always",
-        "CatchClause": "always",
-        "DoWhileStatement": "always",
-        "WhileStatement": "always",
-        "ForStatement": "always",
-        "ForInStatement": "always",
-        "ForOfStatement": "always",
-        "SwitchStatement": "always"
-      }
-    ],
-    "brace-style": "off",
-    "max-len": [
-      "warn",
-      100
-    ],
-    "space-before-function-paren": [
-      "error",
-      "always"
-    ],
-    "key-spacing": [
-      "error",
-      {
-        "singleLine": {
-          "beforeColon": false,
-          "afterColon": true,
-          "mode": "strict"
-        },
-        "multiLine": {
-          "beforeColon": false,
-          "afterColon": true,
-          "mode": "minimum"
-        }
-      }
-    ],
-    "lines-around-comment": [
-      "error",
-      {
-        "beforeBlockComment": true,
-        "allowObjectStart": true,
-        "allowObjectEnd": true,
-        "allowBlockStart": true,
-        "allowBlockEnd": true,
-        "allowArrayStart": true,
-        "allowArrayEnd": true,
-        "applyDefaultIgnorePatterns": true
-      }
-    ],
-    "space-unary-ops": [
-      "error",
-      {
-        "nonwords": true,
-        "overrides": {
-          "++": false,
-          "--": false,
-          "-": false
-        }
-      }
-    ],
-    "no-fallthrough": [
-      "error",
-      {
-        "commentPattern": "falls through"
-      }
-    ],
-    "eqeqeq": [
-      "error",
-      "always"
-    ],
-    "one-var": [
-      "error",
-      {
-        "uninitialized": "always",
-        "initialized": "never"
-      }
-    ],
-    "no-bitwise": "error",
-    "no-multi-assign": "error"
-  }
+
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+
+  "extends": "v6.js"
 }

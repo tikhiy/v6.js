@@ -1,10 +1,10 @@
 docs
 test
+karma.conf.js
 .eslintignore
 .eslintrc.json
 .gitignore
 .jsdoc.js
 .jshintignore
 .jshintrc
-.karma.conf.js
 .npmignore

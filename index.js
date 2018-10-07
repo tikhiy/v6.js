@@ -15,11 +15,13 @@
  * @typedef {string|v6.HSLA|v6.RGBA} TColor
  */
 
+exports.AbstractImage    = require( './core/image/AbstractImage' );
 exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
+exports.AbstractVector   = require( './core/math/AbstractVector' );
 exports.Camera           = require( './core/Camera' );
-exports.CompoundedImage  = require( './core/CompoundedImage' );
+exports.CompoundedImage  = require( './core/image/CompoundedImage' );
 exports.HSLA             = require( './core/color/HSLA' );
-exports.Image            = require( './core/Image' );
+exports.Image            = require( './core/image/Image' );
 exports.RGBA             = require( './core/color/RGBA' );
 exports.Renderer2D       = require( './core/renderer/Renderer2D' );
 exports.RendererGL       = require( './core/renderer/RendererGL' );

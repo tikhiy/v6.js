@@ -42,6 +42,8 @@ function Ticker ()
    * Запускает цикл анимации.
    * @method v6.Ticker#start
    * @chainable
+   * @example
+   * ticker.start();
    */
   function start ( _now )
   {

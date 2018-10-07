@@ -101,6 +101,7 @@
         "initialized": "never"
       }
     ],
-    "no-bitwise": "error"
+    "no-bitwise": "error",
+    "no-multi-assign": "error"
   }
 }

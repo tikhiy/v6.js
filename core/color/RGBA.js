@@ -144,15 +144,15 @@ RGBA.prototype = {
         switch ( void 0 ) {
           case r:
             a = 1;
-            b = g = r = 0;
+            b = g = r = 0;               // eslint-disable-line no-multi-assign
             break;
           case g:
             a = 1;
-            b = g = r = Math.floor( r );
+            b = g = r = Math.floor( r ); // eslint-disable-line no-multi-assign
             break;
           case b:
             a = g;
-            b = g = r = Math.floor( r );
+            b = g = r = Math.floor( r ); // eslint-disable-line no-multi-assign
             break;
           case a:
             a = 1;
@@ -221,7 +221,7 @@ RGBA.prototype = {
       h = Math.round( h * 360 / 6.2832 );
       s = Math.round( s * 100 );
     } else {
-      h = s = 0;
+      h = s = 0; // eslint-disable-line no-multi-assign
     }
 
     hsla[ 0 ] = h;

@@ -30,10 +30,16 @@ function setup ( config )
       'index.js':                   [ 'browserify' ]  // Sources.
     },
 
+    browserify: {
+      transform: [
+        [ 'browserify-istanbul', { ignore: [ 'dist', 'docs' ] } ]
+      ]
+    },
+
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: [ 'mocha' ],
+    reporters: [ 'mocha', 'coverage' ],
 
     // nyan-reporter config
     nyanReporter: {
@@ -55,6 +61,7 @@ function setup ( config )
       'karma-mocha-reporter',
       'karma-nyan-reporter',
       'karma-browserify',
+      'karma-coverage',
       'karma-mocha'
     ],
 

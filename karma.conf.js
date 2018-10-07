@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * @private
  * @method setup
  * @param  {object} config
  * @return {void}

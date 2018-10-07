@@ -34,7 +34,7 @@ function Image ( image )
   }
 
   /**
-   * @member {HTMLImageElement} image DOM эелемент картинки.
+   * @member {HTMLImageElement} v6.Image#image DOM эелемент картинки.
    */
   this.image = image;
 

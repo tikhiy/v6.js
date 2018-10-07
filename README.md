@@ -63,6 +63,20 @@ window.addEventListener( 'resize', function ()
 } );
 ```
 
+### Development
+
+* `make karma:start_static_server &`
+
+#### Before Committing
+
+* `rm -Rf docs dist && npm run prepublish`
+
+#### Testing
+
+* `make mocha`
+* `make karma`
+* `make make karma:start &`, `make karma:run`
+
 ### License
 
 Released under the [GPL-3.0](LICENSE).

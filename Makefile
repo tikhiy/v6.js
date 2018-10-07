@@ -6,6 +6,9 @@ preprocess: $(PRE)
 lint\:test:
 	cd test && ../node_modules/.bin/eslint .
 
+lint\:test--fix:
+	cd test && ../node_modules/.bin/eslint . --fix
+
 lint:
 	              node_modules/.bin/jshint $(subst .preprocess,,$(PRE)) && \
 	              node_modules/.bin/eslint .                            && \
@@ -14,11 +17,14 @@ lint:
 mocha:
 	node_modules/.bin/mocha -r test/internal/register test/**/*.test.js
 
+karma\:start_static_server:
+	node test/internal/server
+
 karma\:start:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js --no-single-run --browsers=FirefoxDeveloper
 
 karma\:run:
-	node_modules/.bin/karma run .karma.conf.js
+	node_modules/.bin/karma run .karma.conf.js --log-level info
 
 karma:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start .karma.conf.js

@@ -896,7 +896,7 @@ Image.prototype._init = function _init() {
     this.sx = 0;
     this.sy = 0;
     this.sw = this.dw = this.image.width;
-    this.sh = this.dw = this.image.height;
+    this.sh = this.dh = this.image.height;
     this.emit('complete');
 };
 Image.prototype.get = function get() {

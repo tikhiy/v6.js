@@ -25,7 +25,7 @@ var renderer = createRenderer( {
     color: HSLA
   },
 
-  type: constants.get( 'RENDERER_AUTO' )
+  type: constants.get( 'AUTO' )
 } );
 ```
 

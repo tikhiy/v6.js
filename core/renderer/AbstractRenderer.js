@@ -1,5 +1,6 @@
+/* eslint lines-around-directive: off */
 /* eslint lines-around-comment: off */
-'use strict'; // eslint-disable-line lines-around-directive
+'use strict';
 var getElementW = require( 'peako/get-element-w' );
 var getElementH = require( 'peako/get-element-h' );
 var constants = require( '../constants' );
@@ -11,11 +12,13 @@ var copyDrawingSettings = require( './internal/copy_drawing_settings' );
 var align = require( './internal/align' );
 var options = require( './settings' );
 /**
- * Абстрактный класс AbstractRenderer - это основа для {@link v6.RendererGL} и {@link v6.Renderer2D}.
+ * Абстрактный класс рендерера.
  * @abstract
  * @constructor v6.AbstractRenderer
- * @param {object}   options {@link v6.options}
- * @param {constant} type    Тип рендерера: `2D` или `GL`.
+ * @see v6.RendererGL
+ * @see v6.Renderer2D
+ * @example
+ * var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );
  */
 function AbstractRenderer ()
 {
@@ -23,10 +26,13 @@ function AbstractRenderer ()
 }
 AbstractRenderer.prototype = {
   /**
-   * Добавляет `canvas` в DOM.
+   * Добавляет `canvas` рендерера в DOM.
    * @method v6.AbstractRenderer#appendTo
-   * @param {Element} parent Элемент, в который {@link v6.AbstractRenderer#canvas} должен быть добавлен.
+   * @param {Element} parent Элемент, в который `canvas` рендерера должен быть добавлен.
    * @chainable
+   * @example
+   * // Add renderer into DOM.
+   * renderer.appendTo( document.body );
    */
   appendTo: function appendTo ( parent )
   {
@@ -34,15 +40,26 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * Удаляет {@link v6.AbstractRenderer#canvas} из DOM.
+   * Удаляет `canvas` рендерера из DOM.
    * @method v6.AbstractRenderer#destroy
    * @chainable
+   * @example
+   * // Remove renderer from DOM.
+   * renderer.destroy();
    */
   destroy: function destroy ()
   {
     this.canvas.parentNode.removeChild( this.canvas );
     return this;
   },
+  /**
+   * Сохраняет текущие настройки рендерера.
+   * @method v6.AbstractRenderer#push
+   * @chainable
+   * @example
+   * // Save drawing settings (fill, lineWidth...) (push onto stack).
+   * renderer.push();
+   */
   push: function push ()
   {
     if ( this._stack[ ++this._stackIndex ] ) {
@@ -52,6 +69,14 @@ AbstractRenderer.prototype = {
     }
     return this;
   },
+  /**
+   * Восстанавливает предыдущие настройки рендерера.
+   * @method v6.AbstractRenderer#pop
+   * @chainable
+   * @example
+   * // Restore drawing settings (fill, lineWidth...) (take from stack).
+   * renderer.pop();
+   */
   pop: function pop ()
   {
     if ( this._stackIndex >= 0 ) {
@@ -62,8 +87,14 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * @param {number} w
-   * @param {number} h
+   * Изменяет размер рендерера.
+   * @method v6.AbstractRenderer#resize
+   * @param {number} w Новая ширина.
+   * @param {number} h Новая высота.
+   * @chainable
+   * @example
+   * // Resize renderer to 600x400.
+   * renderer.resize( 600, 400 );
    */
   resize: function resize ( w, h )
   {
@@ -76,15 +107,17 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * @param {Element} element
+   * Изменяет размер рендерера до размера `element` элемента.
+   * @method v6.AbstractRenderer#resizeTo
+   * @param {Element} element Элемент, до которого надо растянуть рендерер.
+   * @chainable
+   * @example
+   * // Resize renderer to match <body /> sizes.
+   * renderer.resizeTo( document.body );
    */
   resizeTo: function resizeTo ( element )
   {
     return this.resize( getElementW( element ), getElementH( element ) );
-  },
-  rescale: function rescale ()
-  {
-    return this.resizeTo( this.canvas );
   },
   _polygon: function _polygon ( x, y, rx, ry, n, a, degrees )
   {
@@ -330,16 +363,72 @@ AbstractRenderer.prototype = {
     this.matrix.scale( x, y );
     return this;
   },
+  /**
+   * Устанавливает "rectAlign" настройку рендеринга.
+   * @method v6.AbstractRenderer#rectAlign
+   * @param {constant} value `LEFT`, `CENTER`, `RIGHT` or `TOP`, `MIDDLE`, `BOTTOM`.
+   * @chainable
+   * @example
+   * // Set "rectAlign" drawing setting to CENTER | MIDDLE.
+   * renderer.rectAlign( constants.get( 'CENTER' ) );
+   * renderer.rectAlign( constants.get( 'MIDDLE' ) );
+   */
+  rectAlign: function rectAlign ( value )
+  {
+    if ( value === constants.get( 'LEFT' ) || value === constants.get( 'CENTER' ) || value === constants.get( 'RIGHT' ) ) {
+      this._rectAlignX = value;
+    } else if ( value === constants.get( 'TOP' ) || value === constants.get( 'MIDDLE' ) || value === constants.get( 'BOTTOM' ) ) {
+      this._rectAlignY = value;
+    } else {
+      throw Error( 'Got unknown "rectAlign" constant. The known are: LEFT, CENTER, RIGHT, TOP, MIDDLE, BOTTOM.' );
+    }
+    return this;
+  },
   constructor: AbstractRenderer
 };
+[
+  [ 'noStroke', '_doStroke', 'stroke', '_stroke', '_strokeColor' ],
+  [ 'noFill', '_doFill', 'fill', '_fill', '_fillColor' ]
+].forEach( function ( values )
+{
+  AbstractRenderer.prototype[ values[ 0 ] ] = function ()
+  {
+    this[ values[ 1 ] ] = false;
+    return this;
+  };
+  AbstractRenderer.prototype[ values[ 2 ] ] = function ( r, g, b, a )
+  {
+    if ( typeof r === 'undefined' ) {
+      this[ values[ 3 ] ]();
+    } else if ( typeof r === 'boolean' ) {
+      this[ values[ 1 ] ] = r;
+    } else {
+      if ( typeof r === 'string' || this[ values[ 4 ] ].type !== this.settings.color.type ) {
+        this[ values[ 4 ] ] = new this.settings.color( r, g, b, a );
+      } else {
+        this[ values[ 4 ] ].set( r, g, b, a );
+      }
+      this[ values[ 1 ] ] = true;
+    }
+    return this;
+  };
+} );
 /**
  * Инициализирует рендерер на `"self"`.
- * @static
  * @method v6.AbstractRenderer.create
- * @param  {v6.AbstractRenderer} self    Рендерер.
+ * @param  {v6.AbstractRenderer} self    Рендерер который надо инициализировать.
  * @param  {object}              options {@link v6.options}
  * @param  {constant}            type    Тип рендерера: `2D` или `GL`. Не может быть `AUTO`!.
- * @return {void}
+ * @return {void}                        Ничего не возвращает.
+ * @example <caption>Custom Renderer</caption>
+ * var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );
+ * var settings         = require( 'v6.js/core/renderer/settings' );
+ * var constants        = require( 'v6.js/core/constants' );
+ *
+ * function CustomRenderer ( options )
+ * {
+ *   AbstractRenderer.create( this, defaults( settings, options ), constants.get( '2D' ) );
+ * }
  */
 AbstractRenderer.create = function create ( self, options, type )
 {
@@ -405,24 +494,28 @@ AbstractRenderer.create = function create ( self, options, type )
   setDefaultDrawingSettings( self, self );
 };
 /**
- * Заполняет фон цветом.
+ * Заполняет фон рендерера цветом.
  * @virtual
  * @method v6.AbstractRenderer#backgroundColor
- * @param {number|string|v6.RGBA|v6.HSLA} r
- * @param {number}                        g
- * @param {number}                        b
- * @param {number}                        a
- * @chainable
- */
-/**
- * Заполняет фон картинкой.
- * @virtual
- * @method v6.AbstractRenderer#backgroundImage
- * @param {v6.Image|v6.CompoundedImage} image
+ * @param {number|TColor} [r]
+ * @param {number}        [g]
+ * @param {number}        [b]
+ * @param {number}        [a]
  * @chainable
  * @example
- * var Image = require( 'v6.js/Image' );
- * var image = new Image( './assets/background.jpg' );
+ * // Fill renderer with "lightpink" color.
+ * renderer.backgroundColor( 'lightpink' );
+ */
+/**
+ * Заполняет фон рендерера картинкой.
+ * @virtual
+ * @method v6.AbstractRenderer#backgroundImage
+ * @param {v6.AbstractImage} image Картинка, которая должна использоваться для фона.
+ * @chainable
+ * @example
+ * // Create background image.
+ * var image = Image.fromURL( 'background.jpg' );
+ * // Fill renderer with the image.
  * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
  */
 /**
@@ -431,6 +524,7 @@ AbstractRenderer.create = function create ( self, options, type )
  * @method v6.AbstractRenderer#clear
  * @chainable
  * @example
+ * // Clear renderer's context.
  * renderer.clear();
  */
 /**
@@ -443,14 +537,14 @@ AbstractRenderer.create = function create ( self, options, type )
  * @param {number}             count Количество вершин, например: 3 для треугольника.
  * @chainable
  * @example
- * // triangle
+ * // A triangle.
  * var vertices = new Float32Array( [
  *   0, 0,
  *   1, 1,
  *   0, 1
  * ] );
  *
- * // draws triangle
+ * // Draw the triangle.
  * renderer.drawArrays( vertices, 3 );
  */
 /**
@@ -464,27 +558,34 @@ AbstractRenderer.create = function create ( self, options, type )
  * @param {number}           h     "Destination Height". Высота картинки.
  * @chainable
  * @example
- * var image = Image.fromURL( 'assets/300x200.png' );
- * @example <caption>...</caption>
+ * // Create image.
+ * var image = Image.fromURL( '300x200.png' );
+ * // Draw image.
  * renderer.drawImage( image, 0, 0, 600, 400 );
  */
 /**
  * Рисует прямоугольник.
  * @virtual
  * @method v6.AbstractRenderer#rect
- * @param {number} x
- * @param {number} y
- * @param {number} w
- * @param {number} h
+ * @param {number} x X координата прямоугольника.
+ * @param {number} y Y координата прямоугольника.
+ * @param {number} w Ширина прямоугольника.
+ * @param {number} h Высота прямоугольника.
  * @chainable
+ * @example
+ * // Draw rectangle.
+ * renderer.rect( 20, 20, 80, 80 );
  */
 /**
  * Рисует круг.
  * @virtual
  * @method v6.AbstractRenderer#arc
- * @param {number} x
- * @param {number} y
- * @param {number} r
+ * @param {number} x X координата круга.
+ * @param {number} y Y координата круга.
+ * @param {number} r Радиус круга.
  * @chainable
+ * @example
+ * // Draw circle.
+ * renderer.arc( 60, 60, 40 );
  */
 module.exports = AbstractRenderer;

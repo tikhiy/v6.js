@@ -48,6 +48,20 @@ Transform.prototype = {
     mat3.scale( this.matrix, x, y );
   },
 
+  /**
+   * Применяет "transformation matrix" из соответствующих параметров на текущий "transformation matrix".
+   * @method v6.Transform#transform
+   * @param  {number}  m11 X scale.
+   * @param  {number}  m12 X skew.
+   * @param  {number}  m21 Y skew.
+   * @param  {number}  m22 Y scale.
+   * @param  {number}  dx  X translate.
+   * @param  {number}  dy  Y translate.
+   * @return {void}        Ничего не возвращает.
+   * @example
+   * // Apply scaled twice "transformation matrix".
+   * transform.transform( 2, 0, 0, 2, 0, 0 );
+   */
   transform: function transform ( m11, m12, m21, m22, dx, dy )
   {
     mat3.transform( this.matrix, m11, m12, m21, m22, dx, dy );

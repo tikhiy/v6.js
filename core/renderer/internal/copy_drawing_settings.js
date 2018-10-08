@@ -23,11 +23,13 @@ function copyDrawingSettings ( target, source, deep )
     target._strokeColor[ 3 ] = source._strokeColor[ 3 ];
   }
 
-  target._rectAlignX = source._rectAlignX;
-  target._rectAlignY = source._rectAlignY;
-  target._lineWidth  = source._lineWidth;
-  target._doStroke   = source._doStroke;
-  target._doFill     = source._doFill;
+  target._backgroundPositionX = source._backgroundPositionX;
+  target._backgroundPositionY = source._backgroundPositionY;
+  target._rectAlignX          = source._rectAlignX;
+  target._rectAlignY          = source._rectAlignY;
+  target._lineWidth           = source._lineWidth;
+  target._doStroke            = source._doStroke;
+  target._doFill              = source._doFill;
 
   return target;
 }

@@ -165,73 +165,6 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * Устанавливает stroke color.
-   * @method v6.AbstractRenderer#stroke
-   * @param {number|object|boolean} [r] Может быть {@link v6.RGBA} или {@link v6.HSLA} чтобы
-   *                                    поставить stroke color. Если это boolean, то включит
-   *                                    или отключит stroke color.
-   * @param {number}                [g]
-   * @param {number}                [b]
-   * @param {number}                [a]
-   * @chainable
-   * @example
-   * renderer.stroke( new HSLA( 0, 100, 50 ) );
-   * renderer.stroke( 'magenta' );
-   * renderer.stroke( 255, 0, 0, 0.5 );
-   * renderer.noStroke().stroke( true );
-   */
-  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
-  /**
-   * Устанавливает fill color.
-   * @method v6.AbstractRenderer#fill
-   * @see {@link v6.AbstractRenderer#stroke}
-   */
-  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
-  /**
-   * @method v6.AbstractRenderer#setTransform
-   * @param {number|v6.Camera} m11
-   * @param {number}           [m12]
-   * @param {number}           [m21]
-   * @param {number}           [m22]
-   * @param {number}           [dx]
-   * @param {number}           [dy]
-   * @chainable
-   */
-  setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
-  {
-    var position, zoom;
-    if ( typeof m11 === 'object' && m11 !== null ) {
-      position = m11.position;
-      zoom = m11.zoom;
-      this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
-    } else {
-      this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
-    }
-    return this;
-  },
-  /**
-   * @method v6.AbstractRenderer#backgroundPositionX
-   * @param  {number}   value
-   * @param  {constant} [type=VALUE]
-   * @chainable
-   * @example
-   * renderer.backgroundPositionX( constants.get( 'CENTER' ), constants.get( 'CONSTANT' ) );
-   * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
-   * renderer.backgroundPositionX( renderer.w / 2 );
-   */
-  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
-  /**
-   * @method v6.AbstractRenderer#backgroundPositionY
-   * @param  {number}   value
-   * @param  {constant} [type=VALUE]
-   * @chainable
-   * @example
-   * renderer.backgroundPositionY( constants.get( 'MIDDLE' ), constants.get( 'CONSTANT' ) );
-   * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
-   * renderer.backgroundPositionY( renderer.h / 2 );
-   */
-  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line
-  /**
    * Отрисовывает картинку.
    * @method v6.AbstractRenderer#image
    * @param {v6.Image|v6.CompoundedImage} image
@@ -252,11 +185,6 @@ AbstractRenderer.prototype = {
       }
       this.drawImage( image, align( x, w, this._rectAlignX ), align( y, h, this._rectAlignY ), w, h );
     }
-    return this;
-  },
-  closeShape: function closeShape ()
-  {
-    this._closeShape = true;
     return this;
   },
   /**
@@ -304,47 +232,12 @@ AbstractRenderer.prototype = {
     throw Error( 'not impemented now' );
   },
   /**
-   * @method v6.AbstractRenderer#transform
-   * @param  {number}  m11 X scale.
-   * @param  {number}  m12 X skew.
-   * @param  {number}  m21 Y skew.
-   * @param  {number}  m22 Y scale.
-   * @param  {number}  dx  X translate.
-   * @param  {number}  dy  Y translate.
-   * @chainable
-   * @see v6.Transform#transform
-   */
-  transform: function transform ( m11, m12, m21, m22, dx, dy )
-  {
-    this.matrix.transform( m11, m12, m21, m22, dx, dy );
-    return this;
-  },
-  /**
-   * @method v6.AbstractRenderer#translate
-   * @param  {number}  x - X translate.
-   * @param  {number}  y - Y translate.
-   * @chainable
-   * @see v6.Transform#translate
-   */
-  translate: function translate ( x, y )
-  {
-    this.matrix.translate( x, y );
-    return this;
-  },
-  /**
-   * @method v6.AbstractRenderer#restore
-   * @chainable
-   * @see v6.Transform#restore
-   */
-  restore: function restore ()
-  {
-    this.matrix.restore();
-    return this;
-  },
-  /**
    * @method v6.AbstractRenderer#save
    * @chainable
    * @see v6.Transform#save
+   * @example
+   * // Save transform.
+   * renderer.save();
    */
   save: function save ()
   {
@@ -352,11 +245,75 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
+   * @method v6.AbstractRenderer#restore
+   * @chainable
+   * @see v6.Transform#restore
+   * @example
+   * // Restore transform.
+   * renderer.restore();
+   */
+  restore: function restore ()
+  {
+    this.matrix.restore();
+    return this;
+  },
+  /**
+   * @method v6.AbstractRenderer#setTransform
+   * @chainable
+   * @see v6.Transform#setTransform
+   * @see v6.Camera
+   * @example
+   * // Set identity transform.
+   * renderer.setTransform( 1, 0, 0, 1, 0, 0 );
+   * // Set transform from `v6.Camera`.
+   * renderer.setTransform( camera );
+   */
+  setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
+  {
+    var position, zoom;
+    if ( typeof m11 === 'object' && m11 !== null ) {
+      position = m11.position;
+      zoom = m11.zoom;
+      this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
+    } else {
+      this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
+    }
+    return this;
+  },
+  /**
+   * @method v6.AbstractRenderer#translate
+   * @chainable
+   * @see v6.Transform#translate
+   * @example
+   * // Translate transform to [ 4, 2 ].
+   * renderer.translate( 4, 2 );
+   */
+  translate: function translate ( x, y )
+  {
+    this.matrix.translate( x, y );
+    return this;
+  },
+  /**
+   * @method v6.AbstractRenderer#rotate
+   * @chainable
+   * @see v6.Transform#rotate
+   * @todo renderer.settings.degrees
+   * @example
+   * // Rotate transform on 45 degrees.
+   * renderer.rotate( 45 * Math.PI / 180 );
+   */
+  rotate: function rotate ( angle )
+  {
+    this.matrix.rotate( angle );
+    return this;
+  },
+  /**
    * @method v6.AbstractRenderer#scale
-   * @param {number} x
-   * @param {number} y
    * @chainable
    * @see v6.Transform#scale
+   * @example
+   * // Scale transform twice.
+   * renderer.scale( 2, 2 );
    */
   scale: function scale ( x, y )
   {
@@ -364,55 +321,215 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * Устанавливает "rectAlign" настройку рендеринга.
-   * @method v6.AbstractRenderer#rectAlign
-   * @param {constant} value `LEFT`, `CENTER`, `RIGHT` or `TOP`, `MIDDLE`, `BOTTOM`.
+   * @method v6.AbstractRenderer#transform
    * @chainable
+   * @see v6.Transform#transform
    * @example
-   * // Set "rectAlign" drawing setting to CENTER | MIDDLE.
-   * renderer.rectAlign( constants.get( 'CENTER' ) );
-   * renderer.rectAlign( constants.get( 'MIDDLE' ) );
+   * // Apply translated to [ 4, 2 ] "transformation matrix".
+   * renderer.transform( 1, 0, 0, 1, 4, 2 );
    */
-  rectAlign: function rectAlign ( value )
+  transform: function transform ( m11, m12, m21, m22, dx, dy )
   {
-    if ( value === constants.get( 'LEFT' ) || value === constants.get( 'CENTER' ) || value === constants.get( 'RIGHT' ) ) {
-      this._rectAlignX = value;
-    } else if ( value === constants.get( 'TOP' ) || value === constants.get( 'MIDDLE' ) || value === constants.get( 'BOTTOM' ) ) {
-      this._rectAlignY = value;
-    } else {
-      throw Error( 'Got unknown "rectAlign" constant. The known are: LEFT, CENTER, RIGHT, TOP, MIDDLE, BOTTOM.' );
-    }
+    this.matrix.transform( m11, m12, m21, m22, dx, dy );
     return this;
   },
+  /**
+   * Устанавливает `backgroundPositionX` настройку рендеринга.
+   * @method v6.AbstractRenderer#backgroundPositionX
+   * @param {number}   value
+   * @param {constant} type
+   * @chainable
+   * @example
+   * // Set "backgroundPositionX" drawing setting to CENTER (default: LEFT).
+   * renderer.backgroundPositionX( constants.get( 'CENTER' ), constants.get( 'CONSTANT' ) );
+   * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
+   * renderer.backgroundPositionX( renderer.w / 2 );
+   */
+  backgroundPositionX: function backgroundPositionX ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.w; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionX = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Устанавливает `backgroundPositionY` настройку рендеринга.
+   * @method v6.AbstractRenderer#backgroundPositionY
+   * @param {number}   value
+   * @param {constant} type
+   * @chainable
+   * @example
+   * // Set "backgroundPositionY" drawing setting to MIDDLE (default: TOP).
+   * renderer.backgroundPositionY( constants.get( 'MIDDLE' ), constants.get( 'CONSTANT' ) );
+   * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
+   * renderer.backgroundPositionY( renderer.h / 2 );
+   */
+  backgroundPositionY: function backgroundPositionY ( value, type ) { if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) { if ( type === constants.get( 'CONSTANT' ) ) { type = constants.get( 'PERCENTAGES' ); if ( value === constants.get( 'LEFT' ) ) { value = 0; } else if ( value === constants.get( 'CENTER' ) ) { value = 0.5; } else if ( value === constants.get( 'RIGHT' ) ) { value = 1; } else { throw Error( 'Got unknown value. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } } if ( type === constants.get( 'PERCENTAGES' ) ) { value *= this.h; } else { throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' ); } } this._backgroundPositionY = value; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Устанавливает `rectAlignX` настройку рендеринга.
+   * @method v6.AbstractRenderer#rectAlignX
+   * @param {constant} value `LEFT`, `CENTER`, `RIGHT`.
+   * @chainable
+   * @example
+   * // Set "rectAlignX" drawing setting to CENTER (default: LEFT).
+   * renderer.rectAlignX( constants.get( 'CENTER' ) );
+   */
+  rectAlignX: function rectAlignX ( value ) { if ( value === constants.get( 'LEFT' ) || value === constants.get( 'CENTER' ) || value === constants.get( 'RIGHT' ) ) { this._rectAlignX = value; } else { throw Error( 'Got unknown `rectAlign` constant. The known are: ' + "LEFT" + ', ' + "CENTER" + ', ' + "RIGHT" ); } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Устанавливает `rectAlignY` настройку рендеринга.
+   * @method v6.AbstractRenderer#rectAlignY
+   * @param {constant} value `TOP`, `MIDDLE`, `BOTTOM`.
+   * @chainable
+   * @example
+   * // Set "rectAlignY" drawing setting to MIDDLE (default: TOP).
+   * renderer.rectAlignY( constants.get( 'MIDDLE' ) );
+   */
+  rectAlignY: function rectAlignY ( value ) { if ( value === constants.get( 'LEFT' ) || value === constants.get( 'CENTER' ) || value === constants.get( 'RIGHT' ) ) { this._rectAlignY = value; } else { throw Error( 'Got unknown `rectAlign` constant. The known are: ' + "TOP" + ', ' + "MIDDLE" + ', ' + "BOTTOM" ); } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Устанавливает цвет `stroke` при рисовании через {@link v6.AbstractRenderer#rect} и т.п.
+   * @method v6.AbstractRenderer#stroke
+   * @param {number|boolean|TColor} [r] Если это `boolean`, то это включит или выключит `stroke`
+   *                                    (как через {@link v6.AbstractRenderer#noStroke}).
+   * @param {number}                [g]
+   * @param {number}                [b]
+   * @param {number}                [a]
+   * @chainable
+   * @example
+   * // Disable and then enable `stroke`.
+   * renderer.stroke( false ).stroke( true );
+   * // Set `stroke` to "lightskyblue".
+   * renderer.stroke( 'lightskyblue' );
+   * // Set `stroke` from `v6.RGBA`.
+   * renderer.stroke( new RGBA( 255, 0, 0 ).perceivedBrightness() );
+   */
+  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Устанавливает цвет `fill` при рисовании через {@link v6.AbstractRenderer#rect} и т.п.
+   * @method v6.AbstractRenderer#fill
+   * @param {number|boolean|TColor} [r] Если это `boolean`, то это включит или выключит `fill`
+   *                                    (как через {@link v6.AbstractRenderer#noFill}).
+   * @param {number}                [g]
+   * @param {number}                [b]
+   * @param {number}                [a]
+   * @chainable
+   * @example
+   * // Disable and then enable `fill`.
+   * renderer.fill( false ).fill( true );
+   * // Set `fill` to "lightpink".
+   * renderer.fill( 'lightpink' );
+   * // Set `fill` from `v6.RGBA`.
+   * renderer.fill( new RGBA( 255, 0, 0 ).brightness() );
+   */
+  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Выключает рисование контура (stroke).
+   * @method v6.AbstractRenderer#noStroke
+   * @chainable
+   * @example
+   * // Disable drawing stroke.
+   * renderer.noStroke();
+   */
+  noStroke: function noStroke () { this._doStroke = false; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Выключает заполнения фона (fill).
+   * @method v6.AbstractRenderer#noFill
+   * @chainable
+   * @example
+   * // Disable filling.
+   * renderer.noFill();
+   */
+  noFill: function noFill () { this._doFill = false; return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  /**
+   * Заполняет фон рендерера цветом.
+   * @virtual
+   * @method v6.AbstractRenderer#backgroundColor
+   * @param {number|TColor} [r]
+   * @param {number}        [g]
+   * @param {number}        [b]
+   * @param {number}        [a]
+   * @chainable
+   * @example
+   * // Fill renderer with "lightpink" color.
+   * renderer.backgroundColor( 'lightpink' );
+   */
+  /**
+   * Заполняет фон рендерера картинкой.
+   * @virtual
+   * @method v6.AbstractRenderer#backgroundImage
+   * @param {v6.AbstractImage} image Картинка, которая должна использоваться для фона.
+   * @chainable
+   * @example
+   * // Create background image.
+   * var image = Image.fromURL( 'background.jpg' );
+   * // Fill renderer with the image.
+   * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
+   */
+  /**
+   * Очищает контекст.
+   * @virtual
+   * @method v6.AbstractRenderer#clear
+   * @chainable
+   * @example
+   * // Clear renderer's context.
+   * renderer.clear();
+   */
+  /**
+   * Отрисовывает переданные вершины.
+   * @virtual
+   * @method v6.AbstractRenderer#drawArrays
+   * @param {Float32Array|Array} verts Вершины, которые надо отрисовать. Если не передано для
+   *                                   {@link v6.RendererGL}, то будут использоваться вершины из
+   *                                   стандартного буфера ({@link v6.RendererGL#buffers.default}).
+   * @param {number}             count Количество вершин, например: 3 для треугольника.
+   * @chainable
+   * @example
+   * // A triangle.
+   * var vertices = new Float32Array( [
+   *   0, 0,
+   *   1, 1,
+   *   0, 1
+   * ] );
+   *
+   * // Draw the triangle.
+   * renderer.drawArrays( vertices, 3 );
+   */
+  /**
+   * Рисует картинку.
+   * @virtual
+   * @method v6.AbstractRenderer#drawImage
+   * @param {v6.AbstractImage} image Картинка которую надо отрисовать.
+   * @param {number}           x     "Destination X". X координата картинки.
+   * @param {number}           y     "Destination Y". Y координата картинки.
+   * @param {number}           w     "Destination Width". Ширина картинки.
+   * @param {number}           h     "Destination Height". Высота картинки.
+   * @chainable
+   * @example
+   * // Create image.
+   * var image = Image.fromURL( '300x200.png' );
+   * // Draw image.
+   * renderer.drawImage( image, 0, 0, 600, 400 );
+   */
+  /**
+   * Рисует прямоугольник.
+   * @virtual
+   * @method v6.AbstractRenderer#rect
+   * @param {number} x X координата прямоугольника.
+   * @param {number} y Y координата прямоугольника.
+   * @param {number} w Ширина прямоугольника.
+   * @param {number} h Высота прямоугольника.
+   * @chainable
+   * @example
+   * // Draw rectangle.
+   * renderer.rect( 20, 20, 80, 80 );
+   */
+  /**
+   * Рисует круг.
+   * @virtual
+   * @method v6.AbstractRenderer#arc
+   * @param {number} x X координата круга.
+   * @param {number} y Y координата круга.
+   * @param {number} r Радиус круга.
+   * @chainable
+   * @example
+   * // Draw circle.
+   * renderer.arc( 60, 60, 40 );
+   */
   constructor: AbstractRenderer
 };
-[
-  [ 'noStroke', '_doStroke', 'stroke', '_stroke', '_strokeColor' ],
-  [ 'noFill', '_doFill', 'fill', '_fill', '_fillColor' ]
-].forEach( function ( values )
-{
-  AbstractRenderer.prototype[ values[ 0 ] ] = function ()
-  {
-    this[ values[ 1 ] ] = false;
-    return this;
-  };
-  AbstractRenderer.prototype[ values[ 2 ] ] = function ( r, g, b, a )
-  {
-    if ( typeof r === 'undefined' ) {
-      this[ values[ 3 ] ]();
-    } else if ( typeof r === 'boolean' ) {
-      this[ values[ 1 ] ] = r;
-    } else {
-      if ( typeof r === 'string' || this[ values[ 4 ] ].type !== this.settings.color.type ) {
-        this[ values[ 4 ] ] = new this.settings.color( r, g, b, a );
-      } else {
-        this[ values[ 4 ] ].set( r, g, b, a );
-      }
-      this[ values[ 1 ] ] = true;
-    }
-    return this;
-  };
-} );
 /**
  * Инициализирует рендерер на `"self"`.
  * @method v6.AbstractRenderer.create
@@ -445,9 +562,9 @@ AbstractRenderer.create = function create ( self, options, type )
   if ( type === constants.get( '2D' ) ) {
     context = '2d';
   } else if ( type !== constants.get( 'GL' ) ) {
-    throw Error( 'Got unknown renderer type. The known are: `2D` and `GL`' );
+    throw Error( 'Got unknown renderer type. The known are: 2D and GL' );
   } else if ( ! ( context = getWebGL() ) ) {
-    throw Error( 'Cannot get WebGL context. Try to use `2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`' );
+    throw Error( 'Cannot get WebGL context. Try to use 2D as the renderer type or v6.Renderer2D instead of v6.RendererGL' );
   }
   /**
    * @member {object} v6.AbstractRenderer#context
@@ -493,99 +610,4 @@ AbstractRenderer.create = function create ( self, options, type )
   }
   setDefaultDrawingSettings( self, self );
 };
-/**
- * Заполняет фон рендерера цветом.
- * @virtual
- * @method v6.AbstractRenderer#backgroundColor
- * @param {number|TColor} [r]
- * @param {number}        [g]
- * @param {number}        [b]
- * @param {number}        [a]
- * @chainable
- * @example
- * // Fill renderer with "lightpink" color.
- * renderer.backgroundColor( 'lightpink' );
- */
-/**
- * Заполняет фон рендерера картинкой.
- * @virtual
- * @method v6.AbstractRenderer#backgroundImage
- * @param {v6.AbstractImage} image Картинка, которая должна использоваться для фона.
- * @chainable
- * @example
- * // Create background image.
- * var image = Image.fromURL( 'background.jpg' );
- * // Fill renderer with the image.
- * renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );
- */
-/**
- * Очищает контекст.
- * @virtual
- * @method v6.AbstractRenderer#clear
- * @chainable
- * @example
- * // Clear renderer's context.
- * renderer.clear();
- */
-/**
- * Отрисовывает переданные вершины.
- * @virtual
- * @method v6.AbstractRenderer#drawArrays
- * @param {Float32Array|Array} verts Вершины, которые надо отрисовать. Если не передано для
- *                                   {@link v6.RendererGL}, то будут использоваться вершины из
- *                                   стандартного буфера ({@link v6.RendererGL#buffers.default}).
- * @param {number}             count Количество вершин, например: 3 для треугольника.
- * @chainable
- * @example
- * // A triangle.
- * var vertices = new Float32Array( [
- *   0, 0,
- *   1, 1,
- *   0, 1
- * ] );
- *
- * // Draw the triangle.
- * renderer.drawArrays( vertices, 3 );
- */
-/**
- * Рисует картинку.
- * @virtual
- * @method v6.AbstractRenderer#drawImage
- * @param {v6.AbstractImage} image Картинка которую надо отрисовать.
- * @param {number}           x     "Destination X". X координата картинки.
- * @param {number}           y     "Destination Y". Y координата картинки.
- * @param {number}           w     "Destination Width". Ширина картинки.
- * @param {number}           h     "Destination Height". Высота картинки.
- * @chainable
- * @example
- * // Create image.
- * var image = Image.fromURL( '300x200.png' );
- * // Draw image.
- * renderer.drawImage( image, 0, 0, 600, 400 );
- */
-/**
- * Рисует прямоугольник.
- * @virtual
- * @method v6.AbstractRenderer#rect
- * @param {number} x X координата прямоугольника.
- * @param {number} y Y координата прямоугольника.
- * @param {number} w Ширина прямоугольника.
- * @param {number} h Высота прямоугольника.
- * @chainable
- * @example
- * // Draw rectangle.
- * renderer.rect( 20, 20, 80, 80 );
- */
-/**
- * Рисует круг.
- * @virtual
- * @method v6.AbstractRenderer#arc
- * @param {number} x X координата круга.
- * @param {number} y Y координата круга.
- * @param {number} r Радиус круга.
- * @chainable
- * @example
- * // Draw circle.
- * renderer.arc( 60, 60, 40 );
- */
 module.exports = AbstractRenderer;

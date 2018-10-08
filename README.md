@@ -65,7 +65,7 @@ window.addEventListener( 'resize', function ()
 
 ### Development
 
-* `make karma:start_static_server &`
+* `make start_static_server &`
 
 #### Before Committing
 
@@ -75,7 +75,7 @@ window.addEventListener( 'resize', function ()
 
 * `make mocha`
 * `make karma`
-* `make make karma:start &`, `make karma:run`
+* `make karma:start &`, `make karma:run`
 
 ### License
 

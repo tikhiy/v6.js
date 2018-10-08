@@ -1409,9 +1409,6 @@ AbstractRenderer.prototype = {
     resizeTo: function resizeTo(element) {
         return this.resize(getElementW(element), getElementH(element));
     },
-    rescale: function rescale() {
-        return this.resizeTo(this.canvas);
-    },
     _polygon: function _polygon(x, y, rx, ry, n, a, degrees) {
         var polygon = polygons[n];
         var matrix = this.matrix;
@@ -1443,34 +1440,43 @@ AbstractRenderer.prototype = {
         this._lineWidth = number;
         return this;
     },
-    stroke: function stroke(r, g, b, a) {
-        if (typeof r === 'undefined') {
-            this._stroke();
-        } else if (typeof r === 'boolean') {
-            this._doStroke = r;
-        } else {
-            if (typeof r === 'string' || this._strokeColor.type !== this.settings.color.type) {
-                this._strokeColor = new this.settings.color(r, g, b, a);
-            } else {
-                this._strokeColor.set(r, g, b, a);
+    image: function image(image, x, y, w, h) {
+        if (image.get().loaded) {
+            if (typeof w === 'undefined') {
+                w = image.dw;
             }
-            this._doStroke = true;
+            if (typeof h === 'undefined') {
+                h = image.dh;
+            }
+            this.drawImage(image, align(x, w, this._rectAlignX), align(y, h, this._rectAlignY), w, h);
         }
         return this;
     },
-    fill: function fill(r, g, b, a) {
-        if (typeof r === 'undefined') {
-            this._fill();
-        } else if (typeof r === 'boolean') {
-            this._doFill = r;
-        } else {
-            if (typeof r === 'string' || this._fillColor.type !== this.settings.color.type) {
-                this._fillColor = new this.settings.color(r, g, b, a);
-            } else {
-                this._fillColor.set(r, g, b, a);
-            }
-            this._doFill = true;
+    beginShape: function beginShape(options) {
+        if (!options) {
+            options = {};
         }
+        this._vertices.length = 0;
+        if (typeof options.type === 'undefined') {
+            this._shapeType = null;
+        } else {
+            this._shapeType = options.type;
+        }
+        return this;
+    },
+    vertex: function vertex(x, y) {
+        this._vertices.push(Math.floor(x), Math.floor(y));
+        return this;
+    },
+    endShape: function endShape() {
+        throw Error('not impemented now');
+    },
+    save: function save() {
+        this.matrix.save();
+        return this;
+    },
+    restore: function restore() {
+        this.matrix.restore();
         return this;
     },
     setTransform: function setTransform(m11, m12, m21, m22, dx, dy) {
@@ -1482,6 +1488,22 @@ AbstractRenderer.prototype = {
         } else {
             this.matrix.setTransform(m11, m12, m21, m22, dx, dy);
         }
+        return this;
+    },
+    translate: function translate(x, y) {
+        this.matrix.translate(x, y);
+        return this;
+    },
+    rotate: function rotate(angle) {
+        this.matrix.rotate(angle);
+        return this;
+    },
+    scale: function scale(x, y) {
+        this.matrix.scale(x, y);
+        return this;
+    },
+    transform: function transform(m11, m12, m21, m22, dx, dy) {
+        this.matrix.transform(m11, m12, m21, m22, dx, dy);
         return this;
     },
     backgroundPositionX: function backgroundPositionX(value, type) {
@@ -1527,62 +1549,61 @@ AbstractRenderer.prototype = {
                 throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
             }
         }
-        this._backgroundPositionX = value;
+        this._backgroundPositionY = value;
         return this;
     },
-    image: function image(image, x, y, w, h) {
-        if (image.get().loaded) {
-            if (typeof w === 'undefined') {
-                w = image.dw;
-            }
-            if (typeof h === 'undefined') {
-                h = image.dh;
-            }
-            this.drawImage(image, align(x, w, this._rectAlignX), align(y, h, this._rectAlignY), w, h);
-        }
-        return this;
-    },
-    closeShape: function closeShape() {
-        this._closeShape = true;
-        return this;
-    },
-    beginShape: function beginShape(options) {
-        if (!options) {
-            options = {};
-        }
-        this._vertices.length = 0;
-        if (typeof options.type === 'undefined') {
-            this._shapeType = null;
+    rectAlignX: function rectAlignX(value) {
+        if (value === constants.get('LEFT') || value === constants.get('CENTER') || value === constants.get('RIGHT')) {
+            this._rectAlignX = value;
         } else {
-            this._shapeType = options.type;
+            throw Error('Got unknown `rectAlign` constant. The known are: ' + 'LEFT' + ', ' + 'CENTER' + ', ' + 'RIGHT');
         }
         return this;
     },
-    vertex: function vertex(x, y) {
-        this._vertices.push(Math.floor(x), Math.floor(y));
+    rectAlignY: function rectAlignY(value) {
+        if (value === constants.get('LEFT') || value === constants.get('CENTER') || value === constants.get('RIGHT')) {
+            this._rectAlignY = value;
+        } else {
+            throw Error('Got unknown `rectAlign` constant. The known are: ' + 'TOP' + ', ' + 'MIDDLE' + ', ' + 'BOTTOM');
+        }
         return this;
     },
-    endShape: function endShape() {
-        throw Error('not impemented now');
-    },
-    transform: function transform(m11, m12, m21, m22, dx, dy) {
-        this.matrix.transform(m11, m12, m21, m22, dx, dy);
+    stroke: function stroke(r, g, b, a) {
+        if (typeof r === 'undefined') {
+            this._stroke();
+        } else if (typeof r === 'boolean') {
+            this._doStroke = r;
+        } else {
+            if (typeof r === 'string' || this._strokeColor.type !== this.settings.color.type) {
+                this._strokeColor = new this.settings.color(r, g, b, a);
+            } else {
+                this._strokeColor.set(r, g, b, a);
+            }
+            this._doStroke = true;
+        }
         return this;
     },
-    translate: function translate(x, y) {
-        this.matrix.translate(x, y);
+    fill: function fill(r, g, b, a) {
+        if (typeof r === 'undefined') {
+            this._fill();
+        } else if (typeof r === 'boolean') {
+            this._doFill = r;
+        } else {
+            if (typeof r === 'string' || this._fillColor.type !== this.settings.color.type) {
+                this._fillColor = new this.settings.color(r, g, b, a);
+            } else {
+                this._fillColor.set(r, g, b, a);
+            }
+            this._doFill = true;
+        }
         return this;
     },
-    restore: function restore() {
-        this.matrix.restore();
+    noStroke: function noStroke() {
+        this._doStroke = false;
         return this;
     },
-    save: function save() {
-        this.matrix.save();
-        return this;
-    },
-    scale: function scale(x, y) {
-        this.matrix.scale(x, y);
+    noFill: function noFill() {
+        this._doFill = false;
         return this;
     },
     constructor: AbstractRenderer
@@ -1598,9 +1619,9 @@ AbstractRenderer.create = function create(self, options, type) {
     if (type === constants.get('2D')) {
         context = '2d';
     } else if (type !== constants.get('GL')) {
-        throw Error('Got unknown renderer type. The known are: `2D` and `GL`');
+        throw Error('Got unknown renderer type. The known are: 2D and GL');
     } else if (!(context = getWebGL())) {
-        throw Error('Cannot get WebGL context. Try to use `2D` as the renderer type or `v6.Renderer2D` instead of `v6.RendererGL`');
+        throw Error('Cannot get WebGL context. Try to use 2D as the renderer type or v6.Renderer2D instead of v6.RendererGL');
     }
     self.context = self.canvas.getContext(context, { alpha: options.alpha });
     self.settings = options.settings;
@@ -1908,6 +1929,8 @@ function copyDrawingSettings(target, source, deep) {
         target._strokeColor[2] = source._strokeColor[2];
         target._strokeColor[3] = source._strokeColor[3];
     }
+    target._backgroundPositionX = source._backgroundPositionX;
+    target._backgroundPositionY = source._backgroundPositionY;
     target._rectAlignX = source._rectAlignX;
     target._rectAlignY = source._rectAlignY;
     target._lineWidth = source._lineWidth;
@@ -1920,6 +1943,8 @@ module.exports = copyDrawingSettings;
 'use strict';
 var constants = require('../../constants');
 var defaultDrawingSettings = {
+        _backgroundPositionX: constants.get('LEFT'),
+        _backgroundPositionY: constants.get('TOP'),
         _rectAlignX: constants.get('LEFT'),
         _rectAlignY: constants.get('TOP'),
         _lineWidth: 2,

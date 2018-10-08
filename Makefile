@@ -14,11 +14,11 @@ lint:
 	              node_modules/.bin/eslint .                            && \
 	cd test && ../node_modules/.bin/eslint .
 
+start_static_server:
+	node test/internal/server
+
 mocha:
 	node_modules/.bin/mocha -r test/internal/register test/**/*.test.js
-
-karma\:start_static_server:
-	node test/internal/server
 
 karma\:start:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-single-run --browsers=FirefoxDeveloper

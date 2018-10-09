@@ -34,7 +34,7 @@ docs:
 	node_modules/.bin/jsdoc -c .jsdoc.json
 
 all:
-	node_modules/.bin/browserify -o dist/v6.js index.js -x platform -x qs
+	node_modules/.bin/browserify -o dist/v6.js index.js -x platform -x qs -d
 
 min: all
 	node_modules/.bin/uglifyjs -cmo dist/v6.min.js dist/v6.js

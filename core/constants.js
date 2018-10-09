@@ -11,6 +11,7 @@
  * * `"MIDDLE"`
  * * `"RIGHT"`
  * * `"BOTTOM"`
+ * * `"PERCENT"`
  * @namespace {object} v6.constants
  * @example
  * var constants = require( 'v6.js/core/constants' );
@@ -62,7 +63,8 @@ function get ( key )
   'CENTER',
   'MIDDLE',
   'RIGHT',
-  'BOTTOM'
+  'BOTTOM',
+  'PERCENT'
 ].forEach( add );
 
 exports.add = add;

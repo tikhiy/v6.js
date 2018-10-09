@@ -1,101 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
-var defaultTo = require('peako/default-to');
-var Vector2D = require('./math/Vector2D');
-function Camera(renderer, options) {
-    if (!options) {
-        options = {};
-    }
-    this.xSpeed = defaultTo(options.xSpeed, 1);
-    this.ySpeed = defaultTo(options.ySpeed, 1);
-    this.zoomInSpeed = defaultTo(options.zoomInSpeed, 1);
-    this.zoomOutSpeed = defaultTo(options.zoomOutSpeed, 1);
-    this.zoom = defaultTo(options.zoom, 1);
-    this.minZoom = defaultTo(options.minZoom, 1);
-    this.maxZoom = defaultTo(options.maxZoom, 1);
-    this.linearZoomIn = defaultTo(options.linearZoomIn, true);
-    this.linearZoomOut = defaultTo(options.linearZoomOut, true);
-    this.offset = options.offset;
-    if (renderer) {
-        if (!this.offset) {
-            this.offset = new Vector2D(renderer.w * 0.5, renderer.h * 0.5);
-        }
-        this.renderer = renderer;
-    } else if (!this.offset) {
-        this.offset = new Vector2D();
-    }
-    this.position = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    ];
-}
-Camera.prototype = {
-    update: function update() {
-        var pos = this.position;
-        if (pos[0] !== pos[2]) {
-            pos[0] += (pos[2] - pos[0]) * this.xSpeed;
-        }
-        if (pos[1] !== pos[3]) {
-            pos[1] += (pos[3] - pos[1]) * this.ySpeed;
-        }
-        return this;
-    },
-    lookAt: function lookAt(at) {
-        var pos = this.position;
-        var off = this.offset;
-        pos[2] = off.x / this.zoom - at.x;
-        pos[3] = off.y / this.zoom - at.y;
-        pos[4] = at.x;
-        pos[5] = at.y;
-        return this;
-    },
-    shouldLookAt: function shouldLookAt() {
-        return new Vector2D(this.position[4], this.position[5]);
-    },
-    looksAt: function looksAt() {
-        var x = (this.offset.x - this.position[0] * this.zoom) / this.zoom;
-        var y = (this.offset.y - this.position[1] * this.zoom) / this.zoom;
-        return new Vector2D(x, y);
-    },
-    sees: function sees(x, y, w, h, renderer) {
-        var off = this.offset;
-        var at = this.looksAt();
-        if (!renderer) {
-            renderer = this.renderer;
-        }
-        return x + w > at.x - off.x / this.zoom && x < at.x + (renderer.w - off.x) / this.zoom && y + h > at.y - off.y / this.zoom && y < at.y + (renderer.h - off.y) / this.zoom;
-    },
-    zoomIn: function zoomIn() {
-        var speed;
-        if (this.zoom !== this.maxZoom) {
-            if (this.linearZoomIn) {
-                speed = this.zoomInSpeed * this.zoom;
-            } else {
-                speed = this.zoomInSpeed;
-            }
-            this.zoom = Math.min(this.zoom + speed, this.maxZoom);
-        }
-    },
-    zoomOut: function zoomOut() {
-        var speed;
-        if (this.zoom !== this.minZoom) {
-            if (this.linearZoomOut) {
-                speed = this.zoomOutSpeed * this.zoom;
-            } else {
-                speed = this.zoomOutSpeed;
-            }
-            this.zoom = Math.max(this.zoom - speed, this.minZoom);
-        }
-    },
-    constructor: Camera
-};
-module.exports = Camera;
-},{"./math/Vector2D":20,"peako/default-to":59}],2:[function(require,module,exports){
-'use strict';
 var createProgram = require('./internal/create_program');
 var createShader = require('./internal/create_shader');
 function ShaderProgram(sources, gl) {
@@ -216,7 +120,7 @@ ShaderProgram.prototype.setUniform = function setUniform(name, value) {
     return this;
 };
 module.exports = ShaderProgram;
-},{"./internal/create_program":14,"./internal/create_shader":15}],3:[function(require,module,exports){
+},{"./internal/create_program":14,"./internal/create_shader":15}],2:[function(require,module,exports){
 'use strict';
 var LightEmitter = require('light_emitter');
 var timestamp = require('peako/timestamp');
@@ -272,7 +176,7 @@ Ticker.prototype.stop = function stop() {
     return this;
 };
 module.exports = Ticker;
-},{"light_emitter":36,"peako/timer":89,"peako/timestamp":90}],4:[function(require,module,exports){
+},{"light_emitter":36,"peako/timer":89,"peako/timestamp":90}],3:[function(require,module,exports){
 'use strict';
 var mat3 = require('./mat3');
 function Transform() {
@@ -313,7 +217,103 @@ Transform.prototype = {
     constructor: Transform
 };
 module.exports = Transform;
-},{"./mat3":18}],5:[function(require,module,exports){
+},{"./mat3":18}],4:[function(require,module,exports){
+'use strict';
+var defaultTo = require('peako/default-to');
+var Vector2D = require('../math/Vector2D');
+function Camera(renderer, options) {
+    if (!options) {
+        options = {};
+    }
+    this.xSpeed = defaultTo(options.xSpeed, 1);
+    this.ySpeed = defaultTo(options.ySpeed, 1);
+    this.zoomInSpeed = defaultTo(options.zoomInSpeed, 1);
+    this.zoomOutSpeed = defaultTo(options.zoomOutSpeed, 1);
+    this.zoom = defaultTo(options.zoom, 1);
+    this.minZoom = defaultTo(options.minZoom, 1);
+    this.maxZoom = defaultTo(options.maxZoom, 1);
+    this.linearZoomIn = defaultTo(options.linearZoomIn, true);
+    this.linearZoomOut = defaultTo(options.linearZoomOut, true);
+    this.offset = options.offset;
+    if (renderer) {
+        if (!this.offset) {
+            this.offset = new Vector2D(renderer.w * 0.5, renderer.h * 0.5);
+        }
+        this.renderer = renderer;
+    } else if (!this.offset) {
+        this.offset = new Vector2D();
+    }
+    this.position = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ];
+}
+Camera.prototype = {
+    update: function update() {
+        var pos = this.position;
+        if (pos[0] !== pos[2]) {
+            pos[0] += (pos[2] - pos[0]) * this.xSpeed;
+        }
+        if (pos[1] !== pos[3]) {
+            pos[1] += (pos[3] - pos[1]) * this.ySpeed;
+        }
+        return this;
+    },
+    lookAt: function lookAt(at) {
+        var pos = this.position;
+        var off = this.offset;
+        pos[2] = off.x / this.zoom - at.x;
+        pos[3] = off.y / this.zoom - at.y;
+        pos[4] = at.x;
+        pos[5] = at.y;
+        return this;
+    },
+    shouldLookAt: function shouldLookAt() {
+        return new Vector2D(this.position[4], this.position[5]);
+    },
+    looksAt: function looksAt() {
+        var x = (this.offset.x - this.position[0] * this.zoom) / this.zoom;
+        var y = (this.offset.y - this.position[1] * this.zoom) / this.zoom;
+        return new Vector2D(x, y);
+    },
+    sees: function sees(x, y, w, h, renderer) {
+        var off = this.offset;
+        var at = this.looksAt();
+        if (!renderer) {
+            renderer = this.renderer;
+        }
+        return x + w > at.x - off.x / this.zoom && x < at.x + (renderer.w - off.x) / this.zoom && y + h > at.y - off.y / this.zoom && y < at.y + (renderer.h - off.y) / this.zoom;
+    },
+    zoomIn: function zoomIn() {
+        var speed;
+        if (this.zoom !== this.maxZoom) {
+            if (this.linearZoomIn) {
+                speed = this.zoomInSpeed * this.zoom;
+            } else {
+                speed = this.zoomInSpeed;
+            }
+            this.zoom = Math.min(this.zoom + speed, this.maxZoom);
+        }
+    },
+    zoomOut: function zoomOut() {
+        var speed;
+        if (this.zoom !== this.minZoom) {
+            if (this.linearZoomOut) {
+                speed = this.zoomOutSpeed * this.zoom;
+            } else {
+                speed = this.zoomOutSpeed;
+            }
+            this.zoom = Math.max(this.zoom - speed, this.minZoom);
+        }
+    },
+    constructor: Camera
+};
+module.exports = Camera;
+},{"../math/Vector2D":20,"peako/default-to":59}],5:[function(require,module,exports){
 'use strict';
 module.exports = HSLA;
 var clamp = require('peako/clamp');
@@ -840,7 +840,8 @@ function get(key) {
     'CENTER',
     'MIDDLE',
     'RIGHT',
-    'BOTTOM'
+    'BOTTOM',
+    'PERCENT'
 ].forEach(add);
 exports.add = add;
 exports.get = get;
@@ -1367,7 +1368,8 @@ var polygons = require('../internal/polygons');
 var setDefaultDrawingSettings = require('./internal/set_default_drawing_settings');
 var getWebGL = require('./internal/get_webgl');
 var copyDrawingSettings = require('./internal/copy_drawing_settings');
-var align = require('./internal/align');
+var processRectAlignX = require('./internal/process_rect_align').processRectAlignX;
+var processRectAlignY = require('./internal/process_rect_align').processRectAlignY;
 var options = require('./settings');
 function AbstractRenderer() {
     throw Error('Cannot create an instance of the abstract class (new v6.AbstractRenderer)');
@@ -1409,35 +1411,30 @@ AbstractRenderer.prototype = {
     resizeTo: function resizeTo(element) {
         return this.resize(getElementW(element), getElementH(element));
     },
-    _polygon: function _polygon(x, y, rx, ry, n, a, degrees) {
-        var polygon = polygons[n];
-        var matrix = this.matrix;
+    drawPolygon: function drawPolygon(x, y, xRadius, yRadius, sides, rotationAngle, degrees) {
+        var polygon = polygons[sides];
         if (!polygon) {
-            polygon = polygons[n] = createPolygon(n);
+            polygon = polygons[sides] = createPolygon(sides);
         }
         if (degrees) {
-            a *= Math.PI / 180;
+            rotationAngle *= Math.PI / 180;
         }
-        matrix.save();
-        matrix.translate(x, y);
-        matrix.rotate(a);
-        this.drawArrays(polygon, polygon.length * 0.5, null, rx, ry);
-        matrix.restore();
+        this.matrix.save();
+        this.matrix.translate(x, y);
+        this.matrix.rotate(rotationAngle);
+        this.drawArrays(polygon, polygon.length * 0.5, null, xRadius, yRadius);
+        this.matrix.restore();
         return this;
     },
-    polygon: function polygon(x, y, r, n, a) {
-        if (n % 1) {
-            n = Math.floor(n * 100) * 0.01;
+    polygon: function polygon(x, y, r, sides, rotationAngle) {
+        if (sides % 1) {
+            sides = Math.floor(sides * 100) * 0.01;
         }
-        if (typeof a === 'undefined') {
-            this._polygon(x, y, r, r, n, -Math.PI * 0.5);
+        if (typeof rotationAngle === 'undefined') {
+            this.drawPolygon(x, y, r, r, sides, -Math.PI * 0.5);
         } else {
-            this._polygon(x, y, r, r, n, a, options.degrees);
+            this.drawPolygon(x, y, r, r, sides, rotationAngle, options.degrees);
         }
-        return this;
-    },
-    lineWidth: function lineWidth(number) {
-        this._lineWidth = number;
         return this;
     },
     image: function image(image, x, y, w, h) {
@@ -1448,7 +1445,9 @@ AbstractRenderer.prototype = {
             if (typeof h === 'undefined') {
                 h = image.dh;
             }
-            this.drawImage(image, align(x, w, this._rectAlignX), align(y, h, this._rectAlignY), w, h);
+            x = processRectAlignX(this, x, w);
+            x = processRectAlignY(this, y, h);
+            this.drawImage(image, x, y, w, h);
         }
         return this;
     },
@@ -1506,10 +1505,14 @@ AbstractRenderer.prototype = {
         this.matrix.transform(m11, m12, m21, m22, dx, dy);
         return this;
     },
+    lineWidth: function lineWidth(number) {
+        this._lineWidth = number;
+        return this;
+    },
     backgroundPositionX: function backgroundPositionX(value, type) {
         if (typeof type !== 'undefined' && type !== constants.get('VALUE')) {
             if (type === constants.get('CONSTANT')) {
-                type = constants.get('PERCENTAGES');
+                type = constants.get('PERCENT');
                 if (value === constants.get('LEFT')) {
                     value = 0;
                 } else if (value === constants.get('CENTER')) {
@@ -1520,10 +1523,10 @@ AbstractRenderer.prototype = {
                     throw Error('Got unknown value. The known are: ' + 'LEFT' + ', ' + 'CENTER' + ', ' + 'RIGHT');
                 }
             }
-            if (type === constants.get('PERCENTAGES')) {
+            if (type === constants.get('PERCENT')) {
                 value *= this.w;
             } else {
-                throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
+                throw Error('Got unknown `value` type. The known are: VALUE, PERCENT, CONSTANT');
             }
         }
         this._backgroundPositionX = value;
@@ -1532,21 +1535,21 @@ AbstractRenderer.prototype = {
     backgroundPositionY: function backgroundPositionY(value, type) {
         if (typeof type !== 'undefined' && type !== constants.get('VALUE')) {
             if (type === constants.get('CONSTANT')) {
-                type = constants.get('PERCENTAGES');
-                if (value === constants.get('LEFT')) {
+                type = constants.get('PERCENT');
+                if (value === constants.get('TOP')) {
                     value = 0;
-                } else if (value === constants.get('CENTER')) {
+                } else if (value === constants.get('MIDDLE')) {
                     value = 0.5;
-                } else if (value === constants.get('RIGHT')) {
+                } else if (value === constants.get('BOTTOM')) {
                     value = 1;
                 } else {
                     throw Error('Got unknown value. The known are: ' + 'TOP' + ', ' + 'MIDDLE' + ', ' + 'BOTTOM');
                 }
             }
-            if (type === constants.get('PERCENTAGES')) {
+            if (type === constants.get('PERCENT')) {
                 value *= this.h;
             } else {
-                throw Error('Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT');
+                throw Error('Got unknown `value` type. The known are: VALUE, PERCENT, CONSTANT');
             }
         }
         this._backgroundPositionY = value;
@@ -1629,6 +1632,7 @@ AbstractRenderer.create = function create(self, options, type) {
     self._stack = [];
     self._stackIndex = -1;
     self._vertices = [];
+    self._shapeType = null;
     if (typeof options.appendTo === 'undefined') {
         self.appendTo(document.body);
     } else if (options.appendTo !== null) {
@@ -1644,11 +1648,12 @@ AbstractRenderer.create = function create(self, options, type) {
     setDefaultDrawingSettings(self, self);
 };
 module.exports = AbstractRenderer;
-},{"../constants":9,"../internal/create_polygon":13,"../internal/polygons":16,"./internal/align":26,"./internal/copy_drawing_settings":27,"./internal/get_webgl":30,"./internal/set_default_drawing_settings":31,"./settings":32,"peako/get-element-h":63,"peako/get-element-w":64}],23:[function(require,module,exports){
+},{"../constants":9,"../internal/create_polygon":13,"../internal/polygons":16,"./internal/copy_drawing_settings":26,"./internal/get_webgl":29,"./internal/process_rect_align":30,"./internal/set_default_drawing_settings":31,"./settings":32,"peako/get-element-h":63,"peako/get-element-w":64}],23:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var constants = require('../constants');
-var align = require('./internal/align');
+var processRectAlignX = require('./internal/process_rect_align').processRectAlignX;
+var processRectAlignY = require('./internal/process_rect_align').processRectAlignY;
 var AbstractRenderer = require('./AbstractRenderer');
 var options_ = require('./settings');
 function Renderer2D(options) {
@@ -1708,8 +1713,8 @@ Renderer2D.prototype.drawImage = function drawImage(image, x, y, w, h) {
     return this;
 };
 Renderer2D.prototype.rect = function rect(x, y, w, h) {
-    x = Math.floor(align(x, w, this._rectAlignX));
-    y = Math.floor(align(y, h, this._rectAlignY));
+    x = processRectAlignX(this, x, w);
+    y = processRectAlignY(this, y, h);
     this.context.beginPath();
     this.context.rect(x, y, w, h);
     if (this._doFill) {
@@ -1747,14 +1752,15 @@ Renderer2D.prototype._stroke = function (close) {
     context.stroke();
 };
 module.exports = Renderer2D;
-},{"../constants":9,"./AbstractRenderer":22,"./internal/align":26,"./settings":32,"peako/defaults":60}],24:[function(require,module,exports){
+},{"../constants":9,"./AbstractRenderer":22,"./internal/process_rect_align":30,"./settings":32,"peako/defaults":60}],24:[function(require,module,exports){
 'use strict';
 var defaults = require('peako/defaults');
 var ShaderProgram = require('../ShaderProgram');
 var Transform = require('../Transform');
 var constants = require('../constants');
 var shaders = require('../shaders');
-var align = require('./internal/align');
+var processRectAlignX = require('./internal/process_rect_align').processRectAlignX;
+var processRectAlignY = require('./internal/process_rect_align').processRectAlignY;
 var AbstractRenderer = require('./AbstractRenderer');
 var options_ = require('./settings');
 var square = function () {
@@ -1861,8 +1867,8 @@ RendererGL.prototype.arc = function arc(x, y, r) {
     return this._polygon(x, y, r, r, 24, 0);
 };
 RendererGL.prototype.rect = function rect(x, y, w, h) {
-    var alignedX = align(x, w, this._rectAlignX);
-    var alignedY = align(y, h, this._rectAlignY);
+    var alignedX = processRectAlignX(this, x, w);
+    var alignedY = processRectAlignY(this, y, h);
     this.matrix.save();
     this.matrix.translate(alignedX, alignedY);
     this.matrix.scale(w, h);
@@ -1872,7 +1878,7 @@ RendererGL.prototype.rect = function rect(x, y, w, h) {
     return this;
 };
 module.exports = RendererGL;
-},{"../ShaderProgram":2,"../Transform":4,"../constants":9,"../shaders":34,"./AbstractRenderer":22,"./internal/align":26,"./settings":32,"peako/defaults":60}],25:[function(require,module,exports){
+},{"../ShaderProgram":1,"../Transform":3,"../constants":9,"../shaders":34,"./AbstractRenderer":22,"./internal/process_rect_align":30,"./settings":32,"peako/defaults":60}],25:[function(require,module,exports){
 'use strict';
 var constants = require('../constants');
 var report = require('../internal/report');
@@ -1895,28 +1901,10 @@ function createRenderer(options) {
     if (type_ === constants.get('2D') || type_ === constants.get('GL')) {
         return new Renderer2D(options);
     }
-    throw Error('Got unknown renderer type. The known are: `2D` and `GL`');
+    throw Error('Got unknown renderer type. The known are: 2D and GL');
 }
 module.exports = createRenderer;
-},{"../constants":9,"../internal/report":17,"./Renderer2D":23,"./RendererGL":24,"./internal/get_renderer_type":29,"./internal/get_webgl":30,"./settings":32}],26:[function(require,module,exports){
-'use strict';
-var constants = require('../../constants');
-function align(value, width, constant) {
-    switch (constant) {
-    case constants.get('LEFT'):
-    case constants.get('TOP'):
-        return value;
-    case constants.get('CENTER'):
-    case constants.get('MIDDLE'):
-        return value - width * 0.5;
-    case constants.get('RIGHT'):
-    case constants.get('BOTTOM'):
-        return value - width;
-    }
-    throw Error('Got unknown alignment constant. The known are: `LEFT`, `CENTER`, `RIGHT`, `TOP`, `MIDDLE`, and `BOTTOM`');
-}
-module.exports = align;
-},{"../../constants":9}],27:[function(require,module,exports){
+},{"../constants":9,"../internal/report":17,"./Renderer2D":23,"./RendererGL":24,"./internal/get_renderer_type":28,"./internal/get_webgl":29,"./settings":32}],26:[function(require,module,exports){
 'use strict';
 function copyDrawingSettings(target, source, deep) {
     if (deep) {
@@ -1939,7 +1927,7 @@ function copyDrawingSettings(target, source, deep) {
     return target;
 }
 module.exports = copyDrawingSettings;
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 var constants = require('../../constants');
 var defaultDrawingSettings = {
@@ -1952,7 +1940,7 @@ var defaultDrawingSettings = {
         _doFill: true
     };
 module.exports = defaultDrawingSettings;
-},{"../../constants":9}],29:[function(require,module,exports){
+},{"../../constants":9}],28:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 var constants = require('../../constants');
@@ -1977,7 +1965,7 @@ function getRendererType() {
     return constants.get('2D');
 }
 module.exports = once(getRendererType);
-},{"../../constants":9,"peako/once":84,"platform":"platform"}],30:[function(require,module,exports){
+},{"../../constants":9,"peako/once":84,"platform":"platform"}],29:[function(require,module,exports){
 'use strict';
 var once = require('peako/once');
 function getWebGL() {
@@ -1992,7 +1980,30 @@ function getWebGL() {
     return name;
 }
 module.exports = once(getWebGL);
-},{"peako/once":84}],31:[function(require,module,exports){
+},{"peako/once":84}],30:[function(require,module,exports){
+'use strict';
+var constants = require('../../constants');
+exports.processRectAlignX = function processRectAlignX(renderer, x, w) {
+    if (renderer._rectAlignX === constants.get('CENTER')) {
+        x -= w * 0.5;
+    } else if (renderer._rectAlignX === constants.get('RIGHT')) {
+        x -= w;
+    } else if (renderer._rectAlignX !== constants.get('LEFT')) {
+        throw Error('Unknown " +' + 'rectAlignX' + '": ' + renderer._rectAlignX);
+    }
+    return Math.floor(x);
+};
+exports.processRectAlignY = function processRectAlignY(renderer, x, w) {
+    if (renderer._rectAlignY === constants.get('MIDDLE')) {
+        x -= w * 0.5;
+    } else if (renderer._rectAlignY === constants.get('BOTTOM')) {
+        x -= w;
+    } else if (renderer._rectAlignY !== constants.get('TOP')) {
+        throw Error('Unknown " +' + 'rectAlignY' + '": ' + renderer._rectAlignY);
+    }
+    return Math.floor(x);
+};
+},{"../../constants":9}],31:[function(require,module,exports){
 'use strict';
 var defaultDrawingSettings = require('./default_drawing_settings');
 var copyDrawingSettings = require('./copy_drawing_settings');
@@ -2003,7 +2014,7 @@ function setDefaultDrawingSettings(target, renderer) {
     return target;
 }
 module.exports = setDefaultDrawingSettings;
-},{"./copy_drawing_settings":27,"./default_drawing_settings":28}],32:[function(require,module,exports){
+},{"./copy_drawing_settings":26,"./default_drawing_settings":27}],32:[function(require,module,exports){
 'use strict';
 var color = require('../color/RGBA');
 var type = require('../constants').get('2D');
@@ -2040,7 +2051,7 @@ module.exports = shaders;
 exports.AbstractImage = require('./core/image/AbstractImage');
 exports.AbstractRenderer = require('./core/renderer/AbstractRenderer');
 exports.AbstractVector = require('./core/math/AbstractVector');
-exports.Camera = require('./core/Camera');
+exports.Camera = require('./core/camera/Camera');
 exports.CompoundedImage = require('./core/image/CompoundedImage');
 exports.HSLA = require('./core/color/HSLA');
 exports.Image = require('./core/image/Image');
@@ -2054,13 +2065,11 @@ exports.Vector2D = require('./core/math/Vector2D');
 exports.Vector3D = require('./core/math/Vector3D');
 exports.constants = require('./core/constants');
 exports.createRenderer = require('./core/renderer');
-exports.options = require('./core/renderer/settings');
-exports.settings = require('./core/settings');
 exports.shaders = require('./core/shaders');
 if (typeof self !== 'undefined') {
     self.v6 = exports;
 }
-},{"./core/Camera":1,"./core/ShaderProgram":2,"./core/Ticker":3,"./core/Transform":4,"./core/color/HSLA":5,"./core/color/RGBA":6,"./core/constants":9,"./core/image/AbstractImage":10,"./core/image/CompoundedImage":11,"./core/image/Image":12,"./core/math/AbstractVector":19,"./core/math/Vector2D":20,"./core/math/Vector3D":21,"./core/renderer":25,"./core/renderer/AbstractRenderer":22,"./core/renderer/Renderer2D":23,"./core/renderer/RendererGL":24,"./core/renderer/settings":32,"./core/settings":33,"./core/shaders":34}],36:[function(require,module,exports){
+},{"./core/ShaderProgram":1,"./core/Ticker":2,"./core/Transform":3,"./core/camera/Camera":4,"./core/color/HSLA":5,"./core/color/RGBA":6,"./core/constants":9,"./core/image/AbstractImage":10,"./core/image/CompoundedImage":11,"./core/image/Image":12,"./core/math/AbstractVector":19,"./core/math/Vector2D":20,"./core/math/Vector3D":21,"./core/renderer":25,"./core/renderer/AbstractRenderer":22,"./core/renderer/Renderer2D":23,"./core/renderer/RendererGL":24,"./core/shaders":34}],36:[function(require,module,exports){
 'use strict';
 
 /**

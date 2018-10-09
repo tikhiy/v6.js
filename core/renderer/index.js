@@ -46,7 +46,7 @@ function createRenderer ( options )
     return new Renderer2D( options );
   }
 
-  throw Error( 'Got unknown renderer type. The known are: `2D` and `GL`' );
+  throw Error( 'Got unknown renderer type. The known are: 2D and GL' );
 }
 
 module.exports = createRenderer;

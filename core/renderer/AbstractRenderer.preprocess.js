@@ -14,7 +14,8 @@ var polygons                  = require( '../internal/polygons' );
 var setDefaultDrawingSettings = require( './internal/set_default_drawing_settings' );
 var getWebGL                  = require( './internal/get_webgl' );
 var copyDrawingSettings       = require( './internal/copy_drawing_settings' );
-var align                     = require( './internal/align' );
+var processRectAlignX         = require( './internal/process_rect_align' ).processRectAlignX;
+var processRectAlignY         = require( './internal/process_rect_align' ).processRectAlignY;
 
 var options                   = require( './settings' );
 
@@ -138,69 +139,85 @@ AbstractRenderer.prototype = {
     return this.resize( getElementW( element ), getElementH( element ) );
   },
 
-  _polygon: function _polygon ( x, y, rx, ry, n, a, degrees )
+  /**
+   * Рисует полигон.
+   * @method v6.AbstractRenderer#drawPolygon
+   * @param  {number}    x             X координата полигона.
+   * @param  {number}    y             Y координата полигона.
+   * @param  {number}    xRadius       X радиус полигона.
+   * @param  {number}    yRadius       Y радиус полигона.
+   * @param  {number}    sides         Количество сторон полигона.
+   * @param  {number}    rotationAngle Угол поворота полигона
+   *                                   (чтобы не использовать {@link v6.Transform#rotate}).
+   * @param  {boolean}   degrees       Использовать градусы.
+   * @chainable
+   * @example
+   * // Draw hexagon at [ 4, 2 ] with radius 25.
+   * renderer.polygon( 4, 2, 25, 25, 6, 0 );
+   */
+  drawPolygon: function drawPolygon ( x, y, xRadius, yRadius, sides, rotationAngle, degrees )
   {
-    var polygon = polygons[ n ];
-    var matrix  = this.matrix;
+    var polygon = polygons[ sides ];
 
     if ( ! polygon ) {
-      polygon = polygons[ n ] = createPolygon( n ); // eslint-disable-line no-multi-assign
+      polygon = polygons[ sides ] = createPolygon( sides ); // eslint-disable-line no-multi-assign
     }
 
     if ( degrees ) {
-      a *= Math.PI / 180;
+      rotationAngle *= Math.PI / 180;
     }
 
-    matrix.save();
-    matrix.translate( x, y );
-    matrix.rotate( a );
-    this.drawArrays( polygon, polygon.length * 0.5, null, rx, ry );
-    matrix.restore();
-
+    this.matrix.save();
+    this.matrix.translate( x, y );
+    this.matrix.rotate( rotationAngle );
+    this.drawArrays( polygon, polygon.length * 0.5, null, xRadius, yRadius );
+    this.matrix.restore();
     return this;
   },
 
   /**
-   * Рисует многоугольник.
+   * Рисует полигон.
    * @method v6.AbstractRenderer#polygon
-   * @param {number} x
-   * @param {number} y
-   * @param {number} r   Радиус многоугольника.
-   * @param {number} n   Количество сторон многоугольника.
-   * @param {number} [a] Угол поворота. В целях оптимизации вместо {@link v6.AbstractRenderer#rotate}
-   *                     для поворота можно использовать этот параметр.
+   * @param  {number} x               X координата полигона.
+   * @param  {number} y               Y координата полигона.
+   * @param  {number} r               Радиус полигона.
+   * @param  {number} sides           Количество сторон полигона.
+   * @param  {number} [rotationAngle] Угол поворота полигона
+   *                                  (чтобы не использовать {@link v6.Transform#rotate}).
    * @chainable
+   * @example
+   * // Draw hexagon at [ 4, 2 ] with radius 25.
+   * renderer.polygon( 4, 2, 25, 6 );
    */
-  polygon: function polygon ( x, y, r, n, a )
+  polygon: function polygon ( x, y, r, sides, rotationAngle )
   {
-    if ( n % 1 ) {
-      n = Math.floor( n * 100 ) * 0.01;
+    if ( sides % 1 ) {
+      sides = Math.floor( sides * 100 ) * 0.01;
     }
 
-    if ( typeof a === 'undefined' ) {
-      this._polygon( x, y, r, r, n, -Math.PI * 0.5 );
+    if ( typeof rotationAngle === 'undefined' ) {
+      this.drawPolygon( x, y, r, r, sides, -Math.PI * 0.5 );
     } else {
-      this._polygon( x, y, r, r, n, a, options.degrees );
+      this.drawPolygon( x, y, r, r, sides, rotationAngle, options.degrees );
     }
 
-    return this;
-  },
-
-  lineWidth: function lineWidth ( number )
-  {
-    this._lineWidth = number;
     return this;
   },
 
   /**
-   * Отрисовывает картинку.
+   * Рисует картинку.
    * @method v6.AbstractRenderer#image
-   * @param {v6.Image|v6.CompoundedImage} image
-   * @param {number}                      x
-   * @param {number}                      y
-   * @param {number}                      [w]
-   * @param {number}                      [h]
+   * @param {v6.AbstractImage} image Картинка которую надо отрисовать.
+   * @param {number}           x     X координата картинки.
+   * @param {number}           y     Y координата картинки.
+   * @param {number}           [w]   Ширина картинки.
+   * @param {number}           [h]   Высота картинки.
    * @chainable
+   * @example
+   * // Create image.
+   * var image = new Image( document.getElementById( 'image' ) );
+   * // Draw image at [ 4, 2 ].
+   * renderer.image( image, 4, 2 );
    */
   image: function image ( image, x, y, w, h )
   {
@@ -213,18 +230,26 @@ AbstractRenderer.prototype = {
         h = image.dh;
       }
 
-      this.drawImage( image, align( x, w, this._rectAlignX ), align( y, h, this._rectAlignY ), w, h );
+      x = processRectAlignX( this, x, w );
+      x = processRectAlignY( this, y, h );
+
+      this.drawImage( image, x, y, w, h );
     }
 
     return this;
   },
 
   /**
+   * Метод для начала отрисовки фигуры.
    * @method v6.AbstractRenderer#beginShape
-   * @param {constant} [type] POINTS, LINES.
+   * @param {object}   [options]      Настройки фигуры.
+   * @param {constant} [options.type] Тип фигуры: POINTS, LINES.
    * @chainable
    * @example
+   * // Begin drawing POINTS shape.
    * renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );
+   * // Begin drawing shape without type (must be passed later in `endShape`).
+   * renderer.beginShape();
    */
   beginShape: function beginShape ( options )
   {
@@ -244,10 +269,19 @@ AbstractRenderer.prototype = {
   },
 
   /**
+   * Создает вершину в координатах из соответсвующих параметров.
    * @method v6.AbstractRenderer#vertex
-   * @param {number} x
-   * @param {number} y
+   * @param {number} x X координата новой вершины.
+   * @param {number} y Y координата новой вершины.
    * @chainable
+   * @see v6.AbstractRenderer#beginShape
+   * @see v6.AbstractRenderer#endShape
+   * @example
+   * // Draw rectangle with vertices.
+   * renderer.vertex( 0, 0 );
+   * renderer.vertex( 1, 0 );
+   * renderer.vertex( 1, 1 );
+   * renderer.vertex( 0, 1 );
    */
   vertex: function vertex ( x, y )
   {
@@ -380,28 +414,43 @@ AbstractRenderer.prototype = {
     return this;
   },
 
+  /**
+   * Устанавливает lineWidth (ширину контура).
+   * @method lineWidth
+   * @param {number} number Новый lineWidth.
+   * @chainable
+   * @example
+   * // Set `lineWidth` to 10px.
+   * renderer.lineWidth( 10 );
+   */
+  lineWidth: function lineWidth ( number )
+  {
+    this._lineWidth = number;
+    return this;
+  },
+
   #define backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT )                              \
     backgroundPositionX: function backgroundPositionX ( value, type )                                     \
     {                                                                                                     \
       if ( typeof type !== 'undefined' && type !== constants.get( 'VALUE' ) ) {                           \
         if ( type === constants.get( 'CONSTANT' ) ) {                                                     \
-          type = constants.get( 'PERCENTAGES' );                                                          \
+          type = constants.get( 'PERCENT' );                                                              \
                                                                                                           \
-          if ( value === constants.get( 'LEFT' ) ) {                                                      \
+          if ( value === constants.get( #LEFT ) ) {                                                       \
             value = 0;                                                                                    \
-          } else if ( value === constants.get( 'CENTER' ) ) {                                             \
+          } else if ( value === constants.get( #CENTER ) ) {                                              \
             value = 0.5;                                                                                  \
-          } else if ( value === constants.get( 'RIGHT' ) ) {                                              \
+          } else if ( value === constants.get( #RIGHT ) ) {                                               \
             value = 1;                                                                                    \
           } else {                                                                                        \
             throw Error( 'Got unknown value. The known are: ' + #LEFT + ', ' + #CENTER + ', ' + #RIGHT ); \
           }                                                                                               \
         }                                                                                                 \
                                                                                                           \
-        if ( type === constants.get( 'PERCENTAGES' ) ) {                                                  \
+        if ( type === constants.get( 'PERCENT' ) ) {                                                      \
           value *= this.w;                                                                                \
         } else {                                                                                          \
-          throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENTAGES, CONSTANT' );         \
+          throw Error( 'Got unknown `value` type. The known are: VALUE, PERCENT, CONSTANT' );             \
         }                                                                                                 \
       }                                                                                                   \
                                                                                                           \
@@ -418,7 +467,7 @@ AbstractRenderer.prototype = {
    * @example
    * // Set "backgroundPositionX" drawing setting to CENTER (default: LEFT).
    * renderer.backgroundPositionX( constants.get( 'CENTER' ), constants.get( 'CONSTANT' ) );
-   * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENTAGES' ) );
+   * renderer.backgroundPositionX( 0.5, constants.get( 'PERCENT' ) );
    * renderer.backgroundPositionX( renderer.w / 2 );
    */
   backgroundPositionX( backgroundPositionX, w, LEFT, CENTER, RIGHT ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
@@ -432,7 +481,7 @@ AbstractRenderer.prototype = {
    * @example
    * // Set "backgroundPositionY" drawing setting to MIDDLE (default: TOP).
    * renderer.backgroundPositionY( constants.get( 'MIDDLE' ), constants.get( 'CONSTANT' ) );
-   * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENTAGES' ) );
+   * renderer.backgroundPositionY( 0.5, constants.get( 'PERCENT' ) );
    * renderer.backgroundPositionY( renderer.h / 2 );
    */
   backgroundPositionX( backgroundPositionY, h, TOP, MIDDLE, BOTTOM ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
@@ -605,9 +654,9 @@ AbstractRenderer.prototype = {
    * @example
    * // A triangle.
    * var vertices = new Float32Array( [
-   *   0, 0,
-   *   1, 1,
-   *   0, 1
+   *   0,  0,
+   *   50, 50,
+   *   0,  50
    * ] );
    *
    * // Draw the triangle.
@@ -627,7 +676,7 @@ AbstractRenderer.prototype = {
    * @example
    * // Create image.
    * var image = Image.fromURL( '300x200.png' );
-   * // Draw image.
+   * // Draw image at [ 0, 0 ].
    * renderer.drawImage( image, 0, 0, 600, 400 );
    */
 
@@ -641,7 +690,7 @@ AbstractRenderer.prototype = {
    * @param {number} h Высота прямоугольника.
    * @chainable
    * @example
-   * // Draw rectangle.
+   * // Draw square at [ 20, 20 ] with size 80.
    * renderer.rect( 20, 20, 80, 80 );
    */
 
@@ -654,20 +703,44 @@ AbstractRenderer.prototype = {
    * @param {number} r Радиус круга.
    * @chainable
    * @example
-   * // Draw circle.
+   * // Draw circle at [ 60, 60 ] with radius 40.
    * renderer.arc( 60, 60, 40 );
+   */
+
+  /**
+   * Рисует линию.
+   * @method v6.AbstractRenderer#line
+   * @param {number} x1 X начала линии.
+   * @param {number} y1 Y начала линии.
+   * @param {number} x2 X концы линии.
+   * @param {number} y2 Y концы линии.
+   * @chainable
+   * @example
+   * // Draw line from [ 10, 10 ] to [ 20, 20 ].
+   * renderer.line( 10, 10, 20, 20 );
+   */
+
+  /**
+   * Рисует точку.
+   * @method v6.AbstractRenderer#point
+   * @param {number} x X координата точки.
+   * @param {number} y Y координата точки.
+   * @chainable
+   * @example
+   * // Draw point at [ 4, 2 ].
+   * renderer.point( 4, 2 );
    */
 
   constructor: AbstractRenderer
 };
 
 /**
- * Инициализирует рендерер на `"self"`.
+ * Initialize renderer on `"self"`.
  * @method v6.AbstractRenderer.create
- * @param  {v6.AbstractRenderer} self    Рендерер который надо инициализировать.
+ * @param  {v6.AbstractRenderer} self    Renderer that should be initialized.
  * @param  {object}              options {@link v6.options}
- * @param  {constant}            type    Тип рендерера: `2D` или `GL`. Не может быть `AUTO`!.
- * @return {void}                        Ничего не возвращает.
+ * @param  {constant}            type    Type of renderer: `2D` или `GL`. Cannot be `AUTO`!.
+ * @return {void}                        Returns nothing.
  * @example <caption>Custom Renderer</caption>
  * var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );
  * var settings         = require( 'v6.js/core/renderer/settings' );
@@ -675,6 +748,7 @@ AbstractRenderer.prototype = {
  *
  * function CustomRenderer ( options )
  * {
+ *   // Initialize CustomRenderer.
  *   AbstractRenderer.create( this, defaults( settings, options ), constants.get( '2D' ) );
  * }
  */
@@ -709,11 +783,13 @@ AbstractRenderer.create = function create ( self, options, type )
   } );
 
   /**
+   * Renderer settings.
    * @member {object} v6.AbstractRenderer#settings
    */
   self.settings = options.settings;
 
   /**
+   * Renderer type: GL, 2D.
    * @member {constant} v6.AbstractRenderer#type
    */
   self.type = type;
@@ -731,11 +807,24 @@ AbstractRenderer.create = function create ( self, options, type )
   self._stackIndex = -1;
 
   /**
-   * Выглядит так: `[ x1, y1, x2, y2 ]`.
+   * Vertices of current shape.
    * @private
    * @member {Array.<number>} v6.AbstractRenderer#_vertices
+   * @see v6.AbstractRenderer#beginShape
+   * @see v6.AbstractRenderer#vertex
+   * @see v6.AbstractRenderer#endShape
    */
   self._vertices = [];
+
+  /**
+   * Type of current shape.
+   * @private
+   * @member {Array.<number>} v6.AbstractRenderer#_shapeType
+   * @see v6.AbstractRenderer#beginShape
+   * @see v6.AbstractRenderer#vertex
+   * @see v6.AbstractRenderer#endShape
+   */
+  self._shapeType = null;
 
   if ( typeof options.appendTo === 'undefined' ) {
     self.appendTo( document.body );

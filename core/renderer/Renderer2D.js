@@ -1,13 +1,14 @@
 'use strict';
 
-var defaults         = require( 'peako/defaults' );
+var defaults          = require( 'peako/defaults' );
 
-var constants        = require( '../constants' );
+var constants         = require( '../constants' );
 
-var align            = require( './internal/align' );
+var processRectAlignX = require( './internal/process_rect_align' ).processRectAlignX;
+var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
 
-var AbstractRenderer = require( './AbstractRenderer' );
-var options_         = require( './settings' );
+var AbstractRenderer  = require( './AbstractRenderer' );
+var options_          = require( './settings' );
 
 /**
  * 2D рендерер.
@@ -123,8 +124,8 @@ Renderer2D.prototype.drawImage = function drawImage ( image, x, y, w, h )
 
 Renderer2D.prototype.rect = function rect ( x, y, w, h )
 {
-  x = Math.floor( align( x, w, this._rectAlignX ) );
-  y = Math.floor( align( y, h, this._rectAlignY ) );
+  x = processRectAlignX( this, x, w );
+  y = processRectAlignY( this, y, h );
 
   this.context.beginPath();
   this.context.rect( x, y, w, h );

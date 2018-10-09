@@ -69,7 +69,7 @@ window.addEventListener( 'resize', function ()
 
 #### Before Committing
 
-* `rm -Rf docs dist && npm run prepublish`
+* `rm -rf docs dist coverage && npm run prepublish`
 
 #### Testing
 

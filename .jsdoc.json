@@ -1,7 +1,7 @@
 {
   "source": {
     "excludePattern": "\\.preprocess\\.js$",
-    "exclude": [ "node_modules", "docs", "dist", "test", "coverage" ],
+    "exclude": [ "node_modules", "docs", "dist", "test", "temp", "coverage" ],
     "include": [ "." ]
   },
 

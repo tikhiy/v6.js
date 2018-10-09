@@ -1,7 +1,9 @@
-PRE=core/renderer/AbstractRenderer.preprocess.js
+SRC=core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js
 
-preprocess: $(PRE)
-	cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -CC $^ -o $(subst .preprocess,,$^)
+$(SRC):
+	build/preprocess $@ $(@:.preprocess.js=.js)
+
+preprocess: $(SRC)
 
 lint\:test:
 	cd test && ../node_modules/.bin/eslint .
@@ -10,8 +12,7 @@ lint\:test--fix:
 	cd test && ../node_modules/.bin/eslint . --fix
 
 lint:
-	              node_modules/.bin/jshint $(subst .preprocess,,$(PRE)) && \
-	              node_modules/.bin/eslint .                            && \
+	              node_modules/.bin/eslint . && \
 	cd test && ../node_modules/.bin/eslint .
 
 start_static_server:

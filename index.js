@@ -18,7 +18,7 @@
 exports.AbstractImage    = require( './core/image/AbstractImage' );
 exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
 exports.AbstractVector   = require( './core/math/AbstractVector' );
-exports.Camera           = require( './core/Camera' );
+exports.Camera           = require( './core/camera/Camera' );
 exports.CompoundedImage  = require( './core/image/CompoundedImage' );
 exports.HSLA             = require( './core/color/HSLA' );
 exports.Image            = require( './core/image/Image' );
@@ -32,8 +32,6 @@ exports.Vector2D         = require( './core/math/Vector2D' );
 exports.Vector3D         = require( './core/math/Vector3D' );
 exports.constants        = require( './core/constants' );
 exports.createRenderer   = require( './core/renderer' );
-exports.options          = require( './core/renderer/settings' );
-exports.settings         = require( './core/settings' );
 exports.shaders          = require( './core/shaders' );
 
 if ( typeof self !== 'undefined' ) {

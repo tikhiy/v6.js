@@ -1,16 +1,17 @@
 'use strict';
 
-var defaults         = require( 'peako/defaults' );
+var defaults          = require( 'peako/defaults' );
 
-var ShaderProgram    = require( '../ShaderProgram' );
-var Transform        = require( '../Transform' );
-var constants        = require( '../constants' );
-var shaders          = require( '../shaders' );
+var ShaderProgram     = require( '../ShaderProgram' );
+var Transform         = require( '../Transform' );
+var constants         = require( '../constants' );
+var shaders           = require( '../shaders' );
 
-var align            = require( './internal/align' );
+var processRectAlignX = require( './internal/process_rect_align' ).processRectAlignX;
+var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
 
-var AbstractRenderer = require( './AbstractRenderer' );
-var options_         = require( './settings' );
+var AbstractRenderer  = require( './AbstractRenderer' );
+var options_          = require( './settings' );
 
 /**
  * Массив вершин (vertices) квадрата.
@@ -222,8 +223,8 @@ RendererGL.prototype.arc = function arc ( x, y, r )
  */
 RendererGL.prototype.rect = function rect ( x, y, w, h )
 {
-  var alignedX = align( x, w, this._rectAlignX );
-  var alignedY = align( y, h, this._rectAlignY );
+  var alignedX = processRectAlignX( this, x, w );
+  var alignedY = processRectAlignY( this, y, h );
   this.matrix.save();
   this.matrix.translate( alignedX, alignedY );
   this.matrix.scale( w, h );

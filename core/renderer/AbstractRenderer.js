@@ -54,7 +54,7 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * Сохраняет текущие настройки рендерера.
+   * Сохраняет текущие настройки рендеринга.
    * @method v6.AbstractRenderer#push
    * @chainable
    * @example
@@ -71,7 +71,7 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
-   * Восстанавливает предыдущие настройки рендерера.
+   * Восстанавливает предыдущие настройки рендеринга.
    * @method v6.AbstractRenderer#pop
    * @chainable
    * @example
@@ -211,7 +211,7 @@ AbstractRenderer.prototype = {
   /**
    * Метод для начала отрисовки фигуры.
    * @method v6.AbstractRenderer#beginShape
-   * @param {object}   [options]      Настройки фигуры.
+   * @param {object}   [options]      Параметры фигуры.
    * @param {constant} [options.type] Тип фигуры: POINTS, LINES.
    * @chainable
    * @example
@@ -254,17 +254,27 @@ AbstractRenderer.prototype = {
     return this;
   },
   /**
+   * Рисует фигуру из вершин.
    * @method v6.AbstractRenderer#endShape
-   * @param {object}   [options]
-   * @param {boolean}  [options.close]
-   * @param {constant} [options.type]
+   * @param {object}   [options]       Параметры фигуры.
+   * @param {boolean}  [options.close] Соединить последнюю вершину с первой (закрыть фигуру).
+   * @param {constant} [options.type]  Тип фигуры (несовместимо с `options.draw`).
+   * @param {function} [options.draw]  Нестандартная функция для отрисовки всех вершин (несовместимо с `options.type`).
    * @chainable
    * @example
+   * // Close and draw shape.
    * renderer.endShape( { close: true } );
+   * // Draw with custom function.
+   * renderer.endShape( {
+   *   draw: function draw ( vertices )
+   *   {
+   *     renderer.drawArrays( vertices, vertices.length / 2 );
+   *   }
+   * } );
    */
   endShape: function endShape ()
   {
-    throw Error( 'not impemented now' );
+    throw Error( 'Not implemented' );
   },
   /**
    * @method v6.AbstractRenderer#save
@@ -623,6 +633,7 @@ AbstractRenderer.create = function create ( self, options, type )
 {
   var context;
   /**
+   * `canvas` рендерера для отрисовки на экране.
    * @member {HTMLCanvasElement} v6.AbstractRenderer#canvas
    */
   if ( options.canvas ) {
@@ -639,33 +650,36 @@ AbstractRenderer.create = function create ( self, options, type )
     throw Error( 'Cannot get WebGL context. Try to use 2D as the renderer type or v6.Renderer2D instead of v6.RendererGL' );
   }
   /**
+   * Контекст холста.
    * @member {object} v6.AbstractRenderer#context
    */
   self.context = self.canvas.getContext( context, {
     alpha: options.alpha
   } );
   /**
-   * Renderer settings.
+   * Настройки рендерера.
    * @member {object} v6.AbstractRenderer#settings
    */
   self.settings = options.settings;
   /**
-   * Renderer type: GL, 2D.
+   * Тип рендерера: GL, 2D.
    * @member {constant} v6.AbstractRenderer#type
    */
   self.type = type;
   /**
+   * Стэк сохраненных настроек рендеринга.
    * @private
    * @member {Array.<object>} v6.AbstractRenderer#_stack
    */
   self._stack = [];
   /**
+   * Позиция последних сохраненных настроек рендеринга.
    * @private
    * @member {number} v6.AbstractRenderer#_stackIndex
    */
   self._stackIndex = -1;
   /**
-   * Vertices of current shape.
+   * Вершины фигуры.
    * @private
    * @member {Array.<number>} v6.AbstractRenderer#_vertices
    * @see v6.AbstractRenderer#beginShape
@@ -674,7 +688,7 @@ AbstractRenderer.create = function create ( self, options, type )
    */
   self._vertices = [];
   /**
-   * Type of current shape.
+   * Тип фигуры.
    * @private
    * @member {Array.<number>} v6.AbstractRenderer#_shapeType
    * @see v6.AbstractRenderer#beginShape

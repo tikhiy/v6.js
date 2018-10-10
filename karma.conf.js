@@ -32,7 +32,7 @@ function setup ( config )
 
     browserify: {
       transform: [
-        [ 'browserify-istanbul', { ignore: [ 'dist', 'docs' ] } ]
+        'browserify-istanbul'
       ]
     },
 
@@ -52,6 +52,15 @@ function setup ( config )
     mochaReporter: {
       // Shows a diff output.
       showDiff: 'unified'
+    },
+
+    // karma-coverage config
+    coverageReporter: {
+      reporters: [
+        { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
+        { type: 'text',         subdir: '.', file: 'text.txt' },
+        { type: 'html' }
+      ]
     },
 
     // plugins to use

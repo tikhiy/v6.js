@@ -41,7 +41,7 @@ var ticker = new Ticker();
 ticker.on( 'render', function ()
 {
   var hue = Math.floor( this.totalTime * 10 );
-  renderer.background( hue, 80, 80 );
+  renderer.backgroundColor( hue, 80, 80 );
   renderer.stroke( 'white' );
   renderer.fill( 'black' );
   renderer.polygon( renderer.w / 2, renderer.h / 2, 100, 5 );

@@ -8,19 +8,25 @@ var processRectAlignX = require( './internal/process_rect_align' ).processRectAl
 var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
 
 var AbstractRenderer  = require( './AbstractRenderer' );
-var options_          = require( './settings' );
+var settings          = require( './settings' );
 
 /**
  * 2D рендерер.
  * @constructor v6.Renderer2D
  * @extends v6.AbstractRenderer
  * @param {object} options {@link v6.options}
+ * @example
+ * // Require Renderer2D.
+ * var Renderer2D = require( 'v6.js/core/renderer/Renderer2D' );
+ * // Create an Renderer2D isntance.
+ * var renderer = new Renderer2D();
  */
 function Renderer2D ( options )
 {
-  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( '2D' ) );
+  AbstractRenderer.create( this, ( options = defaults( settings, options ) ), constants.get( '2D' ) );
 
   /**
+   * @member v6.Renderer2D#matrix
    * @alias v6.Renderer2D#context
    */
   this.matrix = this.context;
@@ -106,7 +112,7 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
   }
 
   if ( this._doStroke && this._lineWidth > 0 ) {
-    this._stroke( true );
+    this._stroke();
   }
 
   return this;
@@ -118,10 +124,14 @@ Renderer2D.prototype.drawArrays = function drawArrays ( verts, count, _mode, _sx
  */
 Renderer2D.prototype.drawImage = function drawImage ( image, x, y, w, h )
 {
-  this.context.drawImage( image.get().image, image.x, image.y, image.w, image.h, x, y, w, h );
+  this.context.drawImage( image.get().image, image.sx, image.sy, image.sw, image.sh, x, y, w, h );
   return this;
 };
 
+/**
+ * @override
+ * @method v6.Renderer2D#rect
+ */
 Renderer2D.prototype.rect = function rect ( x, y, w, h )
 {
   x = processRectAlignX( this, x, w );
@@ -134,13 +144,17 @@ Renderer2D.prototype.rect = function rect ( x, y, w, h )
     this._fill();
   }
 
-  if ( this._doStroke ) {
+  if ( this._doStroke && this._lineWidth > 0 ) {
     this._stroke();
   }
 
   return this;
 };
 
+/**
+ * @override
+ * @method v6.Renderer2D#arc
+ */
 Renderer2D.prototype.arc = function arc ( x, y, r )
 {
   this.context.beginPath();
@@ -150,26 +164,30 @@ Renderer2D.prototype.arc = function arc ( x, y, r )
     this._fill();
   }
 
-  if ( this._doStroke ) {
-    this._stroke( true );
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    this._stroke();
   }
 
   return this;
 };
 
+/**
+ * @override
+ * @method v6.Renderer2D#_fill
+ */
 Renderer2D.prototype._fill = function _fill ()
 {
   this.context.fillStyle = this._fillColor;
   this.context.fill();
 };
 
-Renderer2D.prototype._stroke = function ( close )
+/**
+ * @override
+ * @method v6.Renderer2D#_stroke
+ */
+Renderer2D.prototype._stroke = function ()
 {
   var context = this.context;
-
-  if ( close ) {
-    context.closePath();
-  }
 
   context.strokeStyle = this._strokeColor;
 

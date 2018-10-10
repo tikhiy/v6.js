@@ -11,7 +11,7 @@ var processRectAlignX = require( './internal/process_rect_align' ).processRectAl
 var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
 
 var AbstractRenderer  = require( './AbstractRenderer' );
-var options_          = require( './settings' );
+var settings          = require( './settings' );
 
 /**
  * Массив вершин (vertices) квадрата.
@@ -40,18 +40,24 @@ var square = ( function ()
  * @constructor v6.RendererGL
  * @extends v6.AbstractRenderer
  * @param {object} options {@link v6.options}
+ * @example
+ * // Require RendererGL.
+ * var RendererGL = require( 'v6.js/core/renderer/RendererGL' );
+ * // Create an RendererGL isntance.
+ * var renderer = new RendererGL();
  */
 function RendererGL ( options )
 {
-  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'GL' ) );
+  AbstractRenderer.create( this, ( options = defaults( settings, options ) ), constants.get( 'GL' ) );
 
   /**
-   * Эта матрица используется для таких методов как {@link v6.RendererGL#rotate}, {@link v6.RendererGL#transform}, и т.п.
+   * Эта "transformation matrix" используется для {@link v6.RendererGL#rotate} и т.п.
    * @member {v6.Transform} v6.RendererGL#matrix
    */
   this.matrix = new Transform();
 
   /**
+   * Буферы данных (вершин).
    * @member {object} v6.RendererGL#buffers
    * @property {WebGLBuffer} default Основной буфер.
    * @property {WebGLBuffer} square  Используется для отрисовки прямоугольника в {@link v6.RendererGL#rect}.
@@ -65,6 +71,7 @@ function RendererGL ( options )
   this.context.bufferData( this.context.ARRAY_BUFFER, square, this.context.STATIC_DRAW );
 
   /**
+   * Шейдеры (WebGL программы).
    * @member {object} v6.RendererGL#programs
    * @property {v6.ShaderProgram} default
    */
@@ -81,9 +88,6 @@ RendererGL.prototype.constructor = RendererGL;
 /**
  * @override
  * @method v6.RendererGL#resize
- * @param {number} w
- * @param {number} h
- * @chainable
  */
 RendererGL.prototype.resize = function resize ( w, h )
 {
@@ -116,14 +120,16 @@ RendererGL.prototype.blending = function blending ( blending )
 };
 
 /**
- * Takes normalized color channels.
+ * Очищает контекст.
  * @private
  * @method v6.RendererGL#_clear
- * @param  {number} r
- * @param  {number} g
- * @param  {number} b
- * @param  {number} a
- * @return {void}
+ * @param  {number} r Нормализованное значение "red channel".
+ * @param  {number} g Нормализованное значение "green channel".
+ * @param  {number} b Нормализованное значение "blue channel".
+ * @param  {number} a Нормализованное значение прозрачности (alpha).
+ * @return {void}     Ничего не возвращает.
+ * @example
+ * renderer._clear( 1, 0, 0, 1 ); // Fill context with red color.
  */
 RendererGL.prototype._clear = function _clear ( r, g, b, a )
 {
@@ -214,7 +220,7 @@ RendererGL.prototype._stroke = function _stroke ( count )
  */
 RendererGL.prototype.arc = function arc ( x, y, r )
 {
-  return this._polygon( x, y, r, r, 24, 0 );
+  return this.drawPolygon( x, y, r, r, 24, 0 );
 };
 
 /**
@@ -223,10 +229,10 @@ RendererGL.prototype.arc = function arc ( x, y, r )
  */
 RendererGL.prototype.rect = function rect ( x, y, w, h )
 {
-  var alignedX = processRectAlignX( this, x, w );
-  var alignedY = processRectAlignY( this, y, h );
+  x = processRectAlignX( this, x, w );
+  y = processRectAlignY( this, y, h );
   this.matrix.save();
-  this.matrix.translate( alignedX, alignedY );
+  this.matrix.translate( x, y );
   this.matrix.scale( w, h );
   this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
   this.drawArrays( null, 4 );

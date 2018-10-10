@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: core/settings.js</title>
+    <title>JSDoc: Source: core/Transform.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: core/settings.js</h1>
+    <h1 class="page-title">Source: core/Transform.js</h1>
 
     
 
@@ -28,10 +28,77 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-/**
- * Использовать градусы вместо радианов.
- */
-exports.degress = false;
+var mat3 = require( './mat3' );
+
+function Transform ()
+{
+  this.matrix = mat3.identity();
+  this._index = -1;
+  this._stack = [];
+}
+
+Transform.prototype = {
+  save: function save ()
+  {
+    if ( ++this._index &lt; this._stack.length ) {
+      mat3.copy( this._stack[ this._index ], this.matrix );
+    } else {
+      this._stack.push( mat3.clone( this.matrix ) );
+    }
+  },
+
+  restore: function restore ()
+  {
+    if ( this._index >= 0 ) {
+      mat3.copy( this.matrix, this._stack[ this._index-- ] );
+    } else {
+      mat3.setIdentity( this.matrix );
+    }
+  },
+
+  setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
+  {
+    mat3.setTransform( this.matrix, m11, m12, m21, m22, dx, dy );
+  },
+
+  translate: function translate ( x, y )
+  {
+    mat3.translate( this.matrix, x, y );
+  },
+
+  rotate: function rotate ( angle )
+  {
+    mat3.rotate( this.matrix, angle );
+  },
+
+  scale: function scale ( x, y )
+  {
+    mat3.scale( this.matrix, x, y );
+  },
+
+  /**
+   * Применяет "transformation matrix" из соответствующих параметров на текущий "transformation matrix".
+   * @method v6.Transform#transform
+   * @param  {number}  m11 X scale.
+   * @param  {number}  m12 X skew.
+   * @param  {number}  m21 Y skew.
+   * @param  {number}  m22 Y scale.
+   * @param  {number}  dx  X translate.
+   * @param  {number}  dy  Y translate.
+   * @return {void}        Ничего не возвращает.
+   * @example
+   * // Apply scaled twice "transformation matrix".
+   * transform.transform( 2, 0, 0, 2, 0, 0 );
+   */
+  transform: function transform ( m11, m12, m21, m22, dx, dy )
+  {
+    mat3.transform( this.matrix, m11, m12, m21, m22, dx, dy );
+  },
+
+  constructor: Transform
+};
+
+module.exports = Transform;
 </code></pre>
         </article>
     </section>

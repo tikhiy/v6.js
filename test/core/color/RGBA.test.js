@@ -43,6 +43,71 @@ describe( 'v6.RGBA', function ()
       new RGBA( r, g, b, a );
     } );
 
+    describe( 'new v6.RGBA()', function ()
+    {
+      it( 'works', function ()
+      {
+        new RGBA().should.be.like( {
+          0: 0,
+          1: 0,
+          2: 0,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.RGBA( <RGB> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new RGBA( 66.6 ).should.be.like( {
+          0: 66,
+          1: 66,
+          2: 66,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.RGBA( <RGB>, <alpha> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new RGBA( 66.6, 0.13 ).should.be.like( {
+          0: 66,
+          1: 66,
+          2: 66,
+          3: 0.13
+        } );
+      } );
+    } );
+
+    describe( 'new v6.RGBA( <R>, <G>, <B> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new RGBA( 1.2, 3.4, 5.6 ).should.be.like( {
+          0: 1,
+          1: 3,
+          2: 5,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.RGBA( <R>, <G>, <B>, <alpha> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new RGBA( 1.2, 3.4, 5.6, 0.7 ).should.be.like( {
+          0: 1,
+          1: 3,
+          2: 5,
+          3: 0.7
+        } );
+      } );
+    } );
+
     describe( 'new v6.RGBA.type', function ()
     {
       it( 'equals to "rgba"', function ()
@@ -80,6 +145,7 @@ describe( 'v6.RGBA', function ()
       it( 'works', function ()
       {
         new RGBA( 100, 0.25 ).lerpColor( new RGBA( 200, 0 ), 0.5 ).should.deep.equal( new RGBA( 150, 150, 150, 0.25 ) );
+        new RGBA( '#f00' ).lerpColor( '#00f', 0.5 ).should.deep.equal( new RGBA( 127, 0, 127, 1 ) );
       } );
     } );
 

@@ -29,7 +29,7 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="v6.html">v6</a>.</span>CompoundedImage<span class="signature">(image, x, y, w, h, dw, dh)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="v6.html">v6</a>.</span>CompoundedImage<span class="signature">(image, sx, sy, sw, sh, dw, dh)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -42,7 +42,7 @@
     
 
     
-    <h4 class="name" id="CompoundedImage"><span class="type-signature"></span>new CompoundedImage<span class="signature">(image, x, y, w, h, dw, dh)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="CompoundedImage"><span class="type-signature"></span>new CompoundedImage<span class="signature">(image, sx, sy, sw, sh, dw, dh)</span><span class="type-signature"></span></h4>
     
 
     
@@ -88,10 +88,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="v6.Image.html">v6.Image</a></span>
-|
-
-<span class="param-type"><a href="v6.CompoundedImage.html">v6.CompoundedImage</a></span>
+<span class="param-type"><a href="v6.AbstractImage.html">v6.AbstractImage</a></span>
 
 
             
@@ -108,13 +105,13 @@
 
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>sx</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -131,13 +128,13 @@
 
         <tr>
             
-                <td class="name"><code>y</code></td>
+                <td class="name"><code>sy</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -154,13 +151,13 @@
 
         <tr>
             
-                <td class="name"><code>w</code></td>
+                <td class="name"><code>sw</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -177,13 +174,13 @@
 
         <tr>
             
-                <td class="name"><code>h</code></td>
+                <td class="name"><code>sh</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -206,7 +203,7 @@
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -229,7 +226,7 @@
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">nubmer</span>
 
 
             
@@ -280,7 +277,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_CompoundedImage.js.html">core/CompoundedImage.js</a>, <a href="core_CompoundedImage.js.html#line3">line 3</a>
+        <a href="core_image_CompoundedImage.js.html">core/image/CompoundedImage.js</a>, <a href="core_image_CompoundedImage.js.html#line5">line 5</a>
     </li></ul></dd>
     
 
@@ -310,6 +307,17 @@
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="v6.AbstractImage.html">v6.AbstractImage</a></li>
+    </ul>
+
 
     
 
@@ -362,6 +370,11 @@
     
 
     
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="v6.AbstractImage.html#get">v6.AbstractImage#get</a>
+    </li></ul></dd>
+    
 
     
 
@@ -382,7 +395,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_CompoundedImage.js.html">core/CompoundedImage.js</a>, <a href="core_CompoundedImage.js.html#line25">line 25</a>
+        <a href="core_image_AbstractImage.js.html">core/image/AbstractImage.js</a>, <a href="core_image_AbstractImage.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -444,13 +457,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Oct 06 2018 20:35:20 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

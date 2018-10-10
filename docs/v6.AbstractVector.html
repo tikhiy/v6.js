@@ -51,6 +51,9 @@
 
 <div class="description">
     <p>Абстрактный класс вектора с базовыми методами.</p>
+<p>Чтобы использовать грудусы вместо радианов надо написать следующее:</p>
+<pre class="prettyprint source lang-javascript"><code>var settings = require( 'v6.js/core/settings' );
+settings.degrees = true;</code></pre>
 </div>
 
 
@@ -165,7 +168,7 @@
 
 
 <div class="description">
-    <p>Создает вектор с направлением равным <code>angle</code>.</p>
+    <p>Создает вектор с направлением равным <code>&quot;angle&quot;</code>.</p>
 </div>
 
 
@@ -258,7 +261,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line181">line 181</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -366,7 +369,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line173">line 173</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line215">line 215</a>
     </li></ul></dd>
     
 
@@ -474,7 +477,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line131">line 131</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line167">line 167</a>
     </li></ul></dd>
     
 
@@ -500,6 +503,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Клон вектора.</p>
+</div>
+
 
 
 <dl>
@@ -517,6 +524,11 @@
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).clone();</code></pre>
 
 
 
@@ -586,7 +598,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Другой (второй) вектор.</p></td>
         </tr>
 
     
@@ -627,7 +639,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line144">line 144</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line185">line 185</a>
     </li></ul></dd>
     
 
@@ -670,6 +682,11 @@
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 3, 3 ).dist( new Vector2D( 1, 1 ) ); // -> 2.8284271247461903</code></pre>
 
 
 
@@ -686,6 +703,10 @@
 
 
 
+<div class="description">
+    <p>Возвращает текущее направление вектора.</p>
+</div>
+
 
 
 
@@ -727,7 +748,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line87">line 87</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line109">line 109</a>
     </li></ul></dd>
     
 
@@ -753,6 +774,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Направление (угол) в градусах или радианах.</p>
+</div>
+
 
 
 <dl>
@@ -770,6 +795,15 @@
     
 
 
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 1, 1 ).getAngle(); // -> 0.7853981633974483</code></pre>
+
+        <p class="code-caption">Используя грудусы</p>
+    
+    <pre class="prettyprint"><code>new Vector2D( 1, 1 ).getAngle(); // -> 45</code></pre>
 
 
 
@@ -786,6 +820,10 @@
 
 
 
+<div class="description">
+    <p>Ограничивает длину вектора до <code>&quot;value&quot;</code>.</p>
+</div>
+
 
 
 
@@ -835,7 +873,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Максимальная длина вектора.</p></td>
         </tr>
 
     
@@ -876,7 +914,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line100">line 100</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -901,6 +939,11 @@
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 1, 1 ).limit( 1 ); // Vector2D { x: 0.7071067811865475, y: 0.7071067811865475 }</code></pre>
 
 
 
@@ -917,6 +960,10 @@
 
 
 
+<div class="description">
+    <p>Возвращает длину вектора.</p>
+</div>
+
 
 
 
@@ -958,7 +1005,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line116">line 116</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line146">line 146</a>
     </li></ul></dd>
     
 
@@ -984,6 +1031,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Длина вектора.</p>
+</div>
+
 
 
 <dl>
@@ -1001,6 +1052,11 @@
     
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 2, 2 ).mag(); // -> 2.8284271247461903</code></pre>
 
 
 
@@ -1017,6 +1073,10 @@
 
 
 
+<div class="description">
+    <p>Возвращает длину вектора в квадрате.</p>
+</div>
+
 
 
 
@@ -1058,7 +1118,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line125">line 125</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line158">line 158</a>
     </li></ul></dd>
     
 
@@ -1084,6 +1144,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Длина вектора в квадрате.</p>
+</div>
+
 
 
 <dl>
@@ -1103,6 +1167,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 2, 2 ).magSq(); // -> 8</code></pre>
+
+
 
         
             
@@ -1116,6 +1185,10 @@
     
 
 
+
+<div class="description">
+    <p>Нормализует вектор.</p>
+</div>
 
 
 
@@ -1158,7 +1231,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line18">line 18</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -1183,6 +1256,11 @@
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).normalize(); // Vector2D { x: 0.8944271909999159, y: 0.4472135954999579 }</code></pre>
 
 
 
@@ -1199,6 +1277,10 @@
 
 
 
+<div class="description">
+    <p>Поворачивает вектор на <code>&quot;angle&quot;</code> угол с сохранением длины.</p>
+</div>
+
 
 
 
@@ -1289,7 +1371,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line62">line 62</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -1314,6 +1396,15 @@
 
 
 
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).rotate( 5 * Math.PI / 180 ); // Vector2D { x: 3.810467306871666, y: 2.3410123671741236 }</code></pre>
+
+        <p class="code-caption">Используя грудусы</p>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).rotate( 5 ); // Vector2D { x: 3.810467306871666, y: 2.3410123671741236 }</code></pre>
 
 
 
@@ -1330,6 +1421,10 @@
 
 
 
+<div class="description">
+    <p>Изменяет направление вектора на <code>&quot;angle&quot;</code> с сохранением длины.</p>
+</div>
+
 
 
 
@@ -1379,7 +1474,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Новое направление.</p></td>
         </tr>
 
     
@@ -1420,7 +1515,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line33">line 33</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -1447,6 +1542,15 @@
 
 
 
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).setAngle( 45 * Math.PI / 180 ); // Vector2D { x: 3.1622776601683795, y: 3.162277660168379 }</code></pre>
+
+        <p class="code-caption">Используя грудусы</p>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).setAngle( 45 ); // Vector2D { x: 3.1622776601683795, y: 3.162277660168379 }</code></pre>
+
+
 
         
             
@@ -1460,6 +1564,10 @@
     
 
 
+
+<div class="description">
+    <p>Изменяет длину вектора на <code>&quot;value&quot;</code> с сохранением направления.</p>
+</div>
 
 
 
@@ -1510,7 +1618,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>Новая длина.</p></td>
         </tr>
 
     
@@ -1551,7 +1659,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line52">line 52</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -1578,6 +1686,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4, 2 ).setMag( 42 ); // Vector2D { x: 37.56594202199646, y: 18.78297101099823 }</code></pre>
+
+
 
         
             
@@ -1591,6 +1704,10 @@
     
 
 
+
+<div class="description">
+    <p>Возвращает строковое представление вектора (prettified).</p>
+</div>
 
 
 
@@ -1633,7 +1750,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line138">line 138</a>
+        <a href="core_math_AbstractVector.js.html">core/math/AbstractVector.js</a>, <a href="core_math_AbstractVector.js.html#line176">line 176</a>
     </li></ul></dd>
     
 
@@ -1678,6 +1795,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>new Vector2D( 4.321, 2.345 ).toString(); // -> "v6.Vector2D { x: 4.32, y: 2.35 }"</code></pre>
+
+
 
         
     
@@ -1695,13 +1817,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Oct 06 2018 20:35:20 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

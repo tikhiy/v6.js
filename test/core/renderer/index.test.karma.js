@@ -16,14 +16,23 @@ describe( 'v6.createRenderer', function ()
   [
     [ 'AUTO', AbstractRenderer ],
     [ 'GL',   RendererGL ],
-    [ '2D',   Renderer2D ]
+    [ '2D',   Renderer2D ],
+    [ null,   Renderer2D ]
   ].forEach( function ( values )
   {
     describe( 'v6.createRenderer( ' + values[ 0 ] +  ' )', function ()
     {
       it( 'works', function ()
       {
-        createRenderer( { type: constants.get( values[ 0 ] ) } ).should.instanceof( values[ 1 ] );
+        var options;
+
+        if ( values[ 0 ] !== null ) {
+          options = {
+            type: constants.get( values[ 0 ] )
+          };
+        }
+
+        createRenderer( options ).should.instanceof( values[ 1 ] );
       } );
     } );
   } );

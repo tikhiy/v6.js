@@ -53,6 +53,16 @@ describe( 'v6.Image', function ()
       } );
     } );
 
+    it( 'throwes when no "image.src" provided', function ()
+    {
+      var img = document.createElement( 'img' );
+
+      ( function ()
+      {
+        return new Image( img );
+      } ).should.throw( Error, /src/ );
+    } );
+
     describe( 'new v6.Image.complete', function ()
     {
       it( 'works', function ()
@@ -112,7 +122,7 @@ describe( 'v6.Image', function ()
     it( 'works with cut image', function ()
     {
       var cut       = Image.cut( image, 200, 100, 400, 300 );
-      var stretched = Image.stretch( cut, 400, 600 );
+      var stretched = Image.stretch( cut, 800, 300 );
 
       stretched.should.like( {
         image: image,

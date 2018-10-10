@@ -43,6 +43,71 @@ describe( 'v6.HSLA', function ()
       new HSLA( h, s, l, a );
     } );
 
+    describe( 'new v6.HSLA()', function ()
+    {
+      it( 'works', function ()
+      {
+        new HSLA().should.be.like( {
+          0: 0,
+          1: 0,
+          2: 0,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.HSLA( <lightness> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new HSLA( 77.7 ).should.be.like( {
+          0: 0,
+          1: 0,
+          2: 77,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.HSLA( <lightness>, <alpha> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new HSLA( 77.7, 0.666 ).should.be.like( {
+          0: 0,
+          1: 0,
+          2: 77,
+          3: 0.666
+        } );
+      } );
+    } );
+
+    describe( 'new v6.HSLA( <hue>, <saturation>, <lightness> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new HSLA( 180.1, 70.2, 30.3 ).should.be.like( {
+          0: 180,
+          1: 70,
+          2: 30,
+          3: 1
+        } );
+      } );
+    } );
+
+    describe( 'new v6.HSLA( <hue>, <saturation>, <lightness>, <alpha> )', function ()
+    {
+      it( 'works', function ()
+      {
+        new HSLA( 180.1, 70.2, 30.3, 0.666 ).should.be.like( {
+          0: 180,
+          1: 70,
+          2: 30,
+          3: 0.666
+        } );
+      } );
+    } );
+
     describe( 'new v6.HSLA.type', function ()
     {
       it( 'equals to "hsla"', function ()

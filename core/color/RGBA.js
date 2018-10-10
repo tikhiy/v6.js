@@ -130,7 +130,7 @@ RGBA.prototype = {
       case typeof r === 'string':
         r = parse( r );
         // falls through
-      case typeof r === 'object' && r != null: // eslint-disable-line eqeqeq
+      case typeof r === 'object' && r !== null:
         if ( r.type !== this.type ) {
           r = r[ this.type ]();
         }
@@ -258,8 +258,8 @@ RGBA.prototype = {
   lerp: function lerp ( r, g, b, value )
   {
     r = this[ 0 ] + ( r - this[ 0 ] ) * value;
-    g = this[ 0 ] + ( g - this[ 0 ] ) * value;
-    b = this[ 0 ] + ( b - this[ 0 ] ) * value;
+    g = this[ 1 ] + ( g - this[ 1 ] ) * value;
+    b = this[ 2 ] + ( b - this[ 2 ] ) * value;
     return new RGBA( r, g, b, this[ 3 ] );
   },
 

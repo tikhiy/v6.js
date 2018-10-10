@@ -28,17 +28,18 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var defaults         = require( 'peako/defaults' );
+var defaults          = require( 'peako/defaults' );
 
-var ShaderProgram    = require( '../ShaderProgram' );
-var Transform        = require( '../Transform' );
-var constants        = require( '../constants' );
-var shaders          = require( '../shaders' );
+var ShaderProgram     = require( '../ShaderProgram' );
+var Transform         = require( '../Transform' );
+var constants         = require( '../constants' );
+var shaders           = require( '../shaders' );
 
-var align            = require( './internal/align' );
+var processRectAlignX = require( './internal/process_rect_align' ).processRectAlignX;
+var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
 
-var AbstractRenderer = require( './AbstractRenderer' );
-var options_         = require( './settings' );
+var AbstractRenderer  = require( './AbstractRenderer' );
+var settings          = require( './settings' );
 
 /**
  * Массив вершин (vertices) квадрата.
@@ -67,18 +68,24 @@ var square = ( function ()
  * @constructor v6.RendererGL
  * @extends v6.AbstractRenderer
  * @param {object} options {@link v6.options}
+ * @example
+ * // Require RendererGL.
+ * var RendererGL = require( 'v6.js/core/renderer/RendererGL' );
+ * // Create an RendererGL isntance.
+ * var renderer = new RendererGL();
  */
 function RendererGL ( options )
 {
-  AbstractRenderer.create( this, ( options = defaults( options_, options ) ), constants.get( 'RENDERER_GL' ) );
+  AbstractRenderer.create( this, ( options = defaults( settings, options ) ), constants.get( 'GL' ) );
 
   /**
-   * Эта матрица используется для таких методов как {@link v6.RendererGL#rotate}, {@link v6.RendererGL#transform}, и т.п.
+   * Эта "transformation matrix" используется для {@link v6.RendererGL#rotate} и т.п.
    * @member {v6.Transform} v6.RendererGL#matrix
    */
   this.matrix = new Transform();
 
   /**
+   * Буферы данных (вершин).
    * @member {object} v6.RendererGL#buffers
    * @property {WebGLBuffer} default Основной буфер.
    * @property {WebGLBuffer} square  Используется для отрисовки прямоугольника в {@link v6.RendererGL#rect}.
@@ -92,6 +99,7 @@ function RendererGL ( options )
   this.context.bufferData( this.context.ARRAY_BUFFER, square, this.context.STATIC_DRAW );
 
   /**
+   * Шейдеры (WebGL программы).
    * @member {object} v6.RendererGL#programs
    * @property {v6.ShaderProgram} default
    */
@@ -108,9 +116,6 @@ RendererGL.prototype.constructor = RendererGL;
 /**
  * @override
  * @method v6.RendererGL#resize
- * @param {number} w
- * @param {number} h
- * @chainable
  */
 RendererGL.prototype.resize = function resize ( w, h )
 {
@@ -143,14 +148,16 @@ RendererGL.prototype.blending = function blending ( blending )
 };
 
 /**
- * Takes normalized color channels.
+ * Очищает контекст.
  * @private
  * @method v6.RendererGL#_clear
- * @param  {number} r
- * @param  {number} g
- * @param  {number} b
- * @param  {number} a
- * @return {void}
+ * @param  {number} r Нормализованное значение "red channel".
+ * @param  {number} g Нормализованное значение "green channel".
+ * @param  {number} b Нормализованное значение "blue channel".
+ * @param  {number} a Нормализованное значение прозрачности (alpha).
+ * @return {void}     Ничего не возвращает.
+ * @example
+ * renderer._clear( 1, 0, 0, 1 ); // Fill context with red color.
  */
 RendererGL.prototype._clear = function _clear ( r, g, b, a )
 {
@@ -241,7 +248,7 @@ RendererGL.prototype._stroke = function _stroke ( count )
  */
 RendererGL.prototype.arc = function arc ( x, y, r )
 {
-  return this._polygon( x, y, r, r, 24, 0 );
+  return this.drawPolygon( x, y, r, r, 24, 0 );
 };
 
 /**
@@ -250,10 +257,10 @@ RendererGL.prototype.arc = function arc ( x, y, r )
  */
 RendererGL.prototype.rect = function rect ( x, y, w, h )
 {
-  var alignedX = align( x, w, this._rectAlignX );
-  var alignedY = align( y, h, this._rectAlignY );
+  x = processRectAlignX( this, x, w );
+  y = processRectAlignY( this, y, h );
   this.matrix.save();
-  this.matrix.translate( alignedX, alignedY );
+  this.matrix.translate( x, y );
   this.matrix.scale( w, h );
   this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
   this.drawArrays( null, 4 );
@@ -272,13 +279,13 @@ module.exports = RendererGL;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Oct 06 2018 20:35:20 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,37 +1,75 @@
 'use strict';
 
-var Renderer2D = require( '../../../core/renderer/Renderer2D' );
+var AbstractRenderer = require( '../../../core/renderer/AbstractRenderer' );
+var Renderer2D       = require( '../../../core/renderer/Renderer2D' );
 
-var internal   = require( './__internal__' );
+var internal         = require( './__internal__' );
 
 describe( 'v6.Renderer2D', function ()
 {
   it( 'successfully required', function ()
   {
-    Renderer2D.should.a( 'function' );
+    Renderer2D.should.be.a( 'function' );
+  } );
+
+  it( 'extends v6.AbstractRenderer', function ()
+  {
+    Renderer2D.prototype.should.instanceof( AbstractRenderer );
   } );
 
   describe( 'new v6.Renderer2D', function ()
   {
-    it( 'works without options', function ()
+    it( 'works with no options', function ()
     {
       var renderer = new Renderer2D(); // eslint-disable-line no-unused-vars
     } );
 
-    describe( 'new v6.Renderer2D @param options.appendTo', function ()
+    it( 'works with options.appendTo', function ()
     {
-      it( 'works', function ()
+      internal.div( function ( div )
       {
-        internal.div( function ( div )
-        {
-          new Renderer2D( { appendTo: div } ).should.as( {
-            canvas: {
-              parentNode: div
-            },
+        new Renderer2D( { appendTo: div } ).should.be.as( {
+          canvas: {
+            parentNode: div
+          },
 
-            w: 600,
-            h: 400
-          } );
+          w: 600,
+          h: 400
+        } );
+      } );
+    } );
+
+    it( 'works with options.appendTo: null', function ()
+    {
+      new Renderer2D( { appendTo: null } ).should.be.like( {
+        w: 600,
+        h: 400
+      } );
+    } );
+
+    it( 'works with options.w and options.h', function ()
+    {
+      new Renderer2D( { w: 1280, h: 720 } ).should.be.like( {
+        w: 1280,
+        h: 720
+      } );
+    } );
+
+    it( 'works with incorrect options.w and options.h', function ()
+    {
+      new Renderer2D( { w: 0 / 0, h: 0 / 0 } ).should.be.like( {
+        w: 0,
+        h: 0
+      } );
+    } );
+
+    it( 'works with options.w and options.h and options.appendTo', function ()
+    {
+      internal.div( function ( div )
+      {
+        new Renderer2D( { w: 1280, h: 720, appendTo: div } ).should.be.like( {
+          w: 1280,
+          h: 720
         } );
       } );
     } );

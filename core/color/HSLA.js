@@ -116,7 +116,7 @@ HSLA.prototype = {
       case typeof h === 'string':
         h = parse( h );
         // falls through
-      case typeof h === 'object' && h != null: // eslint-disable-line eqeqeq
+      case typeof h === 'object' && h !== null:
         if ( h.type !== this.type ) {
           h = h[ this.type ]();
         }

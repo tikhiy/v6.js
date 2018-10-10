@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Global</title>
+    <title>JSDoc: Namespace: constants</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Global</h1>
+    <h1 class="page-title">Namespace: constants</h1>
 
     
 
@@ -28,7 +28,8 @@
 
 <header>
     
-        <h2></h2>
+        <h2>
+            <span class="ancestors"><a href="v6.html">v6</a>.</span>constants</h2>
         
     
 </header>
@@ -37,80 +38,24 @@
     <div class="container-overview">
     
         
-
+            <div class="description"><p>Стандартные константы:</p>
+<ul>
+<li><code>&quot;AUTO&quot;</code></li>
+<li><code>&quot;GL&quot;</code></li>
+<li><code>&quot;2D&quot;</code></li>
+<li><code>&quot;LEFT&quot;</code></li>
+<li><code>&quot;TOP&quot;</code></li>
+<li><code>&quot;CENTER&quot;</code></li>
+<li><code>&quot;MIDDLE&quot;</code></li>
+<li><code>&quot;RIGHT&quot;</code></li>
+<li><code>&quot;BOTTOM&quot;</code></li>
+<li><code>&quot;PERCENT&quot;</code></li>
+<li><code>&quot;POINTS&quot;</code></li>
+<li><code>&quot;LINES&quot;</code></li>
+</ul></div>
         
 
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
         
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id="degress"><span class="type-signature"></span>degress<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Использовать градусы вместо радианов.</p>
-</div>
-
-
-
-
-
 
 
 <dl class="details">
@@ -142,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_settings.js.html">core/settings.js</a>, <a href="core_settings.js.html#line6">line 6</a>
+        <a href="core_constants.js.html">core/constants.js</a>, <a href="core_constants.js.html#line3">line 3</a>
     </li></ul></dd>
     
 
@@ -154,11 +99,27 @@
 </dl>
 
 
-
-
-
+        
+            <h3>Example</h3>
+            
+    <pre class="prettyprint"><code>var constants = require( 'v6.js/core/constants' );</code></pre>
 
         
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -170,7 +131,7 @@
     
 
     
-    <h4 class="name" id="lineWidth"><span class="type-signature"></span>lineWidth<span class="signature">(number)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".add"><span class="type-signature">(static) </span>add<span class="signature">(key)</span><span class="type-signature"> &rarr; {void}</span></h4>
     
 
     
@@ -178,7 +139,7 @@
 
 
 <div class="description">
-    <p>Устанавливает lineWidth (ширину контура).</p>
+    <p>Добавляет константу.</p>
 </div>
 
 
@@ -214,13 +175,13 @@
 
         <tr>
             
-                <td class="name"><code>number</code></td>
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -230,7 +191,7 @@
 
             
 
-            <td class="description last"><p>Новый lineWidth.</p></td>
+            <td class="description last"><p>Имя константы.</p></td>
         </tr>
 
     
@@ -271,7 +232,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_renderer_AbstractRenderer.js.html">core/renderer/AbstractRenderer.js</a>, <a href="core_renderer_AbstractRenderer.js.html#line381">line 381</a>
+        <a href="core_constants.js.html">core/constants.js</a>, <a href="core_constants.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -294,51 +255,111 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Ничего не возвращает.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Set `lineWidth` to 10px.
-renderer.lineWidth( 10 );</code></pre>
+    <pre class="prettyprint"><code>constants.add( 'CUSTOM_CONSTANT' );</code></pre>
 
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id=".get"><span class="type-signature">(static) </span>get<span class="signature">(key)</span><span class="type-signature"> &rarr; {constant}</span></h4>
     
 
     
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id="TColor">TColor</h4>
-
 
 
 
 <div class="description">
-    <p>A valid CSS-color: <code>&quot;hsl(360, 100%, 100%)&quot;</code>, <code>&quot;#ff00ff&quot;</code>, <code>&quot;lightpink&quot;</code>. <a href="v6.HSLA.html">v6.HSLA</a> or <a href="v6.RGBA.html">v6.RGBA</a>.</p>
+    <p>Возвращает константу.</p>
 </div>
 
 
 
-    <h5>Type:</h5>
-    <ul>
-        <li>
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
             
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
 <span class="param-type">string</span>
-|
-
-<span class="param-type"><a href="v6.HSLA.html">v6.HSLA</a></span>
-|
-
-<span class="param-type"><a href="v6.RGBA.html">v6.RGBA</a></span>
 
 
-        </li>
-    </ul>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Имя константы.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
 
 
 
@@ -373,7 +394,7 @@ renderer.lineWidth( 10 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line13">line 13</a>
+        <a href="core_constants.js.html">core/constants.js</a>, <a href="core_constants.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -389,7 +410,48 @@ renderer.lineWidth( 10 );</code></pre>
 
 
 
-            
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Возвращает константу.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">constant</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>constants.get( 'CUSTOM_CONSTANT' );</code></pre>
+
+
+
+        
+    
+
     
 
     

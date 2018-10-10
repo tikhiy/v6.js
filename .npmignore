@@ -1,3 +1,4 @@
+build
 docs
 test
 karma.conf.js
@@ -5,6 +6,3 @@ karma.conf.js
 .eslintrc.json
 .gitignore
 .jsdoc.js
-.jshintignore
-.jshintrc
-.npmignore

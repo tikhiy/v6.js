@@ -2,7 +2,7 @@
 
 var Renderer2D = require( '../../../core/renderer/Renderer2D' );
 
-var internal   = require( './internal' );
+var internal   = require( './__internal__' );
 
 describe( 'v6.Renderer2D', function ()
 {

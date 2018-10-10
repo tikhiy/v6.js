@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/silent-tempest/v6.js.git"
   },
-  "author": "SILENT",
+  "author": "Vladislav Tikhiy (SILENT)",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/silent-tempest/v6.js/issues"
@@ -26,7 +26,6 @@
   "devDependencies": {
     "browserify": "^16.2.3",
     "browserify-istanbul": "^3.0.1",
-    "browserify-optional": "^1.0.1",
     "chai": "^4.2.0",
     "chai-like": "^1.1.1",
     "eslint": "^5.6.1",
@@ -43,13 +42,7 @@
     "karma-nyan-reporter": "^0.2.5",
     "mocha": "^5.2.0",
     "sinon": "^6.3.5",
-    "uglify-es": "^3.3.9",
-    "unexpected": "^10.39.1"
-  },
-  "browserify": {
-    "transform": [
-      "browserify-optional"
-    ]
+    "uglify-es": "^3.3.9"
   },
   "directories": {
     "doc": "docs",

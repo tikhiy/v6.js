@@ -3,7 +3,7 @@
 var RGBA     = require( '../../../core/color/RGBA' );
 var HSLA     = require( '../../../core/color/HSLA' );
 
-var internal = require( '../renderer/internal' );
+var internal = require( '../renderer/__internal__' );
 
 describe( 'v6.RGBA', function ()
 {

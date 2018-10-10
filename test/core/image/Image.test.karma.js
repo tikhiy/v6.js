@@ -6,7 +6,7 @@ var Image           = require( '../../../core/image/Image' );
 
 describe( 'v6.Image', function ()
 {
-  var src = 'http://localhost:8765/image/assets/600x400.png';
+  var src = 'http://localhost:8765/image/__assets__/600x400.png';
   var img, image;
 
   beforeEach( function ()

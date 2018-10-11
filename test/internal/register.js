@@ -12,3 +12,5 @@ global.sinon  = sinon;
 
 chai.use( like );
 chai.use( as );
+
+chai.truncateThreshold = 0;

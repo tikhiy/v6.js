@@ -19,7 +19,7 @@ start_static_server:
 	node test/internal/server
 
 mocha:
-	node_modules/.bin/mocha -r test/internal/register test/**/*.test.js
+	node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`
 
 karma\:start:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-single-run --browsers=FirefoxDeveloper

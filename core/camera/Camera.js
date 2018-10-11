@@ -1,130 +1,186 @@
 'use strict';
 
-var defaultTo = require( 'peako/default-to' );
+var defaults = require( 'peako/defaults' );
+var mixin    = require( 'peako/mixin' );
 
-var Vector2D  = require( '../math/Vector2D' );
+var settings = require( './settings' );
 
-function Camera ( renderer, options )
+/**
+ * Класс камеры. Этот класс удобен для создания камеры, которая должна быть
+ * направленна на определенный объект в приложении, например: на машину в
+ * гоночной игре. Камера будет сама плавно и с анимацией направляться на нужный
+ * объект.
+ * @constructor v6.Camera
+ * @param {object}              [options]          Параметры для создания камеры, смотрите {@link v6.settings.camera}.
+ * @param {v6.AbstractRenderer} [options.renderer] Рендерер.
+ * @example <caption>Require "v6.Camera"</caption>
+ * var Camera = require( 'v6.js/core/camera/Camera' );
+ * @example <caption>Create an instance</caption>
+ * var camera = new Camera();
+ * @example <caption>Create an instance with options</caption>
+ * var camera = new Camera( {
+ *   settings: {
+ *     speed: {
+ *       x: 0.15,
+ *       y: 0.15
+ *     }
+ *   }
+ * } );
+ * @example <caption>Create an instance with renderer</caption>
+ * var camera = new Camera( {
+ *   renderer: renderer
+ * } );
+ */
+function Camera ( options )
 {
-  if ( ! options ) {
-    options = {};
+  options = defaults( settings, options );
+
+  /**
+   * Настройки камеры, такие как скорость анимации или масштаб.
+   * @member {object} v6.Camera#settings
+   */
+  this.settings = options.settings;
+
+  /**
+   * Рендерер.
+   * @member {v6.AbstractRenderer|void} v6.Camera#renderer
+   */
+
+  if ( options.renderer ) {
+    this.renderer = options.renderer;
   }
 
-  this.xSpeed           = defaultTo( options.xSpeed, 1 );
-  this.ySpeed           = defaultTo( options.ySpeed, 1 );
-  this.zoomInSpeed      = defaultTo( options.zoomInSpeed,  1 );
-  this.zoomOutSpeed     = defaultTo( options.zoomOutSpeed, 1 );
+  /**
+   * Объект, на который направлена камера.
+   * @private
+   * @member {object?} v6.Camera#_object
+   * @see v6.Camera#lookAt
+   */
+  this._object = null;
 
-  this.zoom             = defaultTo( options.zoom,    1 );
-  this.minZoom          = defaultTo( options.minZoom, 1 );
-  this.maxZoom          = defaultTo( options.maxZoom, 1 );
-
-  this.linearZoomIn     = defaultTo( options.linearZoomIn,  true );
-  this.linearZoomOut    = defaultTo( options.linearZoomOut, true );
-
-  this.offset           = options.offset;
-
-  if ( renderer ) {
-    if ( ! this.offset ) {
-      this.offset = new Vector2D( renderer.w * 0.5, renderer.h * 0.5 );
-    }
-
-    this.renderer = renderer;
-  } else if ( ! this.offset ) {
-    this.offset = new Vector2D();
-  }
-
-  this.position = [
-    0, 0,
-    0, 0,
-    0, 0
-  ];
+  /**
+   * Свойство, которое надо брать из {@link v6.Camera#_object}.
+   * @private
+   * @member {string?} v6.Camera#_key
+   * @see v6.Camera#lookAt
+   */
+  this._key = null;
 }
 
 Camera.prototype = {
-  update: function update ()
+  /**
+   * Возвращает объект, на который камера должна быть направлена.
+   * @private
+   * @method v6.Camera#_getObject
+   * @return {IVector2D?} Объект или "null".
+   */
+  _getObject: function _getObject ()
   {
-    var pos = this.position;
-
-    if ( pos[ 0 ] !== pos[ 2 ] ) {
-      pos[ 0 ] += ( pos[ 2 ] - pos[ 0 ] ) * this.xSpeed;
+    if ( this._key === null ) {
+      return this._object;
     }
 
-    if ( pos[ 1 ] !== pos[ 3 ] ) {
-      pos[ 1 ] += ( pos[ 3 ] - pos[ 1 ] ) * this.ySpeed;
+    return this._object[ this._key ];
+  },
+
+  /**
+   * Устанавливает настройки.
+   * @method v6.Camera#set
+   * @param {string} setting Имя настройки: "zoom-in speed", "zoom-out speed", "zoom".
+   * @param {any}    value   Новое значение настройки.
+   * @chainable
+   * @example
+   * // Set zoom-in speed setting to 0.0025 with linear flag.
+   * camera.set( 'zoom-in speed', { value: 0.0025, linear: true } );
+   * // Turn off linear flag.
+   * camera.set( 'zoom-in speed', { linear: false } );
+   * // Set zoom setting to 1 with range [ 0.75 .. 1.125 ].
+   * camera.set( 'zoom', { value: 1, min: 0.75, max: 1.125 } );
+   * // Set camera speed.
+   * camera.set( 'speed', { x: 0.1, y: 0.1 } );
+   */
+  set: function set ( setting, value )
+  {
+    switch ( setting ) {
+      case 'zoom-out speed':
+      case 'zoom-in speed':
+      case 'speed':
+      case 'zoom':
+        mixin( this.settings[ setting ], value );
+        break;
+      default:
+        throw Error( 'Got unknown setting name: ' + setting );
     }
 
     return this;
   },
 
-  lookAt: function lookAt ( at )
+  /**
+   * Направляет камеру на определенную позицию (`"object"`).
+   * @method v6.Camera#lookAt
+   * @param {IVector2D} object Позиция, в которую должна смотреть камера.
+   * @param {string}   [key]   Свойство, которое надо брать из `object`.
+   * @chainable
+   * @example
+   * // An object.
+   * var car = {
+   *   position: {
+   *     x: 4,
+   *     y: 2
+   *   }
+   * };
+   * // Direct a camera on the car.
+   * camera.lookAt( car, 'position' );
+   * // This way works too but if the 'position' will be replaced it would not work.
+   * camera.lookAt( car.position );
+   */
+  lookAt: function lookAt ( object, key )
   {
-    var pos = this.position;
-    var off = this.offset;
+    this._object = object;
 
-    pos[ 2 ] = off.x / this.zoom - at.x;
-    pos[ 3 ] = off.y / this.zoom - at.y;
-    pos[ 4 ] = at.x;
-    pos[ 5 ] = at.y;
+    if ( typeof key === 'undefined' ) {
+      this._key = null;
+    } else {
+      this._key = key;
+    }
 
     return this;
   },
 
+  /**
+   * Возвращает позицию, на которую камера должна быть направлена.
+   * @method v6.Camera#shouldLookAt
+   * @return {IVector2D} Позиция.
+   * @example
+   * var object = {
+   *   position: {
+   *     x: 4,
+   *     y: 2
+   *   }
+   * };
+   *
+   * camera.lookAt( object, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (clone of "object.position").
+   */
   shouldLookAt: function shouldLookAt ()
   {
-    return new Vector2D( this.position[ 4 ], this.position[ 5 ] );
-  },
+    var position = this._getObject();
 
-  looksAt: function looksAt ()
-  {
-    var x = ( this.offset.x - this.position[ 0 ] * this.zoom ) / this.zoom;
-    var y = ( this.offset.y - this.position[ 1 ] * this.zoom ) / this.zoom;
-    return new Vector2D( x, y );
-  },
-
-  sees: function sees ( x, y, w, h, renderer )
-  {
-    var off = this.offset;
-    var at  = this.looksAt();
-
-    if ( ! renderer ) {
-      renderer = this.renderer;
+    if ( position === null ) {
+      return {
+        x: 0,
+        y: 0
+      };
     }
 
-    return x + w > at.x - off.x / this.zoom &&
-           x     < at.x + ( renderer.w - off.x ) / this.zoom &&
-           y + h > at.y - off.y / this.zoom &&
-           y     < at.y + ( renderer.h - off.y ) / this.zoom;
+    return {
+      x: position.x,
+      y: position.y
+    };
   },
 
-  zoomIn: function zoomIn ()
+  update: function update ()
   {
-    var speed;
-
-    if ( this.zoom !== this.maxZoom ) {
-      if ( this.linearZoomIn ) {
-        speed = this.zoomInSpeed * this.zoom;
-      } else {
-        speed = this.zoomInSpeed;
-      }
-
-      this.zoom = Math.min( this.zoom + speed, this.maxZoom );
-    }
-  },
-
-  zoomOut: function zoomOut ()
-  {
-    var speed;
-
-    if ( this.zoom !== this.minZoom ) {
-      if ( this.linearZoomOut ) {
-        speed = this.zoomOutSpeed * this.zoom;
-      } else {
-        speed = this.zoomOutSpeed;
-      }
-
-      this.zoom = Math.max( this.zoom - speed, this.minZoom );
-    }
+    return this;
   },
 
   constructor: Camera

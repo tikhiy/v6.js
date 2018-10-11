@@ -189,7 +189,7 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
     .use()
     .setUniform( 'utransform', this.matrix.matrix )
     .setUniform( 'ures', [ this.w, this.h ] )
-    .pointer( 'apos', 2, gl.FLOAT, false, 0, 0 );
+    .setAttribute( 'apos', 2, gl.FLOAT, false, 0, 0 );
 
   this._fill( count );
   this._stroke( count );

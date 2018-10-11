@@ -171,21 +171,13 @@ Renderer2D.prototype.arc = function arc ( x, y, r )
   return this;
 };
 
-/**
- * @override
- * @method v6.Renderer2D#_fill
- */
 Renderer2D.prototype._fill = function _fill ()
 {
   this.context.fillStyle = this._fillColor;
   this.context.fill();
 };
 
-/**
- * @override
- * @method v6.Renderer2D#_stroke
- */
-Renderer2D.prototype._stroke = function ()
+Renderer2D.prototype._stroke = function _stroke ()
 {
   var context = this.context;
 

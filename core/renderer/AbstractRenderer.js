@@ -380,7 +380,7 @@ AbstractRenderer.prototype = {
   },
   /**
    * Устанавливает lineWidth (ширину контура).
-   * @method lineWidth
+   * @method v6.AbstractRenderer#lineWidth
    * @param {number} number Новый lineWidth.
    * @chainable
    * @example
@@ -455,7 +455,7 @@ AbstractRenderer.prototype = {
    * // Set `stroke` from `v6.RGBA`.
    * renderer.stroke( new RGBA( 255, 0, 0 ).perceivedBrightness() );
    */
-  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
   /**
    * Устанавливает цвет `fill` при рисовании через {@link v6.AbstractRenderer#rect} и т.п.
    * @method v6.AbstractRenderer#fill
@@ -473,7 +473,7 @@ AbstractRenderer.prototype = {
    * // Set `fill` from `v6.RGBA`.
    * renderer.fill( new RGBA( 255, 0, 0 ).brightness() );
    */
-  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  fill: function fill ( r, g, b, a ) { if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
   /**
    * Выключает рисование контура (stroke).
    * @method v6.AbstractRenderer#noStroke

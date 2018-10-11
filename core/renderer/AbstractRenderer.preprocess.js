@@ -426,7 +426,7 @@ AbstractRenderer.prototype = {
 
   /**
    * Устанавливает lineWidth (ширину контура).
-   * @method lineWidth
+   * @method v6.AbstractRenderer#lineWidth
    * @param {number} number Новый lineWidth.
    * @chainable
    * @example
@@ -533,9 +533,7 @@ AbstractRenderer.prototype = {
   #define fill( fill, _doFill )                                                                 \
     fill: function fill ( r, g, b, a )                                                          \
     {                                                                                           \
-      if ( typeof r === 'undefined' ) {                                                         \
-        this._##fill();                                                                         \
-      } else if ( typeof r === 'boolean' ) {                                                    \
+      if ( typeof r === 'boolean' ) {                                                           \
         this._doFill = r;                                                                       \
       } else {                                                                                  \
         if ( typeof r === 'string' || this._##fill##Color.type !== this.settings.color.type ) { \

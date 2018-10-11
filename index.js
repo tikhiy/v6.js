@@ -15,6 +15,20 @@
  * @typedef {string|v6.HSLA|v6.RGBA} TColor
  */
 
+/**
+ * @typedef {number} constant
+ * @see v6.constants
+ * @example
+ * // This is a constant.
+ * var RENDERER_TYPE = constants.get( 'GL' );
+ */
+
+/**
+ * @interface IVector2D
+ * @property {number} x
+ * @property {number} y
+ */
+
 exports.AbstractImage    = require( './core/image/AbstractImage' );
 exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
 exports.AbstractVector   = require( './core/math/AbstractVector' );
@@ -33,6 +47,16 @@ exports.Vector3D         = require( './core/math/Vector3D' );
 exports.constants        = require( './core/constants' );
 exports.createRenderer   = require( './core/renderer' );
 exports.shaders          = require( './core/shaders' );
+
+/**
+ * Настройки "v6.js".
+ * @namespace v6.settings
+ */
+exports.settings = {
+  renderer: require( './core/renderer/settings' ),
+  camera:   require( './core/camera/settings' ),
+  core:     require( './core/settings' )
+};
 
 if ( typeof self !== 'undefined' ) {
   self.v6 = exports;

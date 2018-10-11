@@ -1,19 +1,7 @@
 'use strict';
 
 /**
- * Стандартные константы:
- * * `"AUTO"`
- * * `"GL"`
- * * `"2D"`
- * * `"LEFT"`
- * * `"TOP"`
- * * `"CENTER"`
- * * `"MIDDLE"`
- * * `"RIGHT"`
- * * `"BOTTOM"`
- * * `"PERCENT"`
- * * `"POINTS"`
- * * `"LINES"`
+ * Константы.
  * @namespace {object} v6.constants
  * @example
  * var constants = require( 'v6.js/core/constants' );

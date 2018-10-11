@@ -81,16 +81,16 @@ ShaderProgram.prototype = {
   },
 
   /**
-   * @method v6.ShaderProgram#setAttr
+   * @method v6.ShaderProgram#setAttribute
    * @chainable
    * @see [WebGLRenderingContext#enableVertexAttribArray](https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/enableVertexAttribArray)
    * @see [WebGLRenderingContext#vertexAttribPointer](https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/vertexAttribPointer)
    * @example
-   * program.setAttr( 'apos', 2, gl.FLOAT, false, 0, 0 );
+   * program.setAttribute( 'apos', 2, gl.FLOAT, false, 0, 0 );
    */
-  setAttr: function setAttr ( name, size, type, normalized, stride, offset )
+  setAttribute: function setAttribute ( name, size, type, normalized, stride, offset )
   {
-    var location = this.getAttr( name ).location;
+    var location = this.getAttribute( name ).location;
     this._gl.enableVertexAttribArray( location );
     this._gl.vertexAttribPointer( location, size, type, normalized, stride, offset );
     return this;
@@ -138,13 +138,13 @@ ShaderProgram.prototype = {
   },
 
   /**
-   * @method v6.ShaderProgram#getAttr
+   * @method v6.ShaderProgram#getAttribute
    * @param  {string}     name Название атрибута.
    * @return {IAttribute}      Возвращает данные о атрибуте.
    * @example
-   * var { location } = program.getAttr( 'apos' );
+   * var location = program.getAttribute( 'apos' ).location;
    */
-  getAttr: function getAttr ( name )
+  getAttribute: function getAttribute ( name )
   {
     var attr = this._attrs[ name ];
 

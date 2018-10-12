@@ -10,25 +10,6 @@
  * @namespace v6
  */
 
-/**
- * A valid CSS-color: `"hsl(360, 100%, 100%)"`, `"#ff00ff"`, `"lightpink"`. {@link v6.HSLA} or {@link v6.RGBA}.
- * @typedef {string|v6.HSLA|v6.RGBA} TColor
- */
-
-/**
- * @typedef {number} constant
- * @see v6.constants
- * @example
- * // This is a constant.
- * var RENDERER_TYPE = constants.get( 'GL' );
- */
-
-/**
- * @interface IVector2D
- * @property {number} x
- * @property {number} y
- */
-
 exports.AbstractImage    = require( './core/image/AbstractImage' );
 exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
 exports.AbstractVector   = require( './core/math/AbstractVector' );
@@ -47,6 +28,7 @@ exports.Vector3D         = require( './core/math/Vector3D' );
 exports.constants        = require( './core/constants' );
 exports.createRenderer   = require( './core/renderer' );
 exports.shaders          = require( './core/shaders' );
+exports.mat3             = require( './core/math/mat3' );
 
 /**
  * Настройки "v6.js".
@@ -61,3 +43,31 @@ exports.settings = {
 if ( typeof self !== 'undefined' ) {
   self.v6 = exports;
 }
+
+/**
+ * @typedef {string|v6.HSLA|v6.RGBA} TColor
+ * @example <caption>A string (CSS color).</caption>
+ * var color = 'rgba( 255, 0, 255, 1 )';
+ * var color = 'hsl( 360, 100%, 50% )';
+ * var color = '#ff00ff';
+ * var color = 'lightpink';
+ * var color = '#00000000'; // The same as "transparent".
+ *                          // NOTE: CSS does not support this syntax but "v6.js" does.
+ * @example <caption>An object (v6.RGBA, v6.HSLA)</caption>
+ * var color = new RGBA( 255, 0, 255, 1 );
+ * var color = new HSLA( 360, 100, 50 );
+ */
+
+/**
+ * @typedef {number} constant
+ * @see v6.constants
+ * @example
+ * // This is a constant.
+ * var RENDERER_TYPE = constants.get( 'GL' );
+ */
+
+/**
+ * @interface IVector2D
+ * @property {number} x
+ * @property {number} y
+ */

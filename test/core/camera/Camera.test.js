@@ -103,28 +103,28 @@ describe( 'v6.Camera API', function ()
       } );
     } );
 
-    describe( 'new v6.Camera.update', function ()
-    {
-      it( 'works', function ()
-      {
-        throw Error( 'Not implemented' );
-      } );
-    } );
+  //   describe( 'new v6.Camera.update', function ()
+  //   {
+  //     it( 'works', function ()
+  //     {
+  //       throw Error( 'Not implemented' );
+  //     } );
+  //   } );
 
-    describe( 'new v6.Camera.looksAt', function ()
-    {
-      it( 'works #1', function ()
-      {
-        camera.looksAt().should.deep.equal( {
-          x: 0,
-          y: 0
-        } );
-      } );
+  //   describe( 'new v6.Camera.looksAt', function ()
+  //   {
+  //     it( 'works #1', function ()
+  //     {
+  //       camera.looksAt().should.deep.equal( {
+  //         x: 0,
+  //         y: 0
+  //       } );
+  //     } );
 
-      it( 'works #2', function ()
-      {
-        throw Error( 'Not implemented' );
-      } );
-    } );
+  //     it( 'works #2', function ()
+  //     {
+  //       throw Error( 'Not implemented' );
+  //     } );
+  //   } );
   } );
 } );

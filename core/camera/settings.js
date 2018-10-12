@@ -26,8 +26,8 @@
  * @property {number}    ['zoom'.min=1]                 Минимальный масштаб камеры.
  * @property {number}    ['zoom'.max=1]                 Максимальный масштаб камеры.
  * @property {object}    ['speed']                      Скорость направления камеры на объект.
- * @property {number}    ['speed'.x=1]
- * @property {number}    ['speed'.y=1]
+ * @property {number}    ['speed'.x=1]                  1 - моментальное перемещение по X, 0.1 - медленное.
+ * @property {number}    ['speed'.y=1]                  1 - моментальное перемещение по Y, 0.1 - медленное.
  * @property {IVector2D} ['offset']
  */
 exports.settings = {

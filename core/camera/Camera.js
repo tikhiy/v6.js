@@ -11,8 +11,7 @@ var settings = require( './settings' );
  * гоночной игре. Камера будет сама плавно и с анимацией направляться на нужный
  * объект.
  * @constructor v6.Camera
- * @param {object}              [options]          Параметры для создания камеры, смотрите {@link v6.settings.camera}.
- * @param {v6.AbstractRenderer} [options.renderer] Рендерер.
+ * @param {object} [options] Параметры для создания камеры, смотрите {@link v6.settings.camera}.
  * @example <caption>Require "v6.Camera"</caption>
  * var Camera = require( 'v6.js/core/camera/Camera' );
  * @example <caption>Create an instance</caption>
@@ -38,6 +37,7 @@ function Camera ( options )
   /**
    * Настройки камеры, такие как скорость анимации или масштаб.
    * @member {object} v6.Camera#settings
+   * @see v6.settings.camera.settings
    */
   this.settings = options.settings;
 
@@ -81,6 +81,7 @@ function Camera ( options )
 
   /**
    * Текущяя позиция камеры (сюда направлена камера).
+   * @private
    * @member {IVector2D} v6.Camera#_looksAt
    */
   this._looksAt = {
@@ -217,7 +218,7 @@ Camera.prototype = {
     var position = this._looksAt;
     var destination;
 
-    if ( object ) {
+    if ( object !== null ) {
       destination = {
         x: this.settings.offset.x / this.settings.zoom.value - object.x,
         y: this.settings.offset.y / this.settings.zoom.value - object.y

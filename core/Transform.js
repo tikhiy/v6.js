@@ -1,6 +1,6 @@
 'use strict';
 
-var mat3 = require( './mat3' );
+var mat3 = require( './math/mat3' );
 
 function Transform ()
 {

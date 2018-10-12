@@ -41,13 +41,26 @@ function Camera ( options )
    */
   this.settings = options.settings;
 
-  /**
-   * Рендерер.
-   * @member {v6.AbstractRenderer|void} v6.Camera#renderer
-   */
-
   if ( options.renderer ) {
+    /**
+     * Рендерер.
+     * @member {v6.AbstractRenderer|void} v6.Camera#renderer
+     */
     this.renderer = options.renderer;
+  }
+
+  if ( ! this.settings.offset ) {
+    if ( this.renderer ) {
+      this.settings.offset = {
+        x: this.renderer.w * 0.5,
+        y: this.renderer.h * 0.5
+      };
+    } else {
+      this.settings.offset = {
+        x: 0,
+        y: 0
+      };
+    }
   }
 
   /**
@@ -65,6 +78,15 @@ function Camera ( options )
    * @see v6.Camera#lookAt
    */
   this._key = null;
+
+  /**
+   * Текущяя позиция камеры (сюда направлена камера).
+   * @member {IVector2D} v6.Camera#_looksAt
+   */
+  this._looksAt = {
+    x: 0,
+    y: 0
+  };
 }
 
 Camera.prototype = {
@@ -178,8 +200,38 @@ Camera.prototype = {
     };
   },
 
+  /**
+   * Обновляет позицию, на которую направлена камера.
+   * @method v6.Camera#update
+   * @chainable
+   * @see
+   * ticker.on( 'update', function ()
+   * {
+   *   // Update a camera on each frame.
+   *   camera.update();
+   * } );
+   */
   update: function update ()
   {
+    var object   = this._getObject();
+    var position = this._looksAt;
+    var destination;
+
+    if ( object ) {
+      destination = {
+        x: this.settings.offset.x / this.settings.zoom.value - object.x,
+        y: this.settings.offset.y / this.settings.zoom.value - object.y
+      };
+
+      if ( position.x !== destination.x ) {
+        position.x += ( destination.x - position.x ) * this.settings.speed.x;
+      }
+
+      if ( position.y !== destination.y ) {
+        position.y += ( destination.y - position.y ) * this.settings.speed.y;
+      }
+    }
+
     return this;
   },
 

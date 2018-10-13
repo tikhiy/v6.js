@@ -27,6 +27,9 @@ karma\:start:
 karma\:run:
 	node_modules/.bin/karma run
 
+karma--no-colors:
+	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-colors
+
 karma:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start
 

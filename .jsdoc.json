@@ -2,7 +2,7 @@
   "source": {
     "excludePattern": "\\.preprocess\\.js$",
     "exclude": [ "node_modules", "docs", "dist", "test", "temp", "coverage" ],
-    "include": [ "." ]
+    "include": [ ".", "README.md", "package.json" ]
   },
 
   "opts": {

@@ -31,6 +31,20 @@ exports.shaders          = require( './core/shaders' );
 exports.mat3             = require( './core/math/mat3' );
 
 /**
+ * "v6.js" built-in drawing functions.
+ * @namespace v6.shapes
+ * @see v6.AbstractRenderer.beginShape
+ * @see v6.AbstractRenderer.vertex
+ * @see v6.AbstractRenderer.endShape
+ * @example
+ * var shapes = require( 'v6.js/core/renderer/shapes' );
+ */
+exports.shapes = {
+  drawPoints: require( './core/renderer/shapes/draw_points' ),
+  drawLines:  require( './core/renderer/shapes/draw_lines' )
+};
+
+/**
  * Настройки "v6.js".
  * @namespace v6.settings
  */

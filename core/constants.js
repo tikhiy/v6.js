@@ -54,9 +54,7 @@ function get ( key )
   'MIDDLE',
   'RIGHT',
   'BOTTOM',
-  'PERCENT',
-  'POINTS',
-  'LINES'
+  'PERCENT'
 ].forEach( add );
 
 exports.add = add;

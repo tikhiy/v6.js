@@ -11,6 +11,8 @@ var getWebGL = require( './internal/get_webgl' );
 var copyDrawingSettings = require( './internal/copy_drawing_settings' );
 var processRectAlignX = require( './internal/process_rect_align' ).processRectAlignX;
 var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
+var processShape = require( './internal/process_shape' );
+var closeShape = require( './internal/close_shape' );
 var options = require( './settings' );
 /**
  * Абстрактный класс рендерера.
@@ -211,13 +213,15 @@ AbstractRenderer.prototype = {
   /**
    * Метод для начала отрисовки фигуры.
    * @method v6.AbstractRenderer#beginShape
-   * @param {object}   [options]      Параметры фигуры.
-   * @param {constant} [options.type] Тип фигуры: POINTS, LINES.
+   * @param {object}   [options]              Параметры фигуры.
+   * @param {function} [options.drawFunction] Функция, котороя будет отрисовывать все вершины в {@link v6.AbstractRenderer.endShape}. Может быть перезаписана.
    * @chainable
    * @example
-   * // Begin drawing POINTS shape.
-   * renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );
-   * // Begin drawing shape without type (must be passed later in `endShape`).
+   * // Require "v6.shapes" ("v6.js" built-in drawing functions).
+   * var shapes = require( 'v6.js/renderer/shapes/points' );
+   * // Begin drawing points shape.
+   * renderer.beginShape( { drawFunction: shapes.drawPoints } );
+   * // Begin drawing shape without drawing function (must be passed later in `endShape`).
    * renderer.beginShape();
    */
   beginShape: function beginShape ( options )
@@ -226,10 +230,11 @@ AbstractRenderer.prototype = {
       options = {};
     }
     this._vertices.length = 0;
-    if ( typeof options.type === 'undefined' ) {
-      this._shapeType = null;
+    this._closedShape = null;
+    if ( typeof options.drawFunction === 'undefined' ) {
+      this._drawFunction = null;
     } else {
-      this._shapeType = options.type;
+      this._drawFunction = options.drawFunction;
     }
     return this;
   },
@@ -251,30 +256,42 @@ AbstractRenderer.prototype = {
   vertex: function vertex ( x, y )
   {
     this._vertices.push( Math.floor( x ), Math.floor( y ) );
+    this._closedShape = null;
     return this;
   },
   /**
    * Рисует фигуру из вершин.
    * @method v6.AbstractRenderer#endShape
-   * @param {object}   [options]       Параметры фигуры.
-   * @param {boolean}  [options.close] Соединить последнюю вершину с первой (закрыть фигуру).
-   * @param {constant} [options.type]  Тип фигуры (несовместимо с `options.draw`).
-   * @param {function} [options.draw]  Нестандартная функция для отрисовки всех вершин (несовместимо с `options.type`).
+   * @param {object}   [options]              Параметры фигуры.
+   * @param {boolean}  [options.close]        Соединить последнюю вершину с первой (закрыть фигуру).
+   * @param {function} [options.drawFunction] Функция, котороя будет отрисовывать все вершины.
+   *                                          Имеет больший приоритет чем в {@link v6.AbstractRenderer#beginShape}.
    * @chainable
    * @example
-   * // Close and draw shape.
+   * // Require "v6.shapes" ("v6.js" built-in drawing functions).
+   * var shapes = require( 'v6.js/renderer/shapes/points' );
+   * // Close and draw a shape.
    * renderer.endShape( { close: true } );
-   * // Draw with custom function.
-   * renderer.endShape( {
-   *   draw: function draw ( vertices )
-   *   {
-   *     renderer.drawArrays( vertices, vertices.length / 2 );
-   *   }
-   * } );
+   * // Draw with a custom function.
+   * renderer.endShape( { drawFunction: shapes.drawLines } );
    */
-  endShape: function endShape ()
+  endShape: function endShape ( options )
   {
-    throw Error( 'Not implemented' );
+    var drawFunction, vertices;
+    if ( ! options ) {
+      options = {};
+    }
+    if ( ! ( drawFunction = options.drawFunction || this._drawFunction ) ) {
+      throw Error( 'No "drawFunction" specified for "renderer.endShape"' );
+    }
+    if ( options.close ) {
+      closeShape( this );
+      vertices = this._closedShape;
+    } else {
+      vertices = this._vertices;
+    }
+    drawFunction( this, processShape( this, vertices ) );
+    return this;
   },
   /**
    * @method v6.AbstractRenderer#save
@@ -670,12 +687,16 @@ AbstractRenderer.create = function create ( self, options, type )
    * Стэк сохраненных настроек рендеринга.
    * @private
    * @member {Array.<object>} v6.AbstractRenderer#_stack
+   * @see v6.AbstractRenderer#push
+   * @see v6.AbstractRenderer#pop
    */
   self._stack = [];
   /**
    * Позиция последних сохраненных настроек рендеринга.
    * @private
    * @member {number} v6.AbstractRenderer#_stackIndex
+   * @see v6.AbstractRenderer#push
+   * @see v6.AbstractRenderer#pop
    */
   self._stackIndex = -1;
   /**
@@ -688,14 +709,23 @@ AbstractRenderer.create = function create ( self, options, type )
    */
   self._vertices = [];
   /**
-   * Тип фигуры.
+   * Закрытая фигура (вершина).
    * @private
-   * @member {Array.<number>} v6.AbstractRenderer#_shapeType
+   * @member {Array.<number>} v6.AbstractRenderer#_drawFunction
    * @see v6.AbstractRenderer#beginShape
    * @see v6.AbstractRenderer#vertex
    * @see v6.AbstractRenderer#endShape
    */
-  self._shapeType = null;
+  self._closedShape = null;
+  /**
+   * Функция, котороя будет отрисовывать вершины.
+   * @private
+   * @member {function} v6.AbstractRenderer#_drawFunction
+   * @see v6.AbstractRenderer#beginShape
+   * @see v6.AbstractRenderer#vertex
+   * @see v6.AbstractRenderer#endShape
+   */
+  self._drawFunction = null;
   if ( typeof options.appendTo === 'undefined' ) {
     self.appendTo( document.body );
   } else if ( options.appendTo !== null ) {

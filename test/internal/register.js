@@ -6,7 +6,7 @@ var like  = require( 'chai-like' );
 
 var as    = require( './chai-as' );
 
-global.should = chai.should();
+chai.should();
 global.expect = chai.expect;
 global.sinon  = sinon;
 

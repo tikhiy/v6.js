@@ -65,4 +65,22 @@ describe( 'v6.mat3', function ()
       mat3.clone( m1 ).should.have.ordered.members( m1 ).but.not.equal( m1 );
     } );
   } );
+
+  describe( 'v6.mat3.scale', function ()
+  {
+    it( 'works', function ()
+    {
+      var x = 2;
+      var y = 3;
+
+      var result = [
+        m1[ 0 ] * x, m1[ 1 ] * x, m1[ 2 ] * x,
+        m1[ 3 ] * y, m1[ 4 ] * y, m1[ 5 ] * y,
+        m1[ 6 ],     m1[ 7 ],     m1[ 8 ]
+      ];
+
+      mat3.scale( m1, x, y );
+      m1.should.have.ordered.members( result );
+    } );
+  } );
 } );

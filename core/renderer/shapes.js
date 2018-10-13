@@ -2,7 +2,7 @@
 
 var constants = require( '../constants' );
 
-exports[ constants.get( 'POINTS' ) ] = function LINES ()
+exports[ constants.get( 'POINTS' ) ] = function POINTS ()
 {
   throw Error( 'Not implemented' );
 };

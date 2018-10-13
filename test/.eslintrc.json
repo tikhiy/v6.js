@@ -1,6 +1,5 @@
 {
   "globals": {
-    "should": false,
     "expect": false,
     "sinon": false
   },

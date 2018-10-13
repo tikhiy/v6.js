@@ -8,4 +8,9 @@ describe( 'v6.settings.camera', function ()
   {
     settings.should.be.an( 'object' );
   } );
+
+  it( 'have "settings" property', function ()
+  {
+    settings.should.have.property( 'settings' ).that.is.an( 'object' );
+  } );
 } );

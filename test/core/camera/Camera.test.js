@@ -147,6 +147,16 @@ describe( 'v6.Camera API', function ()
           camera.shouldLookAt().should.deep.equal( object.position );
         } );
       } );
+
+      describe( 'new v6.Camera.zoomIn', function ()
+      {
+        it( 'works' );
+      } );
+
+      describe( 'new v6.Camera.zoomOut', function ()
+      {
+        it( 'works' );
+      } );
     } );
   } );
 } );

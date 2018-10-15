@@ -1,9 +1,13 @@
 /* eslint lines-around-directive: off */
 /* eslint lines-around-comment: off */
+
 'use strict';
+
 var defaults = require( 'peako/defaults' );
-var mixin = require( 'peako/mixin' );
+var mixin    = require( 'peako/mixin' );
+
 var settings = require( './settings' );
+
 /**
  * Класс камеры. Этот класс удобен для создания камеры, которая должна быть
  * направленна на определенный объект в приложении, например: на машину в
@@ -32,13 +36,16 @@ var settings = require( './settings' );
 function Camera ( options )
 {
   var x, y;
+
   options = defaults( settings, options );
+
   /**
    * Настройки камеры, такие как скорость анимации или масштаб.
    * @member {object} v6.Camera#settings
    * @see v6.settings.camera.settings
    */
   this.settings = options.settings;
+
   if ( options.renderer ) {
     /**
      * Рендерер.
@@ -46,6 +53,7 @@ function Camera ( options )
      */
     this.renderer = options.renderer;
   }
+
   if ( ! this.settings.offset ) {
     if ( this.renderer ) {
       x = this.renderer.w * 0.5;
@@ -54,11 +62,13 @@ function Camera ( options )
       x = 0;
       y = 0;
     }
+
     this.settings.offset = {
       x: x,
       y: y
     };
   }
+
   /**
    * Объект, на который направлена камера.
    * @private
@@ -66,6 +76,7 @@ function Camera ( options )
    * @see v6.Camera#lookAt
    */
   this._destination = null;
+
   /**
    * Свойство, которое надо брать из {@link v6.Camera#_destination}.
    * @private
@@ -73,6 +84,7 @@ function Camera ( options )
    * @see v6.Camera#lookAt
    */
   this._destinationKey = null;
+
   /**
    * Текущяя позиция камеры (сюда направлена камера).
    * @private
@@ -83,6 +95,7 @@ function Camera ( options )
     y: 0
   };
 }
+
 Camera.prototype = {
   /**
    * Возвращает объект, на который камера должна быть направлена.
@@ -93,11 +106,14 @@ Camera.prototype = {
   _getDestination: function _getDestination ()
   {
     var _destinationKey = this._destinationKey;
+
     if ( _destinationKey === null ) {
       return this._destination;
     }
+
     return this._destination[ _destinationKey ];
   },
+
   /**
    * Устанавливает настройки.
    * @method v6.Camera#set
@@ -126,8 +142,10 @@ Camera.prototype = {
       default:
         throw Error( 'Got unknown setting name: ' + setting );
     }
+
     return this;
   },
+
   /**
    * Направляет камеру на определенную позицию (`"destination"`).
    * @method v6.Camera#lookAt
@@ -149,12 +167,14 @@ Camera.prototype = {
   lookAt: function lookAt ( destination, key )
   {
     this._destination = destination;
+
     if ( typeof key === 'undefined' ) {
       this._destinationKey = null;
     } else {
       this._destinationKey = key;
     }
   },
+
   /**
    * Возвращает позицию, на которую камера должна быть направлена.
    * @method v6.Camera#shouldLookAt
@@ -173,6 +193,7 @@ Camera.prototype = {
   {
     var _destination = this._getDestination();
     var x, y;
+
     if ( _destination === null ) {
       x = 0;
       y = 0;
@@ -180,11 +201,13 @@ Camera.prototype = {
       x = _destination.x;
       y = _destination.y;
     }
+
     return {
       x: x,
       y: y
     };
   },
+
   /**
    * Обновляет позицию, на которую направлена камера.
    * @method v6.Camera#update
@@ -199,11 +222,13 @@ Camera.prototype = {
   update: function update ()
   {
     var _destination = this._getDestination();
+
     if ( _destination !== null ) {
       translate( this, _destination, 'x' );
       translate( this, _destination, 'y' );
     }
   },
+
   /**
    * Возвращает позицию, на которую камера направлена сейчас.
    * @method v6.Camera#looksAt
@@ -219,6 +244,7 @@ Camera.prototype = {
       y: this._currentPosition.y
     };
   },
+
   /**
    * Применяет камеру на матрицу или рендерер.
    * @method v6.Camera#apply
@@ -244,6 +270,7 @@ Camera.prototype = {
     var y = transform( this, this._currentPosition, 'y' );
     ( matrix || this.renderer ).setTransform( zoom, 0, 0, zoom, zoom * x, zoom * y );
   },
+
   /**
    * Определяет, видит ли камера объект из соответсвующих параветров (x, y, w, h) сейчас,
    * если нет, то этот объект можно не отрисовывать.
@@ -264,17 +291,39 @@ Camera.prototype = {
     var zoom = this.setting.zoom.value;
     var offset = this.settings.offset;
     var _currentPosition = this._currentPosition;
+
     if ( ! renderer ) {
       renderer = this.renderer;
     }
+
     if ( ! renderer ) {
       throw Error( 'No renderer (camera.sees)' );
     }
+
     return x + w > _currentPosition.x - offset.x / zoom &&
-           x < _currentPosition.x + ( renderer.w - offset.x ) / zoom &&
+           x     < _currentPosition.x + ( renderer.w - offset.x ) / zoom &&
            y + h > _currentPosition.y - offset.y / zoom &&
-           y < _currentPosition.y + ( renderer.h - offset.y ) / zoom;
+           y     < _currentPosition.y + ( renderer.h - offset.y ) / zoom;
   },
+
+  #define zoomIn( zoomIn, setting, max, min, __ADD__ )                       \
+    zoomIn: function zoomIn ()                                               \
+    {                                                                        \
+      var zoomSpeed = this.settings[ setting ];                              \
+      var zoom      = this.settings.zoom;                                    \
+      var change;                                                            \
+                                                                             \
+      if ( zoom.value !== zoom.max ) {                                       \
+        if ( zoomSpeed.linear ) {                                            \
+          change = zoomSpeed.value * zoom.value;                             \
+        } else {                                                             \
+          change = zoomSpeed.value;                                          \
+        }                                                                    \
+                                                                             \
+        zoom.value = Math.min( zoom.value __ADD__ change, zoom.max );        \
+      }                                                                      \
+    }
+
   /**
    * Отдаляет камеру. Анимация может быть линейной (по умолчанию) если это включено:
    * ```javascript
@@ -298,7 +347,8 @@ Camera.prototype = {
    *   camera.zoomOut();
    * } );
    */
-  zoomOut: function zoomOut () { var zoomSpeed = this.settings[ 'zoom-out speed' ]; var zoom = this.settings.zoom; var change; if ( zoom.value !== zoom.min ) { if ( zoomSpeed.linear ) { change = zoomSpeed.value * zoom.value; } else { change = zoomSpeed.value; } zoom.value = Math.max( zoom.value - change, zoom.min ); } }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  zoomIn( zoomOut, 'zoom-out speed', min, max, - ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+
   /**
    * Приближает камеру. Анимация может быть линейной (по умолчанию) если это включено:
    * ```javascript
@@ -322,17 +372,21 @@ Camera.prototype = {
    *   camera.zoomIn();
    * } );
    */
-  zoomIn: function zoomIn () { var zoomSpeed = this.settings[ 'zoom-in speed' ]; var zoom = this.settings.zoom; var change; if ( zoom.value !== zoom.max ) { if ( zoomSpeed.linear ) { change = zoomSpeed.value * zoom.value; } else { change = zoomSpeed.value; } zoom.value = Math.min( zoom.value + change, zoom.max ); } }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  zoomIn( zoomIn, 'zoom-in speed', max, min, + ), // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+
   constructor: Camera
 };
+
 function transform ( camera, position, axis )
 {
   return camera.settings.offset[ axis ] / camera.settings.zoom.value - position[ axis ];
 }
+
 function translate ( camera, destination, axis )
 {
-  var transformedDestination = transform( camera, destination, axis );
+  var transformedDestination     = transform( camera, destination, axis );
   var transformedCurrentPosition = transform( camera, camera._currentPosition, axis );
   camera._currentPosition[ axis ] += ( transformedDestination - transformedCurrentPosition ) * camera.settings.speed[ axis ];
 }
+
 module.exports = Camera;

@@ -1,4 +1,4 @@
-SRC=core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js
+SRC=core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js core/camera/Camera.preprocess.js
 
 $(SRC):
 	build/preprocess $@ $(@:.preprocess.js=.js)

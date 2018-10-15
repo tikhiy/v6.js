@@ -41,3 +41,6 @@ all:
 
 min: all
 	node_modules/.bin/uglifyjs -cmo dist/v6.min.js dist/v6.js
+
+gzip: min
+	gzip dist/v6.min.js --stdout > dist/v6.min.js.gz

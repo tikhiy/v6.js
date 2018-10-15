@@ -33,7 +33,9 @@ function setup ( config )
     browserify: {
       transform: [
         'browserify-istanbul'
-      ]
+      ],
+
+      debug: true
     },
 
     // test results reporter to use

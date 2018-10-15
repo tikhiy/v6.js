@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: core/renderer/settings.js</title>
+    <title>JSDoc: Namespace: settings</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,72 +17,113 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: core/renderer/settings.js</h1>
+    <h1 class="page-title">Namespace: settings</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict';
+        <h2>
+            <span class="ancestors"><a href="v6.html">v6</a>.</span>settings</h2>
+        
+    
+</header>
 
-var color = require( '../color/RGBA' );
-var type  = require( '../constants' ).get( '2D' );
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Настройки &quot;v6.js&quot;.</p></div>
+        
 
-/**
- * Настройки для рендереров: {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, {@link v6.createRenderer}.
- * @namespace v6.settings.renderer
- */
+        
 
-/**
- * @member   {object} [v6.settings.renderer.settings] Настройки рендерера по умолчанию.
- * @property {object} [color={@link v6.RGBA}]         Конструкторы {@link v6.RGBA} или {@link v6.HSLA}.
- * @property {number} [scale=1]                       Плотность пикселей рендерера, например: `devicePixelRatio`.
- */
-exports.settings = {
-  color: color,
-  scale: 1
-};
 
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.antialias=true]
- */
-exports.antialias = true;
+<dl class="details">
 
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.blending=true]
- */
-exports.blending = true;
+    
 
-/**
- * Использовать градусы вместо радианов.
- * @member {boolean} [v6.settings.renderer.degrees=false]
- */
-exports.degrees = false;
+    
 
-/**
- * Использовать прозрачный (вместо черного) контекст.
- * @member {boolean} [v6.settings.renderer.alpha=true]
- */
-exports.alpha = true;
+    
 
-/**
- * Тип контекста (2D, GL, AUTO).
- * @member {constant} [v6.settings.renderer.type=2D]
- */
-exports.type = type;
+    
 
-/**
- * В этот элемент будет добавлен `canvas`.
- * @member {Element?} [v6.settings.renderer.appendTo]
- */
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
+
+        <dl>
+            <dt><a href="v6.settings.camera.html">camera</a></dt>
+            <dd></dd>
+        
+            <dt><a href="v6.settings.core.html">core</a></dt>
+            <dd></dd>
+        
+            <dt><a href="v6.settings.renderer.html">renderer</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

@@ -1,4 +1,32 @@
-'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/camera/Camera.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/camera/Camera.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 var defaults = require( 'peako/defaults' );
 var mixin    = require( 'peako/mixin' );
@@ -12,11 +40,11 @@ var settings = require( './settings' );
  * объект. Есть возможность анимированного отдаления или приближения камеры.
  * @constructor v6.Camera
  * @param {object} [options] Параметры для создания камеры, смотрите {@link v6.settings.camera}.
- * @example <caption>Require "v6.Camera"</caption>
+ * @example &lt;caption>Require "v6.Camera"&lt;/caption>
  * var Camera = require( 'v6.js/core/camera/Camera' );
- * @example <caption>Create an instance</caption>
+ * @example &lt;caption>Create an instance&lt;/caption>
  * var camera = new Camera();
- * @example <caption>Create an instance with options</caption>
+ * @example &lt;caption>Create an instance with options&lt;/caption>
  * var camera = new Camera( {
  *   settings: {
  *     speed: {
@@ -25,7 +53,7 @@ var settings = require( './settings' );
  *     }
  *   }
  * } );
- * @example <caption>Create an instance with renderer</caption>
+ * @example &lt;caption>Create an instance with renderer&lt;/caption>
  * var camera = new Camera( {
  *   renderer: renderer
  * } );
@@ -247,13 +275,13 @@ Camera.prototype = {
    * @method v6.Camera#apply
    * @param  {v6.Transform|v6.AbstractRenderer} [matrix] Матрица или рендерер.
    * @return {void}                                      Ничего не возвращает.
-   * @example <caption>Apply on a renderer</caption>
+   * @example &lt;caption>Apply on a renderer&lt;/caption>
    * var renderer = v6.createRenderer();
    * camera.apply( renderer );
-   * @example <caption>Apply on a transform</caption>
+   * @example &lt;caption>Apply on a transform&lt;/caption>
    * var matrix = new v6.Transform();
    * camera.apply( matrix );
-   * @example <caption>Apply on a camera's renderer</caption>
+   * @example &lt;caption>Apply on a camera's renderer&lt;/caption>
    * var camera = new v6.Camera( {
    *   renderer: renderer
    * } );
@@ -297,10 +325,10 @@ Camera.prototype = {
       throw Error( 'No renderer (camera.sees)' );
     }
 
-    return x + w > _currentPosition.x - offset.x / zoom &&
-           x     < _currentPosition.x + ( renderer.w - offset.x ) / zoom &&
-           y + h > _currentPosition.y - offset.y / zoom &&
-           y     < _currentPosition.y + ( renderer.h - offset.y ) / zoom;
+    return x + w > _currentPosition.x - offset.x / zoom &amp;&amp;
+           x     &lt; _currentPosition.x + ( renderer.w - offset.x ) / zoom &amp;&amp;
+           y + h > _currentPosition.y - offset.y / zoom &amp;&amp;
+           y     &lt; _currentPosition.y + ( renderer.h - offset.y ) / zoom;
   },
 
   constructor: Camera
@@ -319,3 +347,26 @@ function translate ( camera, destination, axis )
 }
 
 module.exports = Camera;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Oct 15 2018 16:06:55 GMT+0700 (+07)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -50,7 +50,7 @@
 
 
 <div class="description">
-    <p>Высоко-уровневый интерфейс для WebGLProgram.</p>
+    <p>Высокоуровневый интерфейс для WebGLProgram.</p>
 </div>
 
 
@@ -166,7 +166,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line14">line 14</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line26">line 26</a>
     </li></ul></dd>
     
 
@@ -193,12 +193,18 @@
 
 
 
-    <h5>Example</h5>
+    <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>var ShaderProgram = require( 'v6.js/ShaderProgram' );
-var shaders       = require( 'v6.js/shaders' );
-var gl      = canvas.getContext( 'webgl' );
-var program = new ShaderProgram( shaders.basic, gl );</code></pre>
+        <p class="code-caption">Require "v6.ShaderProgram"</p>
+    
+    <pre class="prettyprint"><code>var ShaderProgram = require( 'v6.js/ShaderProgram' );</code></pre>
+
+        <p class="code-caption">Use without renderer</p>
+    
+    <pre class="prettyprint"><code>// Require "v6.js" shaders.
+var shaders = require( 'v6.js/shaders' );
+// Create a program.
+var program = new ShaderProgram( shaders.basic, glContext );</code></pre>
 
 
 
@@ -228,7 +234,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
 
     
-    <h4 class="name" id="getAttr"><span class="type-signature"></span>getAttr<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="IAttribute.html">IAttribute</a>}</span></h4>
+    <h4 class="name" id="getAttribute"><span class="type-signature"></span>getAttribute<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="IShaderAttribute.html">IShaderAttribute</a>}</span></h4>
     
 
     
@@ -325,7 +331,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line140">line 140</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line92">line 92</a>
     </li></ul></dd>
     
 
@@ -363,7 +369,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="IAttribute.html">IAttribute</a></span>
+<span class="param-type"><a href="IShaderAttribute.html">IShaderAttribute</a></span>
 
 
     </dd>
@@ -376,7 +382,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var { location } = program.getAttr( 'apos' );</code></pre>
+    <pre class="prettyprint"><code>var location = program.getAttribute( 'apos' ).location;</code></pre>
 
 
 
@@ -386,7 +392,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
 
     
-    <h4 class="name" id="getUniform"><span class="type-signature"></span>getUniform<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="IUniform.html">IUniform</a>}</span></h4>
+    <h4 class="name" id="getUniform"><span class="type-signature"></span>getUniform<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="IShaderUniform.html">IShaderUniform</a>}</span></h4>
     
 
     
@@ -442,7 +448,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
             
 
-            <td class="description last"><p>Название uniform.</p></td>
+            <td class="description last"><p>Название формы (uniform).</p></td>
         </tr>
 
     
@@ -483,7 +489,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line99">line 99</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -510,7 +516,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
         
 <div class="param-desc">
-    <p>Возвращает данные о uniform.</p>
+    <p>Возвращает данные о форме (uniform).</p>
 </div>
 
 
@@ -521,7 +527,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="IUniform.html">IUniform</a></span>
+<span class="param-type"><a href="IShaderUniform.html">IShaderUniform</a></span>
 
 
     </dd>
@@ -534,7 +540,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var { location } = program.getUniform( 'ucolor' );</code></pre>
+    <pre class="prettyprint"><code>var location = program.getUniform( 'ucolor' ).location;</code></pre>
 
 
 
@@ -544,7 +550,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
 
     
-    <h4 class="name" id="setAttr"><span class="type-signature"></span>setAttr<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setAttribute"><span class="type-signature"></span>setAttribute<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -592,7 +598,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line83">line 83</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line169">line 169</a>
     </li></ul></dd>
     
 
@@ -602,9 +608,9 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     <dt class="tag-see">See:</dt>
     <dd class="tag-see">
         <ul>
-            <li><p><a href="https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/enableVertexAttribArray">WebGLRenderingContext#enableVertexAttribArray</a></p></li>
+            <li><p><a href="https://mdn.io/enableVertexAttribArray">WebGLRenderingContext#enableVertexAttribArray</a></p></li>
         
-            <li><p><a href="https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/vertexAttribPointer">WebGLRenderingContext#vertexAttribPointer</a></p></li>
+            <li><p><a href="https://mdn.io/vertexAttribPointer">WebGLRenderingContext#vertexAttribPointer</a></p></li>
         </ul>
     </dd>
     
@@ -630,7 +636,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>program.setAttr( 'apos', 2, gl.FLOAT, false, 0, 0 );</code></pre>
+    <pre class="prettyprint"><code>program.setAttribute( 'apos', 2, gl.FLOAT, false, 0, 0 );</code></pre>
 
 
 
@@ -696,7 +702,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
             
 
-            <td class="description last"><p>Name of the uniform.</p></td>
+            <td class="description last"><p>Название формы (uniform).</p></td>
         </tr>
 
     
@@ -719,7 +725,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 
             
 
-            <td class="description last"><p>Value you want to set to the uniform.</p></td>
+            <td class="description last"><p>Новое значение формы (uniform).</p></td>
         </tr>
 
     
@@ -760,7 +766,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line171">line 171</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line185">line 185</a>
     </li></ul></dd>
     
 
@@ -847,7 +853,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line70">line 70</a>
+        <a href="core_ShaderProgram.js.html">core/ShaderProgram.js</a>, <a href="core_ShaderProgram.js.html#line251">line 251</a>
     </li></ul></dd>
     
 
@@ -857,7 +863,7 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
     <dt class="tag-see">See:</dt>
     <dd class="tag-see">
         <ul>
-            <li><p><a href="https://developer.mozilla.org/docs/Web/API/WebGLRenderingContext/useProgram">WebGLRenderingContext#useProgram</a></p></li>
+            <li><p><a href="https://mdn.io/useProgram">WebGLRenderingContext#useProgram</a></p></li>
         </ul>
     </dd>
     
@@ -903,13 +909,13 @@ var program = new ShaderProgram( shaders.basic, gl );</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Oct 15 2018 16:06:55 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

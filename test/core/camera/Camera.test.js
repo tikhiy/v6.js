@@ -69,62 +69,84 @@ describe( 'v6.Camera API', function ()
       } );
     } );
 
-    describe( 'new v6.Camera.shouldLookAt', function ()
+    describe( 'members', function ()
     {
-      it( 'works #1', function ()
+      describe( 'new v6.Camera.renderer', function ()
       {
-        camera.shouldLookAt().should.deep.equal( {
-          x: 0,
-          y: 0
+        it( 'works' );
+      } );
+
+      describe( 'new v6.Camera.settings', function ()
+      {
+        it( 'works' );
+      } );
+    } );
+
+    describe( 'methods', function ()
+    {
+      describe( 'new v6.Camera.apply', function ()
+      {
+        it( 'works' );
+      } );
+
+      describe( 'new v6.Camera.lookAt', function ()
+      {
+        it( 'works #1', function ()
+        {
+          camera.lookAt( object, 'position' );
+        } );
+
+        it( 'works #2', function ()
+        {
+          camera.lookAt( object.position );
         } );
       } );
 
-      it( 'works #2', function ()
+      describe( 'new v6.Camera.looksAt', function ()
       {
-        camera.lookAt( object, 'position' ).shouldLookAt().should.deep.equal( object.position );
+        it( 'works' );
       } );
 
-      it( 'works #3', function ()
+      describe( 'new v6.Camera.sees', function ()
       {
-        camera.lookAt( object.position ).shouldLookAt().should.deep.equal( object.position );
+        it( 'works' );
+      } );
+
+      describe( 'new v6.Camera.set', function ()
+      {
+        it( 'works #1', function ()
+        {
+          camera.looksAt().should.deep.equal( {
+            x: 0,
+            y: 0
+          } );
+        } );
+
+        it( 'works #2' );
+      } );
+
+      describe( 'new v6.Camera.shouldLookAt', function ()
+      {
+        it( 'works #1', function ()
+        {
+          camera.shouldLookAt().should.deep.equal( {
+            x: 0,
+            y: 0
+          } );
+        } );
+
+        it( 'works #2', function ()
+        {
+          camera.lookAt( object, 'position' );
+          camera.shouldLookAt().should.deep.equal( object.position );
+        } );
+
+        it( 'works #3', function ()
+        {
+          camera.lookAt( object.position );
+          camera.shouldLookAt().should.deep.equal( object.position );
+        } );
       } );
     } );
-
-    describe( 'new v6.Camera.lookAt', function ()
-    {
-      it( 'works #1', function ()
-      {
-        camera.lookAt( object, 'position' ).should.equal( camera );
-      } );
-
-      it( 'works #2', function ()
-      {
-        camera.lookAt( object.position ).should.equal( camera );
-      } );
-    } );
-
-  //   describe( 'new v6.Camera.update', function ()
-  //   {
-  //     it( 'works', function ()
-  //     {
-  //       throw Error( 'Not implemented' );
-  //     } );
-  //   } );
-
-  //   describe( 'new v6.Camera.looksAt', function ()
-  //   {
-  //     it( 'works #1', function ()
-  //     {
-  //       camera.looksAt().should.deep.equal( {
-  //         x: 0,
-  //         y: 0
-  //       } );
-  //     } );
-
-  //     it( 'works #2', function ()
-  //     {
-  //       throw Error( 'Not implemented' );
-  //     } );
-  //   } );
   } );
 } );

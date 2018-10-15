@@ -39,7 +39,7 @@ var square = ( function ()
  * WebGL рендерер.
  * @constructor v6.RendererGL
  * @extends v6.AbstractRenderer
- * @param {object} options {@link v6.options}
+ * @param {object} options {@link v6.settings.renderer}
  * @example
  * // Require RendererGL.
  * var RendererGL = require( 'v6.js/core/renderer/RendererGL' );

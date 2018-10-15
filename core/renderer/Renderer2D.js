@@ -14,7 +14,7 @@ var settings          = require( './settings' );
  * 2D рендерер.
  * @constructor v6.Renderer2D
  * @extends v6.AbstractRenderer
- * @param {object} options {@link v6.options}
+ * @param {object} options {@link v6.settings.renderer}
  * @example
  * // Require Renderer2D.
  * var Renderer2D = require( 'v6.js/core/renderer/Renderer2D' );

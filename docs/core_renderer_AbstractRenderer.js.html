@@ -39,6 +39,8 @@ var getWebGL = require( './internal/get_webgl' );
 var copyDrawingSettings = require( './internal/copy_drawing_settings' );
 var processRectAlignX = require( './internal/process_rect_align' ).processRectAlignX;
 var processRectAlignY = require( './internal/process_rect_align' ).processRectAlignY;
+var processShape = require( './internal/process_shape' );
+var closeShape = require( './internal/close_shape' );
 var options = require( './settings' );
 /**
  * Абстрактный класс рендерера.
@@ -239,13 +241,15 @@ AbstractRenderer.prototype = {
   /**
    * Метод для начала отрисовки фигуры.
    * @method v6.AbstractRenderer#beginShape
-   * @param {object}   [options]      Параметры фигуры.
-   * @param {constant} [options.type] Тип фигуры: POINTS, LINES.
+   * @param {object}   [options]              Параметры фигуры.
+   * @param {function} [options.drawFunction] Функция, котороя будет отрисовывать все вершины в {@link v6.AbstractRenderer.endShape}. Может быть перезаписана.
    * @chainable
    * @example
-   * // Begin drawing POINTS shape.
-   * renderer.beginShape( { type: v6.constants.get( 'POINTS' ) } );
-   * // Begin drawing shape without type (must be passed later in `endShape`).
+   * // Require "v6.shapes" ("v6.js" built-in drawing functions).
+   * var shapes = require( 'v6.js/renderer/shapes/points' );
+   * // Begin drawing points shape.
+   * renderer.beginShape( { drawFunction: shapes.drawPoints } );
+   * // Begin drawing shape without drawing function (must be passed later in `endShape`).
    * renderer.beginShape();
    */
   beginShape: function beginShape ( options )
@@ -254,10 +258,11 @@ AbstractRenderer.prototype = {
       options = {};
     }
     this._vertices.length = 0;
-    if ( typeof options.type === 'undefined' ) {
-      this._shapeType = null;
+    this._closedShape = null;
+    if ( typeof options.drawFunction === 'undefined' ) {
+      this._drawFunction = null;
     } else {
-      this._shapeType = options.type;
+      this._drawFunction = options.drawFunction;
     }
     return this;
   },
@@ -279,30 +284,42 @@ AbstractRenderer.prototype = {
   vertex: function vertex ( x, y )
   {
     this._vertices.push( Math.floor( x ), Math.floor( y ) );
+    this._closedShape = null;
     return this;
   },
   /**
    * Рисует фигуру из вершин.
    * @method v6.AbstractRenderer#endShape
-   * @param {object}   [options]       Параметры фигуры.
-   * @param {boolean}  [options.close] Соединить последнюю вершину с первой (закрыть фигуру).
-   * @param {constant} [options.type]  Тип фигуры (несовместимо с `options.draw`).
-   * @param {function} [options.draw]  Нестандартная функция для отрисовки всех вершин (несовместимо с `options.type`).
+   * @param {object}   [options]              Параметры фигуры.
+   * @param {boolean}  [options.close]        Соединить последнюю вершину с первой (закрыть фигуру).
+   * @param {function} [options.drawFunction] Функция, котороя будет отрисовывать все вершины.
+   *                                          Имеет больший приоритет чем в {@link v6.AbstractRenderer#beginShape}.
    * @chainable
    * @example
-   * // Close and draw shape.
+   * // Require "v6.shapes" ("v6.js" built-in drawing functions).
+   * var shapes = require( 'v6.js/renderer/shapes/points' );
+   * // Close and draw a shape.
    * renderer.endShape( { close: true } );
-   * // Draw with custom function.
-   * renderer.endShape( {
-   *   draw: function draw ( vertices )
-   *   {
-   *     renderer.drawArrays( vertices, vertices.length / 2 );
-   *   }
-   * } );
+   * // Draw with a custom function.
+   * renderer.endShape( { drawFunction: shapes.drawLines } );
    */
-  endShape: function endShape ()
+  endShape: function endShape ( options )
   {
-    throw Error( 'Not implemented' );
+    var drawFunction, vertices;
+    if ( ! options ) {
+      options = {};
+    }
+    if ( ! ( drawFunction = options.drawFunction || this._drawFunction ) ) {
+      throw Error( 'No "drawFunction" specified for "renderer.endShape"' );
+    }
+    if ( options.close ) {
+      closeShape( this );
+      vertices = this._closedShape;
+    } else {
+      vertices = this._vertices;
+    }
+    drawFunction( this, processShape( this, vertices ) );
+    return this;
   },
   /**
    * @method v6.AbstractRenderer#save
@@ -334,23 +351,13 @@ AbstractRenderer.prototype = {
    * @method v6.AbstractRenderer#setTransform
    * @chainable
    * @see v6.Transform#setTransform
-   * @see v6.Camera
    * @example
    * // Set identity transform.
    * renderer.setTransform( 1, 0, 0, 1, 0, 0 );
-   * // Set transform from `v6.Camera`.
-   * renderer.setTransform( camera );
    */
   setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
   {
-    var position, zoom;
-    if ( typeof m11 === 'object' &amp;&amp; m11 !== null ) {
-      position = m11.position;
-      zoom = m11.zoom;
-      this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
-    } else {
-      this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
-    }
+    this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
     return this;
   },
   /**
@@ -408,7 +415,7 @@ AbstractRenderer.prototype = {
   },
   /**
    * Устанавливает lineWidth (ширину контура).
-   * @method lineWidth
+   * @method v6.AbstractRenderer#lineWidth
    * @param {number} number Новый lineWidth.
    * @chainable
    * @example
@@ -483,7 +490,7 @@ AbstractRenderer.prototype = {
    * // Set `stroke` from `v6.RGBA`.
    * renderer.stroke( new RGBA( 255, 0, 0 ).perceivedBrightness() );
    */
-  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._stroke(); } else if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  stroke: function stroke ( r, g, b, a ) { if ( typeof r === 'boolean' ) { this._doStroke = r; } else { if ( typeof r === 'string' || this._strokeColor.type !== this.settings.color.type ) { this._strokeColor = new this.settings.color( r, g, b, a ); } else { this._strokeColor.set( r, g, b, a ); } this._doStroke = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
   /**
    * Устанавливает цвет `fill` при рисовании через {@link v6.AbstractRenderer#rect} и т.п.
    * @method v6.AbstractRenderer#fill
@@ -501,7 +508,7 @@ AbstractRenderer.prototype = {
    * // Set `fill` from `v6.RGBA`.
    * renderer.fill( new RGBA( 255, 0, 0 ).brightness() );
    */
-  fill: function fill ( r, g, b, a ) { if ( typeof r === 'undefined' ) { this._fill(); } else if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+  fill: function fill ( r, g, b, a ) { if ( typeof r === 'boolean' ) { this._doFill = r; } else { if ( typeof r === 'string' || this._fillColor.type !== this.settings.color.type ) { this._fillColor = new this.settings.color( r, g, b, a ); } else { this._fillColor.set( r, g, b, a ); } this._doFill = true; } return this; }, // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
   /**
    * Выключает рисование контура (stroke).
    * @method v6.AbstractRenderer#noStroke
@@ -643,8 +650,8 @@ AbstractRenderer.prototype = {
  * Initialize renderer on `"self"`.
  * @method v6.AbstractRenderer.create
  * @param  {v6.AbstractRenderer} self    Renderer that should be initialized.
- * @param  {object}              options {@link v6.options}
- * @param  {constant}            type    Type of renderer: `2D` или `GL`. Cannot be `AUTO`!.
+ * @param  {object}              options {@link v6.settings.renderer}
+ * @param  {constant}            type    Type of renderer: `2D` or `GL`. Cannot be `AUTO`!.
  * @return {void}                        Returns nothing.
  * @example &lt;caption>Custom Renderer&lt;/caption>
  * var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );
@@ -687,6 +694,7 @@ AbstractRenderer.create = function create ( self, options, type )
   /**
    * Настройки рендерера.
    * @member {object} v6.AbstractRenderer#settings
+   * @see v6.settings.renderer.settings
    */
   self.settings = options.settings;
   /**
@@ -698,12 +706,16 @@ AbstractRenderer.create = function create ( self, options, type )
    * Стэк сохраненных настроек рендеринга.
    * @private
    * @member {Array.&lt;object>} v6.AbstractRenderer#_stack
+   * @see v6.AbstractRenderer#push
+   * @see v6.AbstractRenderer#pop
    */
   self._stack = [];
   /**
    * Позиция последних сохраненных настроек рендеринга.
    * @private
    * @member {number} v6.AbstractRenderer#_stackIndex
+   * @see v6.AbstractRenderer#push
+   * @see v6.AbstractRenderer#pop
    */
   self._stackIndex = -1;
   /**
@@ -716,14 +728,23 @@ AbstractRenderer.create = function create ( self, options, type )
    */
   self._vertices = [];
   /**
-   * Тип фигуры.
+   * Закрытая фигура (вершина).
    * @private
-   * @member {Array.&lt;number>} v6.AbstractRenderer#_shapeType
+   * @member {Array.&lt;number>} v6.AbstractRenderer#_drawFunction
    * @see v6.AbstractRenderer#beginShape
    * @see v6.AbstractRenderer#vertex
    * @see v6.AbstractRenderer#endShape
    */
-  self._shapeType = null;
+  self._closedShape = null;
+  /**
+   * Функция, котороя будет отрисовывать вершины.
+   * @private
+   * @member {function} v6.AbstractRenderer#_drawFunction
+   * @see v6.AbstractRenderer#beginShape
+   * @see v6.AbstractRenderer#vertex
+   * @see v6.AbstractRenderer#endShape
+   */
+  self._drawFunction = null;
   if ( typeof options.appendTo === 'undefined' ) {
     self.appendTo( document.body );
   } else if ( options.appendTo !== null ) {
@@ -749,13 +770,13 @@ module.exports = AbstractRenderer;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Oct 15 2018 16:06:55 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

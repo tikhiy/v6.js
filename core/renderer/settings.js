@@ -10,7 +10,7 @@ var type  = require( '../constants' ).get( '2D' );
 
 /**
  * @member   {object} [v6.settings.renderer.settings] Настройки рендерера по умолчанию.
- * @property {object} [color=v6.RGBA]                 Конструкторы {@link v6.RGBA} или {@link v6.HSLA}.
+ * @property {object} [color={@link v6.RGBA}]         Конструкторы {@link v6.RGBA} или {@link v6.HSLA}.
  * @property {number} [scale=1]                       Плотность пикселей рендерера, например: `devicePixelRatio`.
  */
 exports.settings = {

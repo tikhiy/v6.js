@@ -38,11 +38,6 @@
  * @namespace v6
  */
 
-/**
- * A valid CSS-color: `"hsl(360, 100%, 100%)"`, `"#ff00ff"`, `"lightpink"`. {@link v6.HSLA} or {@link v6.RGBA}.
- * @typedef {string|v6.HSLA|v6.RGBA} TColor
- */
-
 exports.AbstractImage    = require( './core/image/AbstractImage' );
 exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
 exports.AbstractVector   = require( './core/math/AbstractVector' );
@@ -61,10 +56,63 @@ exports.Vector3D         = require( './core/math/Vector3D' );
 exports.constants        = require( './core/constants' );
 exports.createRenderer   = require( './core/renderer' );
 exports.shaders          = require( './core/shaders' );
+exports.mat3             = require( './core/math/mat3' );
+
+/**
+ * "v6.js" built-in drawing functions.
+ * @namespace v6.shapes
+ * @see v6.AbstractRenderer#beginShape
+ * @see v6.AbstractRenderer#vertex
+ * @see v6.AbstractRenderer#endShape
+ * @example
+ * var shapes = require( 'v6.js/core/renderer/shapes' );
+ */
+exports.shapes = {
+  drawPoints: require( './core/renderer/shapes/draw_points' ),
+  drawLines:  require( './core/renderer/shapes/draw_lines' )
+};
+
+/**
+ * Настройки "v6.js".
+ * @namespace v6.settings
+ */
+exports.settings = {
+  renderer: require( './core/renderer/settings' ),
+  camera:   require( './core/camera/settings' ),
+  core:     require( './core/settings' )
+};
 
 if ( typeof self !== 'undefined' ) {
   self.v6 = exports;
 }
+
+/**
+ * @typedef {string|v6.HSLA|v6.RGBA} TColor
+ * @example &lt;caption>A string (CSS color).&lt;/caption>
+ * var color = 'rgba( 255, 0, 255, 1 )';
+ * var color = 'hsl( 360, 100%, 50% )';
+ * var color = '#ff00ff';
+ * var color = 'lightpink';
+ * var color = '#00000000'; // The same as "transparent".
+ *                          // NOTE: CSS does not support this syntax but "v6.js" does.
+ * @example &lt;caption>An object (v6.RGBA, v6.HSLA)&lt;/caption>
+ * var color = new RGBA( 255, 0, 255, 1 );
+ * var color = new HSLA( 360, 100, 50 );
+ */
+
+/**
+ * @typedef {number} constant
+ * @see v6.constants
+ * @example
+ * // This is a constant.
+ * var RENDERER_TYPE = constants.get( 'GL' );
+ */
+
+/**
+ * @interface IVector2D
+ * @property {number} x
+ * @property {number} y
+ */
 </code></pre>
         </article>
     </section>
@@ -75,13 +123,13 @@ if ( typeof self !== 'undefined' ) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li></ul><h3>Interfaces</h3><ul><li><a href="IAttribute.html">IAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IUniform.html">IUniform</a></li></ul><h3>Global</h3><ul><li><a href="global.html#degress">degress</a></li><li><a href="global.html#lineWidth">lineWidth</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 10 2018 19:46:50 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Oct 15 2018 16:06:55 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

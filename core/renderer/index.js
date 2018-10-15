@@ -14,7 +14,7 @@ var type            = require( './settings' ).type;
 /**
  * Создает новый рендерер. Если создать WebGL контекст не получится, то будет использован 2D.
  * @method v6.createRenderer
- * @param  {object}              options {@link v6.options}.
+ * @param  {object}              options {@link v6.settings.renderer}.
  * @return {v6.AbstractRenderer}         Новый рендерер (2D, GL).
  * @example
  * var createRenderer = require( 'v6.js/core/renderer' );

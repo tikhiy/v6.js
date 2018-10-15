@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: core/renderer/settings.js</title>
+    <title>JSDoc: Source: core/renderer/shapes/draw_points.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: core/renderer/settings.js</h1>
+    <h1 class="page-title">Source: core/renderer/shapes/draw_points.js</h1>
 
     
 
@@ -28,58 +28,17 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var color = require( '../color/RGBA' );
-var type  = require( '../constants' ).get( '2D' );
-
 /**
- * Настройки для рендереров: {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, {@link v6.createRenderer}.
- * @namespace v6.settings.renderer
+ * @member v6.shapes.drawPoints
+ * @example
+ * shapes.drawPoints( renderer, vertices );
  */
+function drawPoints ()
+{
+  throw Error( 'Not implemented' );
+}
 
-/**
- * @member   {object} [v6.settings.renderer.settings] Настройки рендерера по умолчанию.
- * @property {object} [color={@link v6.RGBA}]         Конструкторы {@link v6.RGBA} или {@link v6.HSLA}.
- * @property {number} [scale=1]                       Плотность пикселей рендерера, например: `devicePixelRatio`.
- */
-exports.settings = {
-  color: color,
-  scale: 1
-};
-
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.antialias=true]
- */
-exports.antialias = true;
-
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.blending=true]
- */
-exports.blending = true;
-
-/**
- * Использовать градусы вместо радианов.
- * @member {boolean} [v6.settings.renderer.degrees=false]
- */
-exports.degrees = false;
-
-/**
- * Использовать прозрачный (вместо черного) контекст.
- * @member {boolean} [v6.settings.renderer.alpha=true]
- */
-exports.alpha = true;
-
-/**
- * Тип контекста (2D, GL, AUTO).
- * @member {constant} [v6.settings.renderer.type=2D]
- */
-exports.type = type;
-
-/**
- * В этот элемент будет добавлен `canvas`.
- * @member {Element?} [v6.settings.renderer.appendTo]
- */
+module.exports = drawPoints;
 </code></pre>
         </article>
     </section>

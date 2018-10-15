@@ -33,9 +33,9 @@ exports.mat3             = require( './core/math/mat3' );
 /**
  * "v6.js" built-in drawing functions.
  * @namespace v6.shapes
- * @see v6.AbstractRenderer.beginShape
- * @see v6.AbstractRenderer.vertex
- * @see v6.AbstractRenderer.endShape
+ * @see v6.AbstractRenderer#beginShape
+ * @see v6.AbstractRenderer#vertex
+ * @see v6.AbstractRenderer#endShape
  * @example
  * var shapes = require( 'v6.js/core/renderer/shapes' );
  */

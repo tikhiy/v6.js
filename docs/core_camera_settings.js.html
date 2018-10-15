@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: core/renderer/settings.js</title>
+    <title>JSDoc: Source: core/camera/settings.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: core/renderer/settings.js</h1>
+    <h1 class="page-title">Source: core/camera/settings.js</h1>
 
     
 
@@ -28,58 +28,58 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var color = require( '../color/RGBA' );
-var type  = require( '../constants' ).get( '2D' );
-
 /**
- * Настройки для рендереров: {@link v6.Renderer2D}, {@link v6.RendererGL}, {@link v6.AbstractRenderer}, {@link v6.createRenderer}.
- * @namespace v6.settings.renderer
+ * Стандартные настройки камеры.
+ * @namespace v6.settings.camera
+ * @example
+ * var settings = require( 'v6.js/core/camera/settings' );
  */
 
 /**
- * @member   {object} [v6.settings.renderer.settings] Настройки рендерера по умолчанию.
- * @property {object} [color={@link v6.RGBA}]         Конструкторы {@link v6.RGBA} или {@link v6.HSLA}.
- * @property {number} [scale=1]                       Плотность пикселей рендерера, например: `devicePixelRatio`.
+ * Рендерер.
+ * @member {v6.AbstractRenderer} v6.settings.camera.renderer
+ */
+
+/**
+ * Стандартные настройки камеры.
+ * @member {object} v6.settings.camera.settings
+ * @property {object}    ['zoom-out speed']
+ * @property {number}    ['zoom-out speed'.value=1]     Скорость уменьшения масштаба (отдаления) камеры.
+ * @property {boolean}   ['zoom-out speed'.linear=true] Делать анимацию линейной.
+ * @property {object}    ['zoom-in speed']
+ * @property {number}    ['zoom-in speed'.value=1]      Скорость увеличения масштаба (приближения) камеры.
+ * @property {boolean}   ['zoom-in speed'.linear=true]  Делать анимацию линейной.
+ * @property {object}    ['zoom']
+ * @property {number}    ['zoom'.value=1]               Текущий масштаб камеры.
+ * @property {number}    ['zoom'.min=1]                 Минимальный масштаб камеры.
+ * @property {number}    ['zoom'.max=1]                 Максимальный масштаб камеры.
+ * @property {object}    ['speed']                      Скорость направления камеры на объект.
+ * @property {number}    ['speed'.x=1]                  1 - моментальное перемещение по X, 0.1 - медленное.
+ * @property {number}    ['speed'.y=1]                  1 - моментальное перемещение по Y, 0.1 - медленное.
+ * @property {IVector2D} ['offset']
  */
 exports.settings = {
-  color: color,
-  scale: 1
+  'zoom-out speed': {
+    value:  1,
+    linear: true
+  },
+
+  'zoom-in speed': {
+    value:  1,
+    linear: true
+  },
+
+  'zoom': {
+    value: 1,
+    min:   1,
+    max:   1
+  },
+
+  'speed': {
+    x: 1,
+    y: 1
+  }
 };
-
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.antialias=true]
- */
-exports.antialias = true;
-
-/**
- * Пока не сделано.
- * @member {boolean} [v6.settings.renderer.blending=true]
- */
-exports.blending = true;
-
-/**
- * Использовать градусы вместо радианов.
- * @member {boolean} [v6.settings.renderer.degrees=false]
- */
-exports.degrees = false;
-
-/**
- * Использовать прозрачный (вместо черного) контекст.
- * @member {boolean} [v6.settings.renderer.alpha=true]
- */
-exports.alpha = true;
-
-/**
- * Тип контекста (2D, GL, AUTO).
- * @member {constant} [v6.settings.renderer.type=2D]
- */
-exports.type = type;
-
-/**
- * В этот элемент будет добавлен `canvas`.
- * @member {Element?} [v6.settings.renderer.appendTo]
- */
 </code></pre>
         </article>
     </section>

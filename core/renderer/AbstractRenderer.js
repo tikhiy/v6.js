@@ -323,23 +323,13 @@ AbstractRenderer.prototype = {
    * @method v6.AbstractRenderer#setTransform
    * @chainable
    * @see v6.Transform#setTransform
-   * @see v6.Camera
    * @example
    * // Set identity transform.
    * renderer.setTransform( 1, 0, 0, 1, 0, 0 );
-   * // Set transform from `v6.Camera`.
-   * renderer.setTransform( camera );
    */
   setTransform: function setTransform ( m11, m12, m21, m22, dx, dy )
   {
-    var position, zoom;
-    if ( typeof m11 === 'object' && m11 !== null ) {
-      position = m11.position;
-      zoom = m11.zoom;
-      this.matrix.setTransform( zoom, 0, 0, zoom, position[ 0 ] * zoom, position[ 1 ] * zoom );
-    } else {
-      this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
-    }
+    this.matrix.setTransform( m11, m12, m21, m22, dx, dy );
     return this;
   },
   /**
@@ -632,8 +622,8 @@ AbstractRenderer.prototype = {
  * Initialize renderer on `"self"`.
  * @method v6.AbstractRenderer.create
  * @param  {v6.AbstractRenderer} self    Renderer that should be initialized.
- * @param  {object}              options {@link v6.options}
- * @param  {constant}            type    Type of renderer: `2D` или `GL`. Cannot be `AUTO`!.
+ * @param  {object}              options {@link v6.settings.renderer}
+ * @param  {constant}            type    Type of renderer: `2D` or `GL`. Cannot be `AUTO`!.
  * @return {void}                        Returns nothing.
  * @example <caption>Custom Renderer</caption>
  * var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );
@@ -676,6 +666,7 @@ AbstractRenderer.create = function create ( self, options, type )
   /**
    * Настройки рендерера.
    * @member {object} v6.AbstractRenderer#settings
+   * @see v6.settings.renderer.settings
    */
   self.settings = options.settings;
   /**

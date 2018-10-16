@@ -59,6 +59,7 @@ function setup ( config )
     // karma-coverage config
     coverageReporter: {
       reporters: [
+        { type: 'lcovonly',     subdir: '.', file: 'lcov.info' },
         { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
         { type: 'text',         subdir: '.', file: 'text.txt' },
         { type: 'html' }

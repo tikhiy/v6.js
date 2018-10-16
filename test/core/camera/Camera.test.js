@@ -15,13 +15,11 @@ describe( 'v6.Camera API', function ()
 
   describe( 'new v6.Camera', function ()
   {
-    var camera, object;
-
     beforeEach( function ()
     {
-      camera = new Camera();
+      this.camera = new Camera();
 
-      object = {
+      this.object = {
         position: {
           x: 4,
           y: 2
@@ -64,7 +62,7 @@ describe( 'v6.Camera API', function ()
 
     it( 'works #3', function ()
     {
-      camera.should.be.like( {
+      this.camera.should.be.like( {
         settings: settings.settings
       } );
     } );
@@ -93,18 +91,26 @@ describe( 'v6.Camera API', function ()
       {
         it( 'works #1', function ()
         {
-          camera.lookAt( object, 'position' );
+          this.camera.lookAt( this.object, 'position' );
         } );
 
         it( 'works #2', function ()
         {
-          camera.lookAt( object.position );
+          this.camera.lookAt( this.object.position );
         } );
       } );
 
       describe( 'new v6.Camera.looksAt', function ()
       {
-        it( 'works' );
+        it( 'works #1', function ()
+        {
+          this.camera.looksAt().should.deep.equal( {
+            x: 0,
+            y: 0
+          } );
+        } );
+
+        it( 'works #2' );
       } );
 
       describe( 'new v6.Camera.sees', function ()
@@ -114,22 +120,78 @@ describe( 'v6.Camera API', function ()
 
       describe( 'new v6.Camera.set', function ()
       {
-        it( 'works #1', function ()
+        describe( '"zoom-out speed"', function ()
         {
-          camera.looksAt().should.deep.equal( {
-            x: 0,
-            y: 0
+          it( 'works #1', function ()
+          {
+            this.camera.set( 'zoom-out speed', { linear: false } );
+            this.camera.settings.should.have.property( 'zoom-out speed' ).that.is.like( { value: 1, linear: false } );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'zoom-out speed', { value: 0.8 } );
+            this.camera.settings.should.have.property( 'zoom-out speed' ).that.is.like( { value: 0.8, linear: true } );
           } );
         } );
 
-        it( 'works #2' );
+        describe( '"zoom-in speed"', function ()
+        {
+          it( 'works #1', function ()
+          {
+            this.camera.set( 'zoom-in speed', { linear: false } );
+            this.camera.settings.should.have.property( 'zoom-in speed' ).that.is.like( { value: 1, linear: false } );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'zoom-in speed', { value: 0.2 } );
+            this.camera.settings.should.have.property( 'zoom-in speed' ).that.is.like( { value: 0.2, linear: true } );
+          } );
+        } );
+
+        describe( '"speed"', function ()
+        {
+          it( 'works #1', function ()
+          {
+            this.camera.set( 'speed', { x: 0.25 } );
+            this.camera.settings.should.have.property( 'speed' ).that.is.like( { x: 0.25, y: 1 } );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'speed', { y: 0.25 } );
+            this.camera.settings.should.have.property( 'speed' ).that.is.like( { x: 1, y: 0.25 } );
+          } );
+        } );
+
+        describe( '"zoom"', function ()
+        {
+          it( 'works #1', function ()
+          {
+            this.camera.set( 'zoom', { value: 2 } );
+            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 2, min: 1, max: 1 } );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'zoom', { min: 0.5 } );
+            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 1, min: 0.5, max: 1 } );
+          } );
+
+          it( 'works #3', function ()
+          {
+            this.camera.set( 'zoom', { max: 0.5 } );
+            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 1, min: 1, max: 0.5 } );
+          } );
+        } );
       } );
 
       describe( 'new v6.Camera.shouldLookAt', function ()
       {
         it( 'works #1', function ()
         {
-          camera.shouldLookAt().should.deep.equal( {
+          this.camera.shouldLookAt().should.deep.equal( {
             x: 0,
             y: 0
           } );
@@ -137,14 +199,14 @@ describe( 'v6.Camera API', function ()
 
         it( 'works #2', function ()
         {
-          camera.lookAt( object, 'position' );
-          camera.shouldLookAt().should.deep.equal( object.position );
+          this.camera.lookAt( this.object, 'position' );
+          this.camera.shouldLookAt().should.deep.equal( this.object.position );
         } );
 
         it( 'works #3', function ()
         {
-          camera.lookAt( object.position );
-          camera.shouldLookAt().should.deep.equal( object.position );
+          this.camera.lookAt( this.object.position );
+          this.camera.shouldLookAt().should.deep.equal( this.object.position );
         } );
       } );
 

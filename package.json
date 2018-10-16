@@ -8,17 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/silent-tempest/v6.js.git"
+    "url": "git+https://github.com/tikhiy/v6.js.git"
   },
   "author": "Vladislav Tikhiy (SILENT)",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/silent-tempest/v6.js/issues"
+    "url": "https://github.com/tikhiy/v6.js/issues"
   },
-  "homepage": "https://github.com/silent-tempest/v6.js#readme",
+  "homepage": "https://github.com/tikhiy/v6.js#readme",
   "dependencies": {
-    "light_emitter": "github:silent-tempest/light_emitter#master",
-    "peako": "github:silent-tempest/peako#dev"
+    "light_emitter": "github:tikhiy/light_emitter#master",
+    "peako": "github:tikhiy/peako#dev"
   },
   "optionalDependencies": {
     "platform": "^1.3.5"
@@ -28,8 +28,9 @@
     "browserify-istanbul": "^3.0.1",
     "chai": "^4.2.0",
     "chai-like": "^1.1.1",
+    "coveralls": "^3.0.2",
     "eslint": "^5.7.0",
-    "eslint-config-v6.js": "github:silent-tempest/eslint-config-v6.js#master",
+    "eslint-config-v6.js": "github:tikhiy/eslint-config-v6.js#master",
     "express": "^4.16.4",
     "jsdoc": "^3.5.5",
     "karma": "^3.0.0",

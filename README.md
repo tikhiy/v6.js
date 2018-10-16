@@ -4,7 +4,7 @@ A JavaScript (ES5) library for rendering. The main feature is one API for WebGL 
 
 ### Installing
 
-Installing via [npm](https://www.npmjs.com/): `$ npm install --save github:silent-tempest/v6.js#dev`.
+Installing via [npm](https://www.npmjs.com/): `$ npm install --save github:tikhiy/v6.js#dev`.
 
 ### Example
 
@@ -75,7 +75,6 @@ window.addEventListener( 'resize', function ()
 
 * `make mocha`
 * `make karma`
-* `make karma:start &`, `make karma:run`
 
 ### License
 

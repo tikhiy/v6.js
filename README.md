@@ -65,23 +65,23 @@ window.addEventListener( 'resize', function ()
 
 ### Development
 
-### Preprocessing
+##### Preprocessing
 
 * `make preprocess -B`
 
-### Linting
+##### Linting
 
 * `make lint:core`
 * `make lint:test`
 
-### Testing
+##### Testing
 
 * Сначала надо отредактировать `build/browsers.txt` (он игнорируется в `.gitignore`) под вашу систему
 * `make start_static_server &`
 * `make mocha`
 * `make karma`
 
-### Before Committing
+##### Before Committing
 
 * `rm -rf docs dist coverage && npm run prepublish`
 

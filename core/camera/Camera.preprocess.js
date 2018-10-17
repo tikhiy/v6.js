@@ -1,6 +1,3 @@
-/* eslint lines-around-directive: off */
-/* eslint lines-around-comment: off */
-
 'use strict';
 
 var defaults = require( 'peako/defaults' );

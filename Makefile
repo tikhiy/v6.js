@@ -11,21 +11,17 @@ lint\:test:
 lint\:test--fix:
 	cd test && ../node_modules/.bin/eslint . --fix
 
-lint:
-	              node_modules/.bin/eslint . && \
-	cd test && ../node_modules/.bin/eslint .
+lint\:core:
+	node_modules/.bin/eslint .
+
+lint\:core--fix:
+	node_modules/.bin/eslint . --fix
 
 start_static_server:
 	node test/internal/server
 
 mocha:
 	node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`
-
-karma\:start:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-single-run --browsers=FirefoxDeveloper
-
-karma\:run:
-	node_modules/.bin/karma run
 
 karma--no-colors:
 	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-colors

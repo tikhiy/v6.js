@@ -1,6 +1,3 @@
-/* eslint lines-around-directive: off */
-/* eslint lines-around-comment: off */
-
 'use strict';
 
 var getElementW               = require( 'peako/get-element-w' );
@@ -401,6 +398,10 @@ AbstractRenderer.prototype = {
    */
   rotate: function rotate ( angle )
   {
+    if ( settings.degrees ) {
+      angle *= Math.PI / 180;
+    }
+
     this.matrix.rotate( angle );
     return this;
   },

@@ -1,7 +1,7 @@
 /*!
- * Copyright (c) 2017-2018 VladislavTikhiy (SILENT) (silent-tempest)
+ * Copyright (c) 2017-2018 Vladislav Tikhiy (SILENT)
  * Released under the GPL-3.0 license.
- * https://github.com/silent-tempest/v6.js/tree/dev/
+ * https://github.com/tikhiy/v6.js/tree/dev/
  */
 
 'use strict';
@@ -38,6 +38,10 @@ exports.mat3             = require( './core/math/mat3' );
  * @see v6.AbstractRenderer#endShape
  * @example
  * var shapes = require( 'v6.js/core/renderer/shapes' );
+ * @example
+ * renderer.beginShape( {
+ *   drawFunction: shapes.drawPoints
+ * } );
  */
 exports.shapes = {
   drawPoints: require( './core/renderer/shapes/draw_points' ),
@@ -47,6 +51,13 @@ exports.shapes = {
 /**
  * Настройки "v6.js".
  * @namespace v6.settings
+ * @example <caption>Core Settings</caption>
+ * var settings = require( 'v6.js/core/settings' );
+ * settings.degrees = true;
+ * @example <caption>Renderer Settings</caption>
+ * // Default renderer settings.
+ * var settings = require( 'v6.js/core/renderer/settings' );
+ * settings.degrees = true;
  */
 exports.settings = {
   renderer: require( './core/renderer/settings' ),
@@ -65,8 +76,11 @@ if ( typeof self !== 'undefined' ) {
  * var color = 'hsl( 360, 100%, 50% )';
  * var color = '#ff00ff';
  * var color = 'lightpink';
- * var color = '#00000000'; // The same as "transparent".
- *                          // NOTE: CSS does not support this syntax but "v6.js" does.
+ * // "rgba(0, 0, 0, 0)"
+ * var color = getComputedStyle( document.body ).getPropertyValue( 'background-color' );
+ * // The same as "transparent".
+ * // NOTE: CSS does not support this syntax but "v6.js" does.
+ * var color = '#00000000';
  * @example <caption>An object (v6.RGBA, v6.HSLA)</caption>
  * var color = new RGBA( 255, 0, 255, 1 );
  * var color = new HSLA( 360, 100, 50 );

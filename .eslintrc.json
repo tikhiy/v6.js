@@ -9,5 +9,20 @@
     "ecmaVersion": 5
   },
 
-  "extends": "v6.js"
+  "extends": "v6.js",
+
+  "overrides": [
+    {
+      "files": [
+        "core/renderer/AbstractRenderer.js",
+        "core/renderer/internal/process_rect_align.js",
+        "core/camera/Camera.js"
+      ],
+
+      "rules": {
+        "lines-around-directive": "off",
+        "lines-around-comment": "off"
+      }
+    }
+  ]
 }

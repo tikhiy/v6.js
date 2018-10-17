@@ -2,7 +2,7 @@
 
 var isObjectLike = require( 'peako/is-object-like' );
 
-function as ( chai, util )
+function as ( _chai, utils )
 {
   function like ( object, expected )
   {
@@ -27,14 +27,11 @@ function as ( chai, util )
     return false;
   }
 
-  chai.Assertion.addMethod( 'as', function ( expected )
+  _chai.Assertion.addMethod( 'as', function ( expected )
   {
-    var object = util.flag( this, 'object' );
+    var object = utils.flag( this, 'object' );
     var result = like( object, expected );
-
-    this.assert( result, 'expected #{this} to be dummy like #{exp}',
-      'expected #{this} to not dummy like #{exp}', expected, object,
-      chai.config.showDiff );
+    this.assert( result, 'expected #{this} to be as #{exp}', 'expected #{this} not to be as #{exp}', expected, object, _chai.config.showDiff );
   } );
 }
 

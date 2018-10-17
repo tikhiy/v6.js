@@ -6,10 +6,10 @@ var like  = require( 'chai-like' );
 
 var as    = require( './chai-as' );
 
-chai.should();
 global.expect = chai.expect;
 global.sinon  = sinon;
 
+chai.should();
 chai.use( like );
 chai.use( as );
 

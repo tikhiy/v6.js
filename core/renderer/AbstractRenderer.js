@@ -148,7 +148,7 @@ AbstractRenderer.prototype = {
     this.matrix.save();
     this.matrix.translate( x, y );
     this.matrix.rotate( rotationAngle );
-    this.drawArrays( polygon, polygon.length * 0.5, null, xRadius, yRadius );
+    this.drawArrays( polygon, polygon.length * 0.5, void 0, xRadius, yRadius );
     this.matrix.restore();
     return this;
   },

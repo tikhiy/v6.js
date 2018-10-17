@@ -2,8 +2,9 @@ coverage
 build
 docs
 test
+Makefile
 karma.conf.js
 .eslintignore
 .eslintrc.json
+.jsdoc.json
 .gitignore
-.jsdoc.js

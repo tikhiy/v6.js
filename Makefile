@@ -1,10 +1,13 @@
-SRC      := core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js core/camera/Camera.preprocess.js
-BROWSERS := $(shell cat build/browsers.txt)
+SOURCES   := core/renderer/AbstractRenderer.preprocess.js            \
+             core/renderer/internal/process_rect_align.preprocess.js \
+             core/camera/Camera.preprocess.js
+COVERALLS := $(shell cat build/coveralls.txt)
+BROWSERS  := $(shell cat build/browsers.txt)
 
-$(SRC):
+$(SOURCES):
 	build/preprocess $@ $(@:.preprocess.js=.js)
 
-preprocess: $(SRC)
+preprocess: $(SOURCES)
 
 lint\:test:
 	cd test && ../node_modules/.bin/eslint .
@@ -22,14 +25,12 @@ start_static_server:
 	node test/internal/server
 
 mocha:
-	@if [ $(REPORTER) ]; then                                                                                   \
-		if [ $(REPORTER) = 'mocha' ]; then                                                                        \
-			node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter spec;        \
-		else                                                                                                      \
-			node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter $(REPORTER); \
-		fi;                                                                                                       \
-	else                                                                                                        \
-		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`;                          \
+	@if [ $(REPORTER) = 'mocha' ]; then                                                                       \
+		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter spec;        \
+	elif [ $(REPORTER) ]; then                                                                                \
+		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter $(REPORTER); \
+	else                                                                                                      \
+		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`;                        \
 	fi
 
 karma--no-colors:
@@ -57,3 +58,6 @@ min: all
 
 gzip: min
 	gzip dist/v6.min.js --stdout > dist/v6.min.js.gz
+
+coveralls:
+	@$(COVERALLS) cat coverage/lcov.info | node_modules/.bin/coveralls

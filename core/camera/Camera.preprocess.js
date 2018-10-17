@@ -114,7 +114,7 @@ Camera.prototype = {
   /**
    * Устанавливает настройки.
    * @method v6.Camera#set
-   * @param {string} setting Имя настройки: "zoom-in speed", "zoom-out speed", "zoom".
+   * @param {string} setting Имя настройки: "zoom-in speed", "zoom-out speed", "zoom", "speed", "offset".
    * @param {any}    value   Новое значение настройки.
    * @chainable
    * @example
@@ -132,6 +132,7 @@ Camera.prototype = {
     switch ( setting ) {
       case 'zoom-out speed':
       case 'zoom-in speed':
+      case 'offset':
       case 'speed':
       case 'zoom':
         mixin( this.settings[ setting ], value );
@@ -208,8 +209,9 @@ Camera.prototype = {
   /**
    * Обновляет позицию, на которую направлена камера.
    * @method v6.Camera#update
+   * @return {void} Ничего не возвращает.
    * @chainable
-   * @see
+   * @example
    * ticker.on( 'update', function ()
    * {
    *   // Update a camera on each frame.
@@ -262,7 +264,7 @@ Camera.prototype = {
    */
   apply: function apply ( matrix )
   {
-    var zoom = this.setting.zoom.value;
+    var zoom = this.settings.zoom.value;
     var x = transform( this, this._currentPosition, 'x' );
     var y = transform( this, this._currentPosition, 'y' );
     ( matrix || this.renderer ).setTransform( zoom, 0, 0, zoom, zoom * x, zoom * y );
@@ -285,7 +287,7 @@ Camera.prototype = {
    */
   sees: function sees ( x, y, w, h, renderer )
   {
-    var zoom = this.setting.zoom.value;
+    var zoom = this.settings.zoom.value;
     var offset = this.settings.offset;
     var _currentPosition = this._currentPosition;
 

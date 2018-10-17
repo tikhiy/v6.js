@@ -354,6 +354,9 @@ AbstractRenderer.prototype = {
    */
   rotate: function rotate ( angle )
   {
+    if ( this.settings.degrees ) {
+      angle *= Math.PI / 180;
+    }
     this.matrix.rotate( angle );
     return this;
   },

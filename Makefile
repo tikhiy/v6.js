@@ -1,4 +1,5 @@
-SRC=core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js core/camera/Camera.preprocess.js
+SRC      := core/renderer/AbstractRenderer.preprocess.js core/renderer/internal/process_rect_align.preprocess.js core/camera/Camera.preprocess.js
+BROWSERS := $(shell cat build/browsers.txt)
 
 $(SRC):
 	build/preprocess $@ $(@:.preprocess.js=.js)
@@ -21,13 +22,29 @@ start_static_server:
 	node test/internal/server
 
 mocha:
-	node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`
+	@if [ $(REPORTER) ]; then                                                                                   \
+		if [ $(REPORTER) = 'mocha' ]; then                                                                        \
+			node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter spec;        \
+		else                                                                                                      \
+			node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter $(REPORTER); \
+		fi;                                                                                                       \
+	else                                                                                                        \
+		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`;                          \
+	fi
 
 karma--no-colors:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start --no-colors
+	@if [ $(REPORTER) ]; then                                                        \
+		$(BROWSERS) node_modules/.bin/karma start --no-colors --reporters $(REPORTER); \
+	else                                                                             \
+		$(BROWSERS) node_modules/.bin/karma start --no-colors;                         \
+	fi
 
 karma:
-	FIREFOX_DEVELOPER_BIN=firefox-developer node_modules/.bin/karma start
+	@if [ $(REPORTER) ]; then                                            \
+		$(BROWSERS) node_modules/.bin/karma start --reporters $(REPORTER); \
+	else                                                                 \
+		$(BROWSERS) node_modules/.bin/karma start;                         \
+	fi
 
 docs:
 	node_modules/.bin/jsdoc -c .jsdoc.json

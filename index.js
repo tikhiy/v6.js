@@ -26,7 +26,7 @@ exports.Transform        = require( './core/Transform' );
 exports.Vector2D         = require( './core/math/Vector2D' );
 exports.Vector3D         = require( './core/math/Vector3D' );
 exports.constants        = require( './core/constants' );
-exports.createRenderer   = require( './core/renderer' );
+exports.createRenderer   = require( './core/renderer/create_renderer' );
 exports.shaders          = require( './core/shaders' );
 exports.mat3             = require( './core/math/mat3' );
 

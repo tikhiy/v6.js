@@ -11,7 +11,7 @@ Installing via [npm](https://www.npmjs.com/): `$ npm install --save github:tikhi
 * Importing the library.
 
 ```javascript
-var createRenderer = require( 'v6.js/core/renderer' );
+var createRenderer = require( 'v6.js/core/renderer/create_renderer' );
 var constants      = require( 'v6.js/core/constants' );
 var HSLA           = require( 'v6.js/core/color/HSLA' );
 var Ticker         = require( 'v6.js/core/Ticker' );
@@ -65,17 +65,25 @@ window.addEventListener( 'resize', function ()
 
 ### Development
 
+### Preprocessing
+
+* `make preprocess -B`
+
+### Linting
+
+* `make lint:core`
+* `make lint:test`
+
+### Testing
+
 * `make start_static_server &`
-
-#### Before Committing
-
-* `rm -rf docs dist coverage && npm run prepublish`
-
-#### Testing
-
 * `make mocha`
 * `make karma`
 
+### Before Committing
+
+* `rm -rf docs dist coverage && npm run prepublish`
+
 ### License
 
-Released under the [GPL-3.0](LICENSE).
+Released under the [GPL-3.0](LICENSE) license.

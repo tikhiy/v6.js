@@ -6,6 +6,8 @@ var Camera           = require( '../../../core/camera/Camera' );
 var settings         = require( '../../../core/camera/settings' );
 var AbstractRenderer = require( '../../../core/renderer/AbstractRenderer' );
 
+var Transform        = require( '../../../core/Transform' );
+
 describe( 'v6.Camera API', function ()
 {
   it( 'successfully required', function ()
@@ -84,7 +86,12 @@ describe( 'v6.Camera API', function ()
     {
       describe( 'new v6.Camera.apply', function ()
       {
-        it( 'works' );
+        it( 'works', function ()
+        {
+          var matrix = new Transform();
+          this.camera.apply( matrix );
+          this.skip();
+        } );
       } );
 
       describe( 'new v6.Camera.lookAt', function ()
@@ -185,6 +192,21 @@ describe( 'v6.Camera API', function ()
             this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 1, min: 1, max: 0.5 } );
           } );
         } );
+
+        describe( '"offset"', function ()
+        {
+          it( 'works #1', function ()
+          {
+            this.camera.set( 'offset', { x: 300 } );
+            this.camera.settings.should.have.property( 'offset' ).that.is.like( { x: 300, y: 0 } );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'offset', { y: 200 } );
+            this.camera.settings.should.have.property( 'offset' ).that.is.like( { x: 0, y: 200 } );
+          } );
+        } );
       } );
 
       describe( 'new v6.Camera.shouldLookAt', function ()
@@ -212,12 +234,20 @@ describe( 'v6.Camera API', function ()
 
       describe( 'new v6.Camera.zoomIn', function ()
       {
-        it( 'works' );
+        it( 'works', function ()
+        {
+          this.camera.zoomIn();
+          this.skip();
+        } );
       } );
 
       describe( 'new v6.Camera.zoomOut', function ()
       {
-        it( 'works' );
+        it( 'works', function ()
+        {
+          this.camera.zoomOut();
+          this.skip();
+        } );
       } );
     } );
   } );

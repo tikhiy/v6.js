@@ -1,3 +1,4 @@
+build/browsers.txt
 node_modules
 coverage
 temp

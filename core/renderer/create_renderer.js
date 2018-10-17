@@ -17,7 +17,7 @@ var type            = require( './settings' ).type;
  * @param  {object}              options {@link v6.settings.renderer}.
  * @return {v6.AbstractRenderer}         Новый рендерер (2D, GL).
  * @example
- * var createRenderer = require( 'v6.js/core/renderer' );
+ * var createRenderer = require( 'v6.js/core/renderer/create_renderer' );
  * var constants      = require( 'v6.js/core/constants' );
  * @example <caption>Creating WebGL or 2D renderer based on platform and browser</caption>
  * var renderer = createRenderer( { type: constants.get( 'AUTO' ) } );

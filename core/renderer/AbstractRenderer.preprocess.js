@@ -398,7 +398,7 @@ AbstractRenderer.prototype = {
    */
   rotate: function rotate ( angle )
   {
-    if ( settings.degrees ) {
+    if ( this.settings.degrees ) {
       angle *= Math.PI / 180;
     }
 

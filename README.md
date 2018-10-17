@@ -76,6 +76,7 @@ window.addEventListener( 'resize', function ()
 
 ### Testing
 
+* Сначала надо отредактировать `build/browsers.txt` (он игнорируется в `.gitignore`) под вашу систему
 * `make start_static_server &`
 * `make mocha`
 * `make karma`

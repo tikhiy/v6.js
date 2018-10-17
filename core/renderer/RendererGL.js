@@ -17,11 +17,11 @@ var settings          = require( './settings' );
  * Массив вершин (vertices) квадрата.
  * @private
  * @inner
- * @var {Float32Array} square
+ * @var {Float32Array} rect
  */
-var square = ( function ()
+var rect = ( function ()
 {
-  var square = [
+  var rect = [
     0, 0,
     1, 0,
     1, 1,
@@ -29,10 +29,10 @@ var square = ( function ()
   ];
 
   if ( typeof Float32Array === 'function' ) {
-    return new Float32Array( square ); // eslint-disable-line no-undef
+    return new Float32Array( rect ); // eslint-disable-line no-undef
   }
 
-  return square;
+  return rect;
 } )();
 
 /**
@@ -60,15 +60,15 @@ function RendererGL ( options )
    * Буферы данных (вершин).
    * @member {object} v6.RendererGL#buffers
    * @property {WebGLBuffer} default Основной буфер.
-   * @property {WebGLBuffer} square  Используется для отрисовки прямоугольника в {@link v6.RendererGL#rect}.
+   * @property {WebGLBuffer} rect    Используется для отрисовки прямоугольника в {@link v6.RendererGL#rect}.
    */
   this.buffers = {
     default: this.context.createBuffer(),
-    square:  this.context.createBuffer()
+    rect:  this.context.createBuffer()
   };
 
-  this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.square );
-  this.context.bufferData( this.context.ARRAY_BUFFER, square, this.context.STATIC_DRAW );
+  this.context.bindBuffer( this.context.ARRAY_BUFFER, this.buffers.rect );
+  this.context.bufferData( this.context.ARRAY_BUFFER, rect, this.context.STATIC_DRAW );
 
   /**
    * Шейдеры (WebGL программы).

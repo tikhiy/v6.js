@@ -1,5 +1,7 @@
 # v6.js
 
+[![Coverage Status](https://coveralls.io/repos/github/tikhiy/v6.js/badge.svg?branch=dev)](https://coveralls.io/github/tikhiy/v6.js?branch=dev)
+
 A JavaScript (ES5) library for rendering. The main feature is one API for WebGL and 2D contexts.
 
 ### Installing

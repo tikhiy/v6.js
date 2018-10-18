@@ -333,6 +333,6 @@ function translate ( camera, destination, axis )
 {
   var transformedDestination = transform( camera, destination, axis );
   var transformedCurrentPosition = transform( camera, camera._currentPosition, axis );
-  camera._currentPosition[ axis ] += ( transformedDestination - transformedCurrentPosition ) * camera.settings.speed[ axis ];
+  camera._currentPosition[ axis ] += ( transformedCurrentPosition - transformedDestination ) * camera.settings.speed[ axis ];
 }
 module.exports = Camera;

@@ -232,6 +232,17 @@ describe( 'v6.Camera API', function ()
         } );
       } );
 
+      describe( 'new v6.Camera.update', function ()
+      {
+        it( 'works', function ()
+        {
+          this.camera.lookAt( this.object, 'position' );
+          this.camera.update();
+          this.camera.should.have.nested.property( '_currentPosition.x' ).that.is.gt( 0 );
+          this.camera.should.have.nested.property( '_currentPosition.y' ).that.is.gt( 0 );
+        } );
+      } );
+
       describe( 'new v6.Camera.zoomIn', function ()
       {
         it( 'works', function ()

@@ -25,23 +25,23 @@ start_static_server:
 	node test/internal/server
 
 mocha:
-	@if [ $(REPORTER) = 'mocha' ]; then                                                                       \
+	@if [ "$(REPORTER)" = 'mocha' ]; then                                                                     \
 		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter spec;        \
-	elif [ $(REPORTER) ]; then                                                                                \
+	elif [ "$(REPORTER)" ]; then                                                                              \
 		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter $(REPORTER); \
 	else                                                                                                      \
 		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`;                        \
 	fi
 
 karma--no-colors:
-	@if [ $(REPORTER) ]; then                                                        \
+	@if [ "$(REPORTER)" ]; then                                                      \
 		$(BROWSERS) node_modules/.bin/karma start --no-colors --reporters $(REPORTER); \
 	else                                                                             \
 		$(BROWSERS) node_modules/.bin/karma start --no-colors;                         \
 	fi
 
 karma:
-	@if [ $(REPORTER) ]; then                                            \
+	@if [ "$(REPORTER)" ]; then                                          \
 		$(BROWSERS) node_modules/.bin/karma start --reporters $(REPORTER); \
 	else                                                                 \
 		$(BROWSERS) node_modules/.bin/karma start;                         \

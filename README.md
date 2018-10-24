@@ -47,7 +47,7 @@ ticker.on( 'render', function ()
   renderer.backgroundColor( hue, 80, 80 );
   renderer.stroke( 'white' );
   renderer.fill( 'black' );
-  renderer.polygon( renderer.w / 2, renderer.h / 2, 100, 5 );
+  renderer.polygon( renderer.w / 2, renderer.h / 2, 5, 100 );
 } );
 ```
 

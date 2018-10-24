@@ -4,7 +4,7 @@
   "description": "A JavaScript (ES5) library for rendering. The main feature is one API for WebGL and 2D contexts.",
   "main": "index.js",
   "scripts": {
-    "prepublish": "make --always-make preprocess lint:core lint:test mocha karma--no-colors gzip docs"
+    "prepublish": "make --always-make clean preprocess lint:core lint:test mocha karma--no-colors gzip docs"
   },
   "repository": {
     "type": "git",

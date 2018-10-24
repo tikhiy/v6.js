@@ -207,6 +207,17 @@ describe( 'v6.Camera API', function ()
             this.camera.settings.should.have.property( 'offset' ).that.is.like( { x: 0, y: 200 } );
           } );
         } );
+
+        describe( 'unknown settings', function ()
+        {
+          it( 'throws', function ()
+          {
+            ( function ()
+            {
+              this.camera.set( 'unknown', {} );
+            } ).bind( this ).should.throw( Error );
+          } );
+        } );
       } );
 
       describe( 'new v6.Camera.shouldLookAt', function ()
@@ -243,21 +254,53 @@ describe( 'v6.Camera API', function ()
         } );
       } );
 
-      describe( 'new v6.Camera.zoomIn', function ()
+      [
+        [ 'zoomOut', 'zoom-out speed', 0.5, 0.825, 0.85 ],
+        [ 'zoomIn',  'zoom-in speed',  1.5, 1.375, 1.35 ]
+      ].forEach( function ( values )
       {
-        it( 'works', function ()
+        describe( 'new v6.Camera.' + values[ 0 ], function ()
         {
-          this.camera.zoomIn();
-          this.skip();
-        } );
-      } );
+          beforeEach( function ()
+          {
+            this.camera = new Camera( {
+              settings: {
+                'zoom': {
+                  value: 1.1,
+                  min: 0.5,
+                  max: 1.5
+                }
+              }
+            } );
+          } );
 
-      describe( 'new v6.Camera.zoomOut', function ()
-      {
-        it( 'works', function ()
-        {
-          this.camera.zoomOut();
-          this.skip();
+          it( 'works #1', function ()
+          {
+            this.camera[ values[ 0 ] ]();
+            this.camera.should.have.nested.property( 'settings.zoom.value' ).that.is.equal( values[ 2 ] );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( values[ 1 ], {
+              linear: true,
+              value: 0.25
+            } );
+
+            this.camera[ values[ 0 ] ]();
+            this.camera.should.have.nested.property( 'settings.zoom.value' ).that.is.closeTo( values[ 3 ], 0.1 );
+          } );
+
+          it( 'works #3', function ()
+          {
+            this.camera.set( values[ 1 ], {
+              linear: false,
+              value: 0.25
+            } );
+
+            this.camera[ values[ 0 ] ]();
+            this.camera.should.have.nested.property( 'settings.zoom.value' ).that.is.closeTo( values[ 4 ], 0.1 );
+          } );
         } );
       } );
     } );

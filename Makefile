@@ -61,3 +61,6 @@ gzip: min
 
 coveralls:
 	@cat coverage/lcov.info | $(COVERALLS) node_modules/.bin/coveralls
+
+clean:
+	rm -rf coverage docs dist

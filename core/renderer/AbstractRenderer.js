@@ -125,18 +125,18 @@ AbstractRenderer.prototype = {
    * @method v6.AbstractRenderer#drawPolygon
    * @param  {number}    x             X координата полигона.
    * @param  {number}    y             Y координата полигона.
+   * @param  {number}    sides         Количество сторон полигона.
    * @param  {number}    xRadius       X радиус полигона.
    * @param  {number}    yRadius       Y радиус полигона.
-   * @param  {number}    sides         Количество сторон полигона.
    * @param  {number}    rotationAngle Угол поворота полигона
    *                                   (чтобы не использовать {@link v6.Transform#rotate}).
    * @param  {boolean}   degrees       Использовать градусы.
    * @chainable
    * @example
    * // Draw hexagon at [ 4, 2 ] with radius 25.
-   * renderer.polygon( 4, 2, 25, 25, 6, 0 );
+   * renderer.polygon( 4, 2, 6, 25, 25, 0 );
    */
-  drawPolygon: function drawPolygon ( x, y, xRadius, yRadius, sides, rotationAngle, degrees )
+  drawPolygon: function drawPolygon ( x, y, sides, xRadius, yRadius, rotationAngle, degrees )
   {
     var polygon = polygons[ sides ];
     if ( ! polygon ) {
@@ -157,24 +157,24 @@ AbstractRenderer.prototype = {
    * @method v6.AbstractRenderer#polygon
    * @param  {number} x               X координата полигона.
    * @param  {number} y               Y координата полигона.
-   * @param  {number} r               Радиус полигона.
    * @param  {number} sides           Количество сторон полигона.
-   * @param  {number} [rotationAngle] Угол поворота полигона
+   * @param  {number} r               Радиус полигона.
+   * @param  {number} [rotationAngle] Угол поворота полигона.
    *                                  (чтобы не использовать {@link v6.Transform#rotate}).
    * @chainable
    * @example
    * // Draw hexagon at [ 4, 2 ] with radius 25.
-   * renderer.polygon( 4, 2, 25, 6 );
+   * renderer.polygon( 4, 2, 6, 25 );
    */
-  polygon: function polygon ( x, y, r, sides, rotationAngle )
+  polygon: function polygon ( x, y, sides, r, rotationAngle )
   {
     if ( sides % 1 ) {
       sides = Math.floor( sides * 100 ) * 0.01;
     }
     if ( typeof rotationAngle === 'undefined' ) {
-      this.drawPolygon( x, y, r, r, sides, -Math.PI * 0.5 );
+      this.drawPolygon( x, y, sides, r, r, -Math.PI * 0.5 );
     } else {
-      this.drawPolygon( x, y, r, r, sides, rotationAngle, options.degrees );
+      this.drawPolygon( x, y, sides, r, r, rotationAngle, options.degrees );
     }
     return this;
   },

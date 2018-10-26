@@ -99,9 +99,9 @@ Camera.prototype = {
   /**
    * Устанавливает настройки.
    * @method v6.Camera#set
-   * @param {string} setting Имя настройки: "zoom-in speed", "zoom-out speed", "zoom", "speed", "offset".
-   * @param {any}    value   Новое значение настройки.
-   * @chainable
+   * @param  {string} setting Имя настройки: "zoom-out speed", "zoom-in speed", "offset", "speed", "zoom".
+   * @param  {any}    value   Новое значение настройки.
+   * @return {void}           Ничего не возращает.
    * @example
    * // Set zoom-in speed setting to 0.0025 with linear flag (default: true).
    * camera.set( 'zoom-in speed', { value: 0.0025, linear: true } );
@@ -114,25 +114,29 @@ Camera.prototype = {
    */
   set: function set ( setting, value )
   {
-    switch ( setting ) {
-      case 'zoom-out speed':
-      case 'zoom-in speed':
-      case 'offset':
-      case 'speed':
-      case 'zoom':
-        mixin( this.settings[ setting ], value );
-        break;
-      default:
-        throw Error( 'Got unknown setting name: ' + setting );
-    }
-    return this;
+    CHECK( setting );
+    mixin( this.settings[ setting ], value );
+  },
+  /**
+   * Возвращает значение настройки.
+   * @method v6.Camera#get
+   * @param  {string} setting Имя настройки: "zoom-out speed", "zoom-in speed", "offset", "speed", "zoom".
+   * @return {any}            Значение настройки.
+   * @example
+   * // Get current camera zoom.
+   * var zoom = camera.get( 'zoom' ).value;
+   */
+  get: function get ( setting )
+  {
+    CHECK( setting );
+    return this.settings[ setting ];
   },
   /**
    * Направляет камеру на определенную позицию (`"destination"`).
    * @method v6.Camera#lookAt
-   * @param {IVector2D} destination Позиция, в которую должна смотреть камера.
-   * @param {string}   [key]   Свойство, которое надо брать из `"destination"`.
-   * @chainable
+   * @param  {IVector2D} destination Позиция, в которую должна смотреть камера.
+   * @param  {string}   [key]        Свойство, которое надо брать из `"destination"`.
+   * @return {void}                  Ничего не возращает.
    * @example
    * var car = {
    *   position: {
@@ -188,7 +192,6 @@ Camera.prototype = {
    * Обновляет позицию, на которую направлена камера.
    * @method v6.Camera#update
    * @return {void} Ничего не возвращает.
-   * @chainable
    * @example
    * ticker.on( 'update', function ()
    * {
@@ -334,5 +337,17 @@ function translate ( camera, destination, axis )
   var transformedDestination = transform( camera, destination, axis );
   var transformedCurrentPosition = transform( camera, camera._currentPosition, axis );
   camera._currentPosition[ axis ] += ( transformedCurrentPosition - transformedDestination ) * camera.settings.speed[ axis ];
+}
+function CHECK ( setting )
+{
+  switch ( setting ) {
+    case 'zoom-out speed':
+    case 'zoom-in speed':
+    case 'offset':
+    case 'speed':
+    case 'zoom':
+      return;
+  }
+  throw new Error( 'Got unknown setting key: ' + setting );
 }
 module.exports = Camera;

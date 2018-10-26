@@ -220,6 +220,34 @@ describe( 'v6.Camera API', function ()
         } );
       } );
 
+      describe( 'new v6.Camera.get', function ()
+      {
+        describe( 'example', function ()
+        {
+          it( 'works #1', function ()
+          {
+            this.camera.get( 'zoom' ).value.should.equal( 1 );
+          } );
+
+          it( 'works #2', function ()
+          {
+            this.camera.set( 'zoom', { value: 2 } );
+            this.camera.get( 'zoom' ).value.should.equal( 2 );
+          } );
+        } );
+
+        describe( 'unknown settings', function ()
+        {
+          it( 'throws', function ()
+          {
+            ( function ()
+            {
+              this.camera.get( 'unknown' );
+            } ).bind( this ).should.throw( Error );
+          } );
+        } );
+      } );
+
       describe( 'new v6.Camera.shouldLookAt', function ()
       {
         it( 'works #1', function ()

@@ -1,9 +1,11 @@
 'use strict';
 
 var defaults = require( 'peako/defaults' );
-var mixin    = require( 'peako/mixin' );
 
 var settings = require( './settings' );
+
+#define FOR_IN( object ) \
+  for ( var _keys = Object.keys( object ), _i = 0, _l = _keys.length; _i < _l; ++_i )
 
 /**
  * Класс камеры. Этот класс удобен для создания камеры, которая должна быть
@@ -129,8 +131,11 @@ Camera.prototype = {
    */
   set: function set ( setting, value )
   {
-    CHECK( setting );
-    mixin( this.settings[ setting ], value );
+    var setting_ = this.get( setting );
+
+    FOR_IN( value ) {
+      setting_[ _keys[ _i ] ] = value[ _keys[ _i ] ];
+    }
   },
 
   /**
@@ -183,13 +188,12 @@ Camera.prototype = {
    * @return {IVector2D} Позиция.
    * @example
    * var object = {
-   *   position: {
-   *     x: 4,
-   *     y: 2
-   *   }
+   *   position: { x: 4, y: 2 }
    * };
    *
-   * camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (clone of "object.position").
+   * camera.shouldLookAt(); // -> { x: 0, y: 0 }.
+   * camera.lookAt( object, 'position' );
+   * camera.shouldLookAt(); // -> { x: 4, y: 2 } (clone).
    */
   shouldLookAt: function shouldLookAt ()
   {

@@ -132,13 +132,13 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.set( 'zoom-out speed', { linear: false } );
-            this.camera.settings.should.have.property( 'zoom-out speed' ).that.is.like( { value: 1, linear: false } );
+            this.camera.get( 'zoom-out speed' ).should.be.like( { value: 1, linear: false } );
           } );
 
           it( 'works #2', function ()
           {
             this.camera.set( 'zoom-out speed', { value: 0.8 } );
-            this.camera.settings.should.have.property( 'zoom-out speed' ).that.is.like( { value: 0.8, linear: true } );
+            this.camera.get( 'zoom-out speed' ).should.be.like( { value: 0.8, linear: true } );
           } );
         } );
 
@@ -147,13 +147,13 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.set( 'zoom-in speed', { linear: false } );
-            this.camera.settings.should.have.property( 'zoom-in speed' ).that.is.like( { value: 1, linear: false } );
+            this.camera.get( 'zoom-in speed' ).should.be.like( { value: 1, linear: false } );
           } );
 
           it( 'works #2', function ()
           {
             this.camera.set( 'zoom-in speed', { value: 0.2 } );
-            this.camera.settings.should.have.property( 'zoom-in speed' ).that.is.like( { value: 0.2, linear: true } );
+            this.camera.get( 'zoom-in speed' ).should.be.like( { value: 0.2, linear: true } );
           } );
         } );
 
@@ -162,13 +162,13 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.set( 'speed', { x: 0.25 } );
-            this.camera.settings.should.have.property( 'speed' ).that.is.like( { x: 0.25, y: 1 } );
+            this.camera.get( 'speed' ).should.be.like( { x: 0.25, y: 1 } );
           } );
 
           it( 'works #2', function ()
           {
             this.camera.set( 'speed', { y: 0.25 } );
-            this.camera.settings.should.have.property( 'speed' ).that.is.like( { x: 1, y: 0.25 } );
+            this.camera.get( 'speed' ).should.be.like( { x: 1, y: 0.25 } );
           } );
         } );
 
@@ -177,19 +177,19 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.set( 'zoom', { value: 2 } );
-            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 2, min: 1, max: 1 } );
+            this.camera.get( 'zoom' ).should.be.like( { value: 2, min: 1, max: 1 } );
           } );
 
           it( 'works #2', function ()
           {
             this.camera.set( 'zoom', { min: 0.5 } );
-            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 1, min: 0.5, max: 1 } );
+            this.camera.get( 'zoom' ).should.be.like( { value: 1, min: 0.5, max: 1 } );
           } );
 
           it( 'works #3', function ()
           {
             this.camera.set( 'zoom', { max: 0.5 } );
-            this.camera.settings.should.have.property( 'zoom' ).that.is.like( { value: 1, min: 1, max: 0.5 } );
+            this.camera.get( 'zoom' ).should.be.like( { value: 1, min: 1, max: 0.5 } );
           } );
         } );
 
@@ -198,13 +198,13 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.set( 'offset', { x: 300 } );
-            this.camera.settings.should.have.property( 'offset' ).that.is.like( { x: 300, y: 0 } );
+            this.camera.get( 'offset' ).should.be.like( { x: 300, y: 0 } );
           } );
 
           it( 'works #2', function ()
           {
             this.camera.set( 'offset', { y: 200 } );
-            this.camera.settings.should.have.property( 'offset' ).that.is.like( { x: 0, y: 200 } );
+            this.camera.get( 'offset' ).should.be.like( { x: 0, y: 200 } );
           } );
         } );
 
@@ -227,12 +227,6 @@ describe( 'v6.Camera API', function ()
           it( 'works #1', function ()
           {
             this.camera.get( 'zoom' ).value.should.equal( 1 );
-          } );
-
-          it( 'works #2', function ()
-          {
-            this.camera.set( 'zoom', { value: 2 } );
-            this.camera.get( 'zoom' ).value.should.equal( 2 );
           } );
         } );
 

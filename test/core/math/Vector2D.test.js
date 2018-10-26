@@ -2,6 +2,8 @@
 
 var Vector2D = require( '../../../core/math/Vector2D' );
 
+var settings = require( '../../../core/settings' );
+
 describe( 'v6.Vector2D', function ()
 {
   it( 'successfully required', function ()
@@ -262,20 +264,29 @@ describe( 'v6.Vector2D', function ()
     } );
   } );
 
-  describe( 'v6.Vector2D.random', function ()
+  [
+    [ 'works with radians', false, Math.PI, Math.PI ],
+    [ 'works with degrees', true,  180,     Math.PI ]
+  ].forEach( function ( values )
   {
-    it( 'works', function ()
+    describe( 'v6.Vector2D.random', function ()
     {
-      Vector2D.random().mag().should.closeTo( 1, 1e-8 );
+      it( values[ 0 ], function ()
+      {
+        settings.degrees = values[ 1 ];
+        Vector2D.random().mag().should.closeTo( 1, 1e-8 );
+        settings.degrees = false;
+      } );
     } );
-  } );
 
-  describe( 'v6.Vector2D.fromAngle', function ()
-  {
-    it( 'works', function ()
+    describe( 'v6.Vector2D.fromAngle', function ()
     {
-      var angle = Math.PI / 180 * 45;
-      Vector2D.fromAngle( angle ).should.like( { x: Math.cos( angle ), y: Math.sin( angle ) } );
+      it( values[ 0 ], function ()
+      {
+        settings.degrees = values[ 1 ];
+        Vector2D.fromAngle( values[ 2 ] ).should.like( { x: Math.cos( values[ 3 ] ), y: Math.sin( values[ 3 ] ) } );
+        settings.degrees = false;
+      } );
     } );
   } );
 } );

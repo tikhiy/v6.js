@@ -2,6 +2,8 @@
 
 var AbstractVector = require( '../../../core/math/AbstractVector' );
 
+var settings       = require( '../../../core/settings' );
+
 describe( 'v6.AbstractVector', function ()
 {
   it( 'successfully required', function ()
@@ -22,7 +24,7 @@ describe( 'v6.AbstractVector', function ()
 
   describe( 'v6.AbstractVector._fromAngle', function ()
   {
-    it( 'works', function ()
+    before( function ()
     {
       function Vector4D ( x, y, z, w )
       {
@@ -35,9 +37,23 @@ describe( 'v6.AbstractVector', function ()
       Vector4D.prototype = Object.create( AbstractVector.prototype );
       Vector4D.prototype.constructor = Vector4D;
 
-      AbstractVector._fromAngle( Vector4D, Math.PI )
-        .should
-          .deep.equal( new Vector4D( Math.cos( Math.PI ), Math.sin( Math.PI ) ) );
+      this.Vector4D = Vector4D;
+    } );
+
+    [
+      [ 'works with radians', false, Math.PI, Math.PI ],
+      [ 'works with degrees', true,  180,     Math.PI ]
+    ].forEach( function ( values )
+    {
+      it( values[ 0 ], function ()
+      {
+        settings.degrees = values[ 1 ];
+
+        AbstractVector._fromAngle( this.Vector4D, values[ 2 ] ).should.deep.equal(
+          new this.Vector4D( Math.cos( values[ 3 ] ), Math.sin( values[ 3 ] ) ) );
+
+        settings.degrees = false;
+      } );
     } );
   } );
 } );

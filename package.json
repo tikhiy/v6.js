@@ -1,6 +1,6 @@
 {
   "name": "v6.js",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A JavaScript (ES5) library for rendering. The main feature is one API for WebGL and 2D contexts.",
   "main": "index.js",
   "scripts": {

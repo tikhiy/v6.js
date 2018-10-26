@@ -348,6 +348,6 @@ function CHECK ( setting )
     case 'zoom':
       return;
   }
-  throw new Error( 'Got unknown setting key: ' + setting );
+  throw Error( 'Got unknown setting key: ' + setting );
 }
 module.exports = Camera;

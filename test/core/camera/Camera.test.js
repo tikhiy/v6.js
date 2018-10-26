@@ -127,7 +127,7 @@ describe( 'v6.Camera API', function ()
 
       describe( 'new v6.Camera.set', function ()
       {
-        describe( '"zoom-out speed"', function ()
+        describe( 'zoom-out speed', function ()
         {
           it( 'works #1', function ()
           {
@@ -142,7 +142,7 @@ describe( 'v6.Camera API', function ()
           } );
         } );
 
-        describe( '"zoom-in speed"', function ()
+        describe( 'zoom-in speed', function ()
         {
           it( 'works #1', function ()
           {
@@ -157,7 +157,7 @@ describe( 'v6.Camera API', function ()
           } );
         } );
 
-        describe( '"speed"', function ()
+        describe( 'speed', function ()
         {
           it( 'works #1', function ()
           {
@@ -172,7 +172,7 @@ describe( 'v6.Camera API', function ()
           } );
         } );
 
-        describe( '"zoom"', function ()
+        describe( 'zoom', function ()
         {
           it( 'works #1', function ()
           {
@@ -193,7 +193,7 @@ describe( 'v6.Camera API', function ()
           } );
         } );
 
-        describe( '"offset"', function ()
+        describe( 'offset', function ()
         {
           it( 'works #1', function ()
           {

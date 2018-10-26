@@ -59,7 +59,7 @@ min: all
 gzip: min
 	gzip dist/v6.min.js --stdout > dist/v6.min.js.gz
 
-coveralls:
+coverage:
 	@cat coverage/lcov.info | $(COVERALLS) node_modules/.bin/coveralls
 
 clean:

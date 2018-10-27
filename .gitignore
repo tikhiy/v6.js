@@ -1,5 +1,4 @@
-build/coveralls.txt
-build/browsers.txt
 node_modules
 coverage
+config
 temp

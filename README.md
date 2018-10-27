@@ -81,10 +81,20 @@ window.addEventListener( 'resize', function ()
 
 ##### Testing
 
-* First, edit `build/browsers.txt` (it is ignored in `.gitignore`) for your system
+* First, create `config/browsers.txt` (ignored in `.gitignore`) for your system:
+```bash
+FIREFOX_DEVELOPER_BIN=firefox-developer
+CHROMIUM_BIN=chromium-browser
+FIREFOX_BIN=firefox
+CHROME_BIN=google-chrome
+```
 * `make start_static_server &`
 * `make mocha`
 * `make karma`
+
+##### Coveralls
+
+* `make coverage`
 
 ##### Before Committing
 

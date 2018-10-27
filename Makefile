@@ -1,8 +1,7 @@
-SOURCES   := core/renderer/AbstractRenderer.preprocess.js            \
+SOURCES  := core/renderer/AbstractRenderer.preprocess.js             \
              core/renderer/internal/process_rect_align.preprocess.js \
              core/camera/Camera.preprocess.js
-COVERALLS := $(shell cat build/coveralls.txt)
-BROWSERS  := $(shell cat build/browsers.txt)
+BROWSERS := $(subst \n, ,$(shell cat config/browsers.txt))
 
 $(SOURCES):
 	build/preprocess $@ $(@:.preprocess.js=.js)
@@ -60,7 +59,7 @@ gzip: min
 	gzip dist/v6.min.js --stdout > dist/v6.min.js.gz
 
 coverage:
-	@cat coverage/lcov.info | $(COVERALLS) node_modules/.bin/coveralls
+	@cat coverage/lcov.info | $(subst \n, ,$(shell cat config/coveralls.txt)) node_modules/.bin/coveralls
 
 clean:
 	rm -rf coverage docs dist

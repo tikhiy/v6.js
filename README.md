@@ -7,7 +7,7 @@ A JavaScript (ES5) library for rendering. Simple API for both WebGL and 2D conte
 
 ### Installing
 
-Installing via [npm](https://www.npmjs.com/): `$ npm install --save github:tikhiy/v6.js#dev`.
+Installing via [npm](https://www.npmjs.com/): `$ npm install --save github:tikhiy/v6.js#dev`, or `$ npm install --save github:tikhiy/v6.js#v0.2.0`.
 
 ### Example
 

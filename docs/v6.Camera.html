@@ -158,7 +158,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line5">line 5</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -291,7 +291,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line41">line 41</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -363,7 +363,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line34">line 34</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -514,7 +514,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line222">line 222</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line225">line 225</a>
     </li></ul></dd>
     
 
@@ -591,7 +591,170 @@ camera.apply();</code></pre>
     
 
     
-    <h4 class="name" id="lookAt"><span class="type-signature"></span>lookAt<span class="signature">(destination, key<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(setting)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Возвращает значение настройки.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>setting</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Имя настройки: &quot;zoom-out speed&quot;, &quot;zoom-in speed&quot;, &quot;offset&quot;, &quot;speed&quot;, &quot;zoom&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line121">line 121</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Значение настройки.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Get current camera zoom.
+var zoom = camera.get( 'zoom' ).value;</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="lookAt"><span class="type-signature"></span>lookAt<span class="signature">(destination, key<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {void}</span></h4>
     
 
     
@@ -735,7 +898,7 @@ camera.apply();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line130">line 130</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line135">line 135</a>
     </li></ul></dd>
     
 
@@ -758,6 +921,28 @@ camera.apply();</code></pre>
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Ничего не возращает.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -835,7 +1020,7 @@ camera.lookAt( car.position );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line207">line 207</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line210">line 210</a>
     </li></ul></dd>
     
 
@@ -1135,7 +1320,7 @@ var looksAt = camera.looksAt();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line247">line 247</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line250">line 250</a>
     </li></ul></dd>
     
 
@@ -1198,7 +1383,7 @@ var looksAt = camera.looksAt();</code></pre>
     
 
     
-    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(setting, value)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(setting, value)</span><span class="type-signature"> &rarr; {void}</span></h4>
     
 
     
@@ -1258,7 +1443,7 @@ var looksAt = camera.looksAt();</code></pre>
 
             
 
-            <td class="description last"><p>Имя настройки: &quot;zoom-in speed&quot;, &quot;zoom-out speed&quot;, &quot;zoom&quot;, &quot;speed&quot;, &quot;offset&quot;.</p></td>
+            <td class="description last"><p>Имя настройки: &quot;zoom-out speed&quot;, &quot;zoom-in speed&quot;, &quot;offset&quot;, &quot;speed&quot;, &quot;zoom&quot;.</p></td>
         </tr>
 
     
@@ -1322,7 +1507,7 @@ var looksAt = camera.looksAt();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line99">line 99</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -1345,6 +1530,28 @@ var looksAt = camera.looksAt();</code></pre>
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Ничего не возращает.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1420,7 +1627,7 @@ camera.set( 'speed', { x: 0.1, y: 0.1 } );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line157">line 157</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line162">line 162</a>
     </li></ul></dd>
     
 
@@ -1472,13 +1679,12 @@ camera.set( 'speed', { x: 0.1, y: 0.1 } );</code></pre>
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var object = {
-  position: {
-    x: 4,
-    y: 2
-  }
+  position: { x: 4, y: 2 }
 };
 
-camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (clone of "object.position").</code></pre>
+camera.shouldLookAt(); // -> { x: 0, y: 0 }.
+camera.lookAt( object, 'position' );
+camera.shouldLookAt(); // -> { x: 4, y: 2 } (clone).</code></pre>
 
 
 
@@ -1540,7 +1746,7 @@ camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line187">line 187</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -1665,7 +1871,7 @@ camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line302">line 302</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line305">line 305</a>
     </li></ul></dd>
     
 
@@ -1789,7 +1995,7 @@ camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line278">line 278</a>
+        <a href="core_camera_Camera.js.html">core/camera/Camera.js</a>, <a href="core_camera_Camera.js.html#line281">line 281</a>
     </li></ul></dd>
     
 
@@ -1869,7 +2075,7 @@ camera.lookAt( destination, 'position' ).shouldLookAt(); // -> { x: 4, y: 2 } (c
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 17 2018 22:52:00 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 31 2018 01:35:18 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

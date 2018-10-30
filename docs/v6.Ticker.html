@@ -236,7 +236,7 @@ ticker.on( 'render', function () {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line106">line 106</a>
+        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -270,7 +270,7 @@ ticker.on( 'render', function () {
     
 
     
-    <h4 class="name" id="fps"><span class="type-signature"></span>fps<span class="signature">(fps)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(setting)</span><span class="type-signature"> &rarr; {any}</span></h4>
     
 
     
@@ -278,7 +278,7 @@ ticker.on( 'render', function () {
 
 
 <div class="description">
-    <p>Устанавливает максимальное количество кадров в секунду (FPS) анимации.</p>
+    <p>Get current value of a setting.</p>
 </div>
 
 
@@ -314,13 +314,13 @@ ticker.on( 'render', function () {
 
         <tr>
             
-                <td class="name"><code>fps</code></td>
+                <td class="name"><code>setting</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -330,7 +330,7 @@ ticker.on( 'render', function () {
 
             
 
-            <td class="description last"><p>Максимальный FPS, например: 60.</p></td>
+            <td class="description last"><p>The setting`s key, e.g.: &quot;FPS&quot;, &quot;frame time&quot;.</p></td>
         </tr>
 
     
@@ -371,7 +371,7 @@ ticker.on( 'render', function () {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line90">line 90</a>
+        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line115">line 115</a>
     </li></ul></dd>
     
 
@@ -394,15 +394,220 @@ ticker.on( 'render', function () {
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The setting`s value.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Set maximum animation FPS to 10.
-// Do not need to restart ticker.
-ticker.fps( 10 );</code></pre>
+    <pre class="prettyprint"><code>var frameTime = ticker.get( 'frame time' );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(setting, value)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Set new value of a setting.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>setting</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The setting`s key, e.g.: &quot;FPS&quot;, &quot;frame time&quot;.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>New setting`s value.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line93">line 93</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns nothing.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>ticker.set( 'FPS', 120 );</code></pre>
 
 
 
@@ -464,7 +669,7 @@ ticker.fps( 10 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line41">line 41</a>
+        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -555,7 +760,7 @@ ticker.fps( 10 );</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line116">line 116</a>
+        <a href="core_Ticker.js.html">core/Ticker.js</a>, <a href="core_Ticker.js.html#line139">line 139</a>
     </li></ul></dd>
     
 
@@ -615,7 +820,7 @@ ticker.fps( 10 );</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 17 2018 22:52:00 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 31 2018 01:35:18 GMT+0700 (+07)
 </footer>
 
 <script> prettyPrint(); </script>

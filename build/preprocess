@@ -1,21 +1,8 @@
 #!/usr/bin/env bash
 
-function backup
-{
-  if [[ ! -e $1 ]]; then
-    return 0
-  fi
-
-  if [[ ! -e temp ]]; then
-    mkdir temp
-  fi
-
-  cp $1 temp/`echo $1 | sed 's/.*\///'`
-}
-
 function preprocess
 {
   cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -CC $1 -o $2
 }
 
-backup $2 && preprocess $1 $2
+build/backup $2 && preprocess $1 $2

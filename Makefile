@@ -1,8 +1,5 @@
-SOURCES  :=                                               \
-  core/renderer/internal/process_rect_align.preprocess.js \
-  core/renderer/AbstractRenderer.preprocess.js            \
-  core/camera/Camera.preprocess.js
 BROWSERS := $(subst \n, ,$(shell cat config/browsers.txt))
+SOURCES  := $(subst \n, ,$(shell cat config/sources.txt))
 
 $(SOURCES):
 	build/preprocess $@ $(@:.preprocess.js=.js)

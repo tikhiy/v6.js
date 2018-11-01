@@ -199,5 +199,30 @@ describe( 'v6.Renderer2D', function ()
         } );
       } );
     } );
+
+    describe.skip( 'new v6.Renderer2D.pop', function ()
+    {
+      before( function ()
+      {
+        this.renderer = new Renderer2D();
+      } );
+
+      it( 'works', function ()
+      {
+        this.renderer.fill( '#ff0000' );
+        this.renderer.push();
+        this.renderer.fill( '#ff00ff' );
+        this.renderer.pop();
+
+        console.log( this.renderer._fillColor );
+
+        this.renderer._fillColor.should.be.like( {
+          0: 255,
+          1: 0,
+          2: 0,
+          3: 1
+        } );
+      } );
+    } );
   } );
 } );

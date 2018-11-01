@@ -8,7 +8,6 @@ A JavaScript (ES5) library for rendering. Simple API for both WebGL and 2D conte
 
 ### Installing
 
-* `npm install --save github:tikhiy/v6.js#dev`
 * `npm install --save github:tikhiy/v6.js#v0.2.0`
 
 ### Example
@@ -76,8 +75,8 @@ window.addEventListener( 'resize', function ()
 
 ##### Linting
 
-* `make lint:core`
-* `make lint:test`
+* `make lint:core`, `ESLINT='--fix' make lint:core`
+* `make lint:test`, `ESLINT='--fix' make lint:test`
 
 ##### Testing
 
@@ -88,9 +87,9 @@ CHROMIUM_BIN=chromium-browser
 FIREFOX_BIN=firefox
 CHROME_BIN=google-chrome
 ```
-* `make start_static_server &`
-* `make mocha`
-* `make karma`
+* `node test/internal/server`
+* `make mocha`, `MOCHA='--reporter spec' make mocha`
+* `make karma`, `KARMA='--browsers FirefoxDeveloper --reporters mocha' make karma`
 
 ##### Coveralls
 

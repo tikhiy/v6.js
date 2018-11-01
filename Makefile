@@ -9,42 +9,16 @@ $(SOURCES):
 preprocess: $(SOURCES)
 
 lint\:test:
-	cd test && ../node_modules/.bin/eslint .
-
-lint\:test--fix:
-	cd test && ../node_modules/.bin/eslint . --fix
+	cd test && ../node_modules/.bin/eslint . $(ESLINT)
 
 lint\:core:
-	node_modules/.bin/eslint .
-
-lint\:core--fix:
-	node_modules/.bin/eslint . --fix
-
-start_static_server:
-	node test/internal/server
+	node_modules/.bin/eslint . $(ESLINT)
 
 mocha:
-	@if [ "$(REPORTER)" = 'mocha' ]; then                                                                     \
-		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter spec;        \
-	elif [ "$(REPORTER)" ]; then                                                                              \
-		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` --reporter $(REPORTER); \
-	else                                                                                                      \
-		node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'`;                        \
-	fi
-
-karma--no-colors:
-	@if [ "$(REPORTER)" ]; then                                                      \
-		$(BROWSERS) node_modules/.bin/karma start --no-colors --reporters $(REPORTER); \
-	else                                                                             \
-		$(BROWSERS) node_modules/.bin/karma start --no-colors;                         \
-	fi
+	node_modules/.bin/mocha -r test/internal/register `find test -name '*.test.js'` $(MOCHA)
 
 karma:
-	@if [ "$(REPORTER)" ]; then                                          \
-		$(BROWSERS) node_modules/.bin/karma start --reporters $(REPORTER); \
-	else                                                                 \
-		$(BROWSERS) node_modules/.bin/karma start;                         \
-	fi
+	$(BROWSERS) node_modules/.bin/karma start $(KARMA)
 
 docs:
 	node_modules/.bin/jsdoc -c .jsdoc.json

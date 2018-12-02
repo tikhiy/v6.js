@@ -1,3 +1,4 @@
 core/renderer/internal/process_rect_align.preprocess.js
 core/renderer/AbstractRenderer.preprocess.js
 core/camera/Camera.preprocess.js
+core/Ticker.preprocess.js

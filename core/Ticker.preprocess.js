@@ -1,7 +1,14 @@
 'use strict';
+
 var LightEmitter = require( 'light_emitter' );
-var timestamp = require( 'peako/timestamp' );
-var timer = require( 'peako/timer' );
+var timestamp    = require( 'peako/timestamp' );
+var timer        = require( 'peako/timer' );
+
+#define CHECK( setting )                                  \
+  if ( isInvalidSetting( setting ) ) {                    \
+    throw Error( 'Got unknown setting key: ' + setting ); \
+  } // eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len
+
 /**
  * Этот класс используется для зацикливания анимации вместо `requestAnimationFrame`.
  * @constructor v6.Ticker
@@ -27,13 +34,16 @@ var timer = require( 'peako/timer' );
 function Ticker ()
 {
   var self = this;
+
   LightEmitter.call( this );
+
   this.lastRequestAnimationFrameID = 0;
   this.lastRequestTime = 0;
   this.skippedTime = 0;
   this.totalTime = 0;
   this.running = false;
   this.settings = {};
+
   /**
    * Запускает цикл анимации.
    * @method v6.Ticker#start
@@ -44,35 +54,47 @@ function Ticker ()
   function start ( _now )
   {
     var elapsedTime, frameTime;
+
     if ( ! self.running ) {
       if ( ! _now ) {
         self.lastRequestAnimationFrameID = timer.request( start );
         self.lastRequestTime = timestamp();
         self.running = true;
       }
+
       return this; // eslint-disable-line no-invalid-this
     }
+
     if ( ! _now ) {
       return this; // eslint-disable-line no-invalid-this
     }
+
     elapsedTime = Math.min( 1, ( _now - self.lastRequestTime ) * 0.001 );
+
     self.skippedTime += elapsedTime;
-    self.totalTime += elapsedTime;
+    self.totalTime   += elapsedTime;
+
     frameTime = self.settings[ 'frame time' ];
+
     while ( self.skippedTime >= frameTime && self.running ) {
       self.skippedTime -= frameTime;
       self.emit( 'update', frameTime, _now );
     }
+
     self.emit( 'render', elapsedTime, _now );
     self.lastRequestTime = _now;
     self.lastRequestAnimationFrameID = timer.request( start );
+
     return this; // eslint-disable-line no-invalid-this
   }
+
   this.start = start;
   this.set( 'FPS', 60 );
 }
+
 Ticker.prototype = Object.create( LightEmitter.prototype );
 Ticker.prototype.constructor = Ticker;
+
 /**
  * Set new value of a setting.
  * @method v6.Ticker#set
@@ -84,14 +106,17 @@ Ticker.prototype.constructor = Ticker;
  */
 Ticker.prototype.set = function set ( setting, value )
 {
-  if ( isInvalidSetting( setting ) ) { throw Error( 'Got unknown setting key: ' + setting ); } /* eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len*/
+  CHECK( setting )
+
   if ( setting === 'FPS' ) {
     this.settings[ 'frame time' ] = 1 / value;
   } else if ( setting === 'frame time' ) {
     this.settings[ 'FPS' ] = 1 / value; // eslint-disable-line dot-notation
   }
+
   this.settings[ setting ] = value;
 };
+
 /**
  * Get current value of a setting.
  * @method v6.Ticker#get
@@ -102,9 +127,10 @@ Ticker.prototype.set = function set ( setting, value )
  */
 Ticker.prototype.get = function get ( setting )
 {
-  if ( isInvalidSetting( setting ) ) { throw Error( 'Got unknown setting key: ' + setting ); } /* eslint-disable-line brace-rules/brace-on-same-line, no-useless-concat, quotes, max-statements-per-line, max-len*/
+  CHECK( setting )
   return this.settings[ setting ];
 };
+
 /**
  * @method v6.Ticker#clear
  * @chainable
@@ -114,6 +140,7 @@ Ticker.prototype.clear = function clear ()
   this.skippedTime = 0;
   return this;
 };
+
 /**
  * Останавливает анимацию.
  * @method v6.Ticker#stop
@@ -131,8 +158,10 @@ Ticker.prototype.stop = function stop ()
   this.running = false;
   return this;
 };
+
 function isInvalidSetting ( setting )
 {
   return setting !== 'frame time' && setting !== 'FPS';
 }
+
 module.exports = Ticker;

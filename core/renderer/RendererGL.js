@@ -2,6 +2,8 @@
 
 var defaults          = require( 'peako/defaults' );
 
+var createArray       = require( '../internal/create_array' );
+
 var ShaderProgram     = require( '../ShaderProgram' );
 var Transform         = require( '../Transform' );
 var constants         = require( '../constants' );
@@ -13,27 +15,12 @@ var processRectAlignY = require( './internal/process_rect_align' ).processRectAl
 var AbstractRenderer  = require( './AbstractRenderer' );
 var settings          = require( './settings' );
 
-/**
- * Массив вершин (vertices) квадрата.
- * @private
- * @inner
- * @var {Float32Array} rect
- */
-var rect = ( function ()
-{
-  var rect = [
-    0, 0,
-    1, 0,
-    1, 1,
-    0, 1
-  ];
-
-  if ( typeof Float32Array === 'function' ) {
-    return new Float32Array( rect ); // eslint-disable-line no-undef
-  }
-
-  return rect;
-} )();
+var rect = createArray( [
+  0, 0,
+  1, 0,
+  1, 1,
+  0, 1
+] );
 
 /**
  * WebGL рендерер.
@@ -221,6 +208,20 @@ RendererGL.prototype._stroke = function _stroke ( count )
 RendererGL.prototype.arc = function arc ( x, y, r )
 {
   return this.drawPolygon( x, y, r, r, 24, 0 );
+};
+
+/**
+ * @override
+ * @method v6.RendererGL#line
+ */
+RendererGL.prototype.line = function line ( x1, y1, x2, y2 )
+{
+  this.drawArrays( createArray( [
+    x1, y1,
+    x2, y2
+  ] ), 2, this.context.STATIC_DRAW );
+
+  return this;
 };
 
 /**

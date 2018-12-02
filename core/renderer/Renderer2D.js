@@ -46,7 +46,7 @@ Renderer2D.prototype.backgroundColor = function backgroundColor ( r, g, b, a )
 
   context.save();
   context.fillStyle = new settings.color( r, g, b, a );
-  context.setTransform( settings.scale, 0, 0, settings.scale, 0, 0 );
+  context.setTransform( 1, 0, 0, 1, 0, 0 );
   context.fillRect( 0, 0, this.w, this.h );
   context.restore();
 
@@ -163,6 +163,22 @@ Renderer2D.prototype.arc = function arc ( x, y, r )
   if ( this._doFill ) {
     this._fill();
   }
+
+  if ( this._doStroke && this._lineWidth > 0 ) {
+    this._stroke();
+  }
+
+  return this;
+};
+
+/**
+ * @override
+ * @method v6.Renderer2D#line
+ */
+Renderer2D.prototype.line = function line ( x1, y1, x2, y2 )
+{
+  this.context.moveTo( x1, y1 );
+  this.context.lineTo( x2, y2 );
 
   if ( this._doStroke && this._lineWidth > 0 ) {
     this._stroke();

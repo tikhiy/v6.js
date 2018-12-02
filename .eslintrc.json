@@ -14,9 +14,10 @@
   "overrides": [
     {
       "files": [
-        "core/renderer/AbstractRenderer.js",
         "core/renderer/internal/process_rect_align.js",
-        "core/camera/Camera.js"
+        "core/renderer/AbstractRenderer.js",
+        "core/camera/Camera.js",
+        "core/Ticker.js"
       ],
 
       "rules": {

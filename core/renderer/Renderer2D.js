@@ -79,7 +79,7 @@ Renderer2D.prototype.backgroundImage = function backgroundImage ( image )
  */
 Renderer2D.prototype.clear = function clear ()
 {
-  this.context.clear( 0, 0, this.w, this.h );
+  this.context.clearRect( 0, 0, this.w, this.h );
   return this;
 };
 

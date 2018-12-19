@@ -118,6 +118,13 @@ describe( 'v6.Renderer2D', function ()
         renderer.destroy();
       } );
 
+      describe( 'new v6.Rederer2D.clear', function ()
+      {
+        it( 'works', function () {
+          renderer.clear();
+        } );
+      } );
+
       describe( 'new v6.Renderer2D.arc', function ()
       {
         it( 'works', function ()

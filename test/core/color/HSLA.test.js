@@ -14,7 +14,11 @@ describe( 'v6.HSLA', function ()
 
   describe( 'new v6.HSLA', function ()
   {
-    var mock, h, s, l, a;
+    var mock;
+    var h;
+    var s;
+    var l;
+    var a;
 
     beforeEach( function ()
     {

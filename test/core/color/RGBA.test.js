@@ -14,7 +14,11 @@ describe( 'v6.RGBA', function ()
 
   describe( 'new v6.RGBA', function ()
   {
-    var mock, r, g, b, a;
+    var mock;
+    var r;
+    var g;
+    var b;
+    var a;
 
     beforeEach( function ()
     {

@@ -17,7 +17,8 @@ if ( typeof platform === 'undefined' ) { // eslint-disable-line no-use-before-de
 
 function getRendererType ()
 {
-  var safari, touchable;
+  var touchable;
+  var safari;
 
   if ( platform ) {
     safari = platform.os &&

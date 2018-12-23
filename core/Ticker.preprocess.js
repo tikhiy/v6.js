@@ -53,7 +53,8 @@ function Ticker ()
    */
   function start ( _now )
   {
-    var elapsedTime, frameTime;
+    var elapsedTime;
+    var frameTime;
 
     if ( ! self.running ) {
       if ( ! _now ) {

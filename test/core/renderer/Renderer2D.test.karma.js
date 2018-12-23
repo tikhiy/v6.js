@@ -95,7 +95,9 @@ describe( 'v6.Renderer2D', function ()
 
     describe( 'new v6.Renderer2D rendering methods', function ()
     {
-      var renderer, mock, sandbox;
+      var renderer;
+      var sandbox;
+      var mock;
 
       before( function ()
       {
@@ -120,7 +122,8 @@ describe( 'v6.Renderer2D', function ()
 
       describe( 'new v6.Rederer2D.clear', function ()
       {
-        it( 'works', function () {
+        it( 'works', function ()
+        {
           renderer.clear();
         } );
       } );

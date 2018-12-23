@@ -2,7 +2,8 @@
 
 var noop = require( 'peako/noop' );
 
-var report, reported;
+var reported;
+var report;
 
 if ( typeof console !== 'undefined' && console.warn ) { // eslint-disable-line no-console
   reported = {};

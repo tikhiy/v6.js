@@ -28,7 +28,8 @@ var settings = require( './settings' );
  */
 function Camera ( options )
 {
-  var x, y;
+  var x;
+  var y;
   options = defaults( settings, options );
   /**
    * Настройки камеры, такие как скорость анимации или масштаб.
@@ -175,7 +176,8 @@ Camera.prototype = {
   shouldLookAt: function shouldLookAt ()
   {
     var _destination = this._getDestination();
-    var x, y;
+    var x;
+    var y;
     if ( _destination === null ) {
       x = 0;
       y = 0;

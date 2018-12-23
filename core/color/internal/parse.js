@@ -67,7 +67,10 @@ function parse ( string )
  */
 function formatHex ( match )
 {
-  var r, g, b, a;
+  var r;
+  var g;
+  var b;
+  var a;
 
   if ( match.length === 3 ) {
     return match[ 1 ] + ( match[ 2 ] || 'ff' );

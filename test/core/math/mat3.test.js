@@ -4,7 +4,9 @@ var mat3 = require( '../../../core/math/mat3' );
 
 describe( 'v6.mat3', function ()
 {
-  var identity, m1, m2;
+  var identity;
+  var m1;
+  var m2;
 
   it( 'successfully required', function ()
   {

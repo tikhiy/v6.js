@@ -30,7 +30,7 @@
     "chai-like": "^1.1.1",
     "coveralls": "^3.0.2",
     "eslint": "^5.7.0",
-    "eslint-config-v6.js": "github:tikhiy/eslint-config-v6.js#v1.0.8",
+    "eslint-config-v6.js": "github:tikhiy/eslint-config-v6.js#v1.0.9",
     "express": "^4.16.4",
     "jsdoc": "^3.5.5",
     "karma": "^3.0.0",

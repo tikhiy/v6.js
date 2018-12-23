@@ -191,7 +191,8 @@ RGBA.prototype = {
     var min = Math.min( r, g, b );
 
     var l = ( max + min ) * 50;
-    var h, s;
+    var h;
+    var s;
 
     var diff = max - min;
 
@@ -277,7 +278,9 @@ RGBA.prototype = {
    */
   lerpColor: function lerpColor ( color, value )
   {
-    var r, g, b;
+    var r;
+    var g;
+    var b;
 
     if ( typeof color !== 'object' ) {
       color = parse( color );

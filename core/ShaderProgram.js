@@ -135,7 +135,8 @@ ShaderProgram.prototype = {
   getUniform: function getUniform ( name )
   {
     var uniform = this._uniforms[ name ];
-    var index, info;
+    var index;
+    var info;
 
     if ( uniform ) {
       return uniform;

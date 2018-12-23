@@ -275,7 +275,8 @@ AbstractRenderer.prototype = {
    */
   endShape: function endShape ( options )
   {
-    var drawFunction, vertices;
+    var drawFunction;
+    var vertices;
     if ( ! options ) {
       options = {};
     }

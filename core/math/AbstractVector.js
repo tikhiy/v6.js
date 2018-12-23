@@ -90,8 +90,8 @@ AbstractVector.prototype = {
   {
     var x = this.x;
     var y = this.y;
-
-    var c, s;
+    var c;
+    var s;
 
     if ( settings.degrees ) {
       angle *= Math.PI / 180;

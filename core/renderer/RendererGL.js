@@ -184,6 +184,11 @@ RendererGL.prototype.drawArrays = function drawArrays ( verts, count, mode, _sx,
   return this;
 };
 
+/**
+ * @private
+ * @method v6.RendererGL#_fill
+ * @return {void}
+ */
 RendererGL.prototype._fill = function _fill ( count )
 {
   if ( this._doFill ) {
@@ -192,6 +197,11 @@ RendererGL.prototype._fill = function _fill ( count )
   }
 };
 
+/**
+ * @private
+ * @method v6.RendererGL#_stroke
+ * @return {void}
+ */
 RendererGL.prototype._stroke = function _stroke ( count )
 {
   if ( this._doStroke && this._lineWidth > 0 ) {
@@ -219,7 +229,36 @@ RendererGL.prototype.line = function line ( x1, y1, x2, y2 )
   this.drawArrays( createArray( [
     x1, y1,
     x2, y2
-  ] ), 2, this.context.STATIC_DRAW );
+  ] ), 2 );
+
+  return this;
+};
+
+/**
+ * @override
+ * @method v6.RendererGL#point
+ */
+RendererGL.prototype.point = function point ( x, y )
+{
+  var hw = this._lineWidth * 0.5;
+  var fc = this._fillColor;
+  var df = this._doFill;
+  var ds = this._doStroke;
+
+  this._fillColor = this._strokeColor;
+  this._doFill    = true;
+  this._doStroke  = false;
+
+  this.drawArrays( createArray( [
+    x - hw, y - hw,
+    x + hw, y - hw,
+    x + hw, y + hw,
+    x - hw, y + hw
+  ] ), 4 );
+
+  this._fillColor = fc;
+  this._doFill    = df;
+  this._doStroke  = ds;
 
   return this;
 };

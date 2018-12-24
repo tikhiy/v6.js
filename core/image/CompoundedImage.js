@@ -5,13 +5,13 @@ var AbstractImage = require( './AbstractImage' );
 /**
  * @constructor v6.CompoundedImage
  * @extends v6.AbstractImage
- * @param {v6.AbstractImage} image
- * @param {nubmer}           sx
- * @param {nubmer}           sy
- * @param {nubmer}           sw
- * @param {nubmer}           sh
- * @param {nubmer}           dw
- * @param {nubmer}           dh
+ * @param {v6.AbstractImage} image v6.CompoundedImage or v6.Image.
+ * @param {nubmer}           sx    Source X.
+ * @param {nubmer}           sy    Source Y.
+ * @param {nubmer}           sw    Source Width.
+ * @param {nubmer}           sh    Source Height.
+ * @param {nubmer}           dw    Destination Width.
+ * @param {nubmer}           dh    Destination Height.
  */
 function CompoundedImage ( image, sx, sy, sw, sh, dw, dh )
 {

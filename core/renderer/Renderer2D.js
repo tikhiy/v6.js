@@ -177,22 +177,49 @@ Renderer2D.prototype.arc = function arc ( x, y, r )
  */
 Renderer2D.prototype.line = function line ( x1, y1, x2, y2 )
 {
-  this.context.moveTo( x1, y1 );
-  this.context.lineTo( x2, y2 );
-
   if ( this._doStroke && this._lineWidth > 0 ) {
+    this.context.moveTo( x1, y1 );
+    this.context.lineTo( x2, y2 );
     this._stroke();
   }
 
   return this;
 };
 
+/**
+ * @override
+ * @method v6.Renderer2D#point
+ */
+Renderer2D.prototype.point = function point ( x, y )
+{
+  var w = this._lineWidth;
+
+  if ( this._doStroke && w > 0 ) {
+    this.context.beginPath();
+    this.context.rect( x - w * 0.5, y - w * 0.5, w, w );
+    this.context.fillStyle = this._strokeColor;
+    this.context.fill();
+  }
+
+  return this;
+};
+
+/**
+ * @private
+ * @method v6.Renderer2D#_fill
+ * @return {void}
+ */
 Renderer2D.prototype._fill = function _fill ()
 {
   this.context.fillStyle = this._fillColor;
   this.context.fill();
 };
 
+/**
+ * @private
+ * @method v6.Renderer2D#_stroke
+ * @return {void}
+ */
 Renderer2D.prototype._stroke = function _stroke ()
 {
   var context = this.context;

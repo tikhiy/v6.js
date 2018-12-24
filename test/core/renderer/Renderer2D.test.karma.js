@@ -159,6 +159,22 @@ describe( 'v6.Renderer2D', function ()
         } );
       } );
 
+      describe( 'new v6.Renderer2D.line', function ()
+      {
+        it( 'works', function ()
+        {
+          renderer.line( 1, 2, 3, 4 );
+        } );
+      } );
+
+      describe( 'new v6.Renderer2D.point', function ()
+      {
+        it( 'works', function ()
+        {
+          renderer.point( 1, 2 );
+        } );
+      } );
+
       describe( 'new v6.Renderer2D.rect', function ()
       {
         it( 'works', function ()

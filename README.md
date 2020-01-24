@@ -101,4 +101,4 @@ CHROME_BIN=google-chrome
 
 ### License
 
-Released under the [GPL-3.0](LICENSE) license.
+Released under the [MIT](LICENSE) license.

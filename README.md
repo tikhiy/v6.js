@@ -2,13 +2,13 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/tikhiy/v6.js/badge.svg?branch=dev)](https://coveralls.io/github/tikhiy/v6.js?branch=dev)
 [![Size](http://img.badgesize.io/tikhiy/v6.js/dev/dist/v6.min.js.gz.svg?&label=lightweight)](https://github.com/ngryman/badge-size)
-[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/github/license/tikhiy/v6.js)](LICENSE)
 
 A JavaScript (ES5) library for rendering. Simple API for both WebGL and 2D contexts.
 
 ### Installing
 
-* `npm install --save github:tikhiy/v6.js#v0.2.0`
+* `npm install --save v6.js`
 
 ### Example
 

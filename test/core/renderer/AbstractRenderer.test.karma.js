@@ -116,6 +116,22 @@ describe( 'v6.AbstractRenderer', function ()
           } );
         } );
       } );
+
+      describe( 'new v6.AbstractRenderer.push', function ()
+      {
+        it( 'works', function ()
+        {
+          renderer.push();
+        } );
+      } );
+
+      describe( 'new v6.AbstractRenderer.pop', function ()
+      {
+        it( 'works', function ()
+        {
+          renderer.pop();
+        } );
+      } );
     } );
   } );
 

@@ -130,6 +130,8 @@
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var AbstractRenderer = require( 'v6.js/core/renderer/AbstractRenderer' );</code></pre>
@@ -631,6 +633,8 @@
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -790,6 +794,8 @@ function CustomRenderer ( options )
 
     
 </dl>
+
+
 
 
 
@@ -977,6 +983,8 @@ renderer.appendTo( document.body );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -1249,6 +1257,8 @@ renderer.arc( 60, 60, 40 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Fill renderer with "lightpink" color.
@@ -1373,6 +1383,8 @@ renderer.backgroundColor( 'lightpink' );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -1556,6 +1568,8 @@ renderer.backgroundImage( Image.stretch( image, renderer.w, renderer.h ) );</cod
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Set "backgroundPositionX" drawing setting to CENTER (default: LEFT).
@@ -1705,6 +1719,8 @@ renderer.backgroundPositionX( renderer.w / 2 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -1938,6 +1954,8 @@ renderer.backgroundPositionY( renderer.h / 2 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Require "v6.shapes" ("v6.js" built-in drawing functions).
@@ -2017,6 +2035,8 @@ renderer.beginShape();</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -2126,6 +2146,8 @@ renderer.clear();</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Remove renderer from DOM.
@@ -2203,8 +2225,8 @@ renderer.destroy();</code></pre>
             
 
             <td class="description last"><p>Вершины, которые надо отрисовать. Если не передано для
-                                  <a href="v6.RendererGL.html">v6.RendererGL</a>, то будут использоваться вершины из
-                                  стандартного буфера (v6.RendererGL#buffers.default).</p></td>
+<a href="v6.RendererGL.html">v6.RendererGL</a>, то будут использоваться вершины из
+стандартного буфера (v6.RendererGL#buffers.default).</p></td>
         </tr>
 
     
@@ -2278,6 +2300,8 @@ renderer.destroy();</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -2535,6 +2559,8 @@ renderer.drawArrays( vertices, 3 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Create image.
@@ -2726,7 +2752,7 @@ renderer.drawImage( image, 0, 0, 600, 400 );</code></pre>
             
 
             <td class="description last"><p>Угол поворота полигона
-                                  (чтобы не использовать v6.Transform#rotate).</p></td>
+(чтобы не использовать v6.Transform#rotate).</p></td>
         </tr>
 
     
@@ -2800,6 +2826,8 @@ renderer.drawImage( image, 0, 0, 600, 400 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -2990,7 +3018,7 @@ renderer.polygon( 4, 2, 6, 25, 25, 0 );</code></pre>
             
 
             <td class="description last"><p>Функция, котороя будет отрисовывать все вершины.
-                                         Имеет больший приоритет чем в <a href="v6.AbstractRenderer.html#beginShape">v6.AbstractRenderer#beginShape</a>.</p></td>
+Имеет больший приоритет чем в <a href="v6.AbstractRenderer.html#beginShape">v6.AbstractRenderer#beginShape</a>.</p></td>
         </tr>
 
     
@@ -3048,6 +3076,8 @@ renderer.polygon( 4, 2, 6, 25, 25, 0 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -3161,7 +3191,7 @@ renderer.endShape( { drawFunction: shapes.drawLines } );</code></pre>
             
 
             <td class="description last"><p>Если это <code>boolean</code>, то это включит или выключит <code>fill</code>
-                                   (как через <a href="v6.AbstractRenderer.html#noFill">v6.AbstractRenderer#noFill</a>).</p></td>
+(как через <a href="v6.AbstractRenderer.html#noFill">v6.AbstractRenderer#noFill</a>).</p></td>
         </tr>
 
     
@@ -3311,6 +3341,8 @@ renderer.endShape( { drawFunction: shapes.drawLines } );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -3611,6 +3643,8 @@ renderer.fill( new RGBA( 255, 0, 0 ).brightness() );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Create image.
@@ -3823,6 +3857,8 @@ renderer.image( image, 4, 2 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Draw line from [ 10, 10 ] to [ 20, 20 ].
@@ -3964,6 +4000,8 @@ renderer.line( 10, 10, 20, 20 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Set `lineWidth` to 10px.
@@ -4056,6 +4094,8 @@ renderer.lineWidth( 10 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Disable filling.
@@ -4131,6 +4171,8 @@ renderer.noFill();</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -4295,6 +4337,8 @@ renderer.noStroke();</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -4522,7 +4566,7 @@ renderer.point( 4, 2 );</code></pre>
             
 
             <td class="description last"><p>Угол поворота полигона.
-                                 (чтобы не использовать v6.Transform#rotate).</p></td>
+(чтобы не использовать v6.Transform#rotate).</p></td>
         </tr>
 
     
@@ -4573,6 +4617,8 @@ renderer.point( 4, 2 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -4682,6 +4728,8 @@ renderer.polygon( 4, 2, 6, 25 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Restore drawing settings (fill, lineWidth...) (take from stack).
@@ -4757,6 +4805,8 @@ renderer.pop();</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -4984,6 +5034,8 @@ renderer.push();</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Draw square at [ 20, 20 ] with size 80.
@@ -5125,6 +5177,8 @@ renderer.rect( 20, 20, 80, 80 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Set "rectAlignX" drawing setting to CENTER (default: LEFT).
@@ -5249,6 +5303,8 @@ renderer.rectAlignX( constants.get( 'CENTER' ) );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -5430,6 +5486,8 @@ renderer.rectAlignY( constants.get( 'MIDDLE' ) );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Resize renderer to 600x400.
@@ -5571,6 +5629,8 @@ renderer.resize( 600, 400 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Resize renderer to match &lt;body /> sizes.
@@ -5649,6 +5709,8 @@ renderer.resizeTo( document.body );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -5768,6 +5830,8 @@ renderer.restore();</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Rotate transform on 45 degrees.
@@ -5846,6 +5910,8 @@ renderer.rotate( 45 * Math.PI / 180 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -5958,6 +6024,8 @@ renderer.save();</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Scale transform twice.
@@ -6036,6 +6104,8 @@ renderer.scale( 2, 2 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -6145,7 +6215,7 @@ renderer.setTransform( 1, 0, 0, 1, 0, 0 );</code></pre>
             
 
             <td class="description last"><p>Если это <code>boolean</code>, то это включит или выключит <code>stroke</code>
-                                   (как через <a href="v6.AbstractRenderer.html#noStroke">v6.AbstractRenderer#noStroke</a>).</p></td>
+(как через <a href="v6.AbstractRenderer.html#noStroke">v6.AbstractRenderer#noStroke</a>).</p></td>
         </tr>
 
     
@@ -6312,6 +6382,8 @@ renderer.setTransform( 1, 0, 0, 1, 0, 0 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Disable and then enable `stroke`.
@@ -6411,6 +6483,8 @@ renderer.stroke( new RGBA( 255, 0, 0 ).perceivedBrightness() );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Apply translated to [ 4, 2 ] "transformation matrix".
@@ -6489,6 +6563,8 @@ renderer.transform( 1, 0, 0, 1, 4, 2 );</code></pre>
 
     
 </dl>
+
+
 
 
 
@@ -6679,6 +6755,8 @@ renderer.translate( 4, 2 );</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>// Draw rectangle with vertices.
@@ -6705,13 +6783,13 @@ renderer.vertex( 0, 1 );</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Feb 05 2019 23:15:42 GMT+0700 (+07)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Jan 25 2020 04:08:28 GMT+0700 (GMT+07:00)
 </footer>
 
 <script> prettyPrint(); </script>

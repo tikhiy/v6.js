@@ -1,1 +1,6 @@
-*.swp
+node_modules
+coverage
+config/coveralls.txt
+config/browsers.txt
+temp
+*.log

@@ -1,0 +1,13 @@
+{
+  "globals": {
+    "expect": false,
+    "sinon": false
+  },
+
+  "env": {
+    "commonjs": true,
+    "mocha": true
+  },
+
+  "extends": "../.eslintrc.json"
+}

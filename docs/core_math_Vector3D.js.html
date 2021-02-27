@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/math/Vector3D.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/math/Vector3D.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var AbstractVector = require( './AbstractVector' );
+
+/**
+ * 3D вектор.
+ * @constructor v6.Vector3D
+ * @extends v6.AbstractVector
+ * @param {number} [x=0] X координата вектора.
+ * @param {number} [y=0] Y координата вектора.
+ * @param {number} [z=0] Z координата вектора.
+ * @example
+ * var Vector3D = require( 'v6.js/math/Vector3D' );
+ * var position = new Vector3D( 4, 2, 3 ); // Vector3D { x: 4, y: 2, z: 3 }
+ */
+function Vector3D ( x, y, z )
+{
+  /**
+   * X координата вектора.
+   * @member {number} v6.Vector3D#x
+   * @example
+   * var x = new Vector3D( 4, 2, 3 ).x; // -> 4
+   */
+
+  /**
+   * Y координата вектора.
+   * @member {number} v6.Vector3D#y
+   * @example
+   * var y = new Vector3D( 4, 2, 3 ).y; // -> 2
+   */
+
+  /**
+   * Z координата вектора.
+   * @member {number} v6.Vector3D#z
+   * @example
+   * var z = new Vector3D( 4, 2, 3 ).z; // -> 3
+   */
+
+  this.set( x, y, z );
+}
+
+Vector3D.prototype = Object.create( AbstractVector.prototype );
+Vector3D.prototype.constructor = Vector3D;
+
+/**
+ * Устанавливает X, Y, и Z координаты.
+ * @method v6.Vector3D#set
+ * @param {number} [x=0] Новая X координата.
+ * @param {number} [y=0] Новая Y координата.
+ * @param {number} [z=0] Новая Z координата.
+ * @chainable
+ * @example
+ * new Vector3D().set( 4, 2, 6 ); // Vector3D { x: 4, y: 2, z: 6 }
+ */
+Vector3D.prototype.set = function set ( x, y, z )
+{
+  this.x = x || 0;
+  this.y = y || 0;
+  this.z = z || 0;
+  return this;
+};
+
+/**
+ * Добавляет к координатам X, Y, и Z соответствующие параметры.
+ * @method v6.Vector3D#add
+ * @param {number} [x=0] Число, которое должно быть добавлено.
+ * @param {number} [y=0] Число, которое должно быть добавлено.
+ * @param {number} [z=0] Число, которое должно быть добавлено.
+ * @chainable
+ * @example
+ * new Vector3D().add( 4, 2, 6 ); // Vector3D { x: 4, y: 2, z: 6 }
+ */
+Vector3D.prototype.add = function add ( x, y, z )
+{
+  this.x += x || 0;
+  this.y += y || 0;
+  this.z += z || 0;
+  return this;
+};
+
+/**
+ * Вычитает из координат X, Y, и Z соответствующие параметры.
+ * @method v6.Vector3D#sub
+ * @param {number} [x=0] Число, которое должно быть вычтено.
+ * @param {number} [y=0] Число, которое должно быть вычтено.
+ * @param {number} [z=0] Число, которое должно быть вычтено.
+ * @chainable
+ * @example
+ * new Vector3D().sub( 4, 2, 6 ); // Vector3D { x: -4, y: -2, z: -6 }
+ */
+Vector3D.prototype.sub = function sub ( x, y, z )
+{
+  this.x -= x || 0;
+  this.y -= y || 0;
+  this.z -= z || 0;
+  return this;
+};
+
+/**
+ * Умножает X, Y, и Z координаты на `value`.
+ * @method v6.Vector3D#mul
+ * @param {number} value Число, на которое надо умножить.
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).mul( 2 ); // Vector3D { x: 8, y: 4, z: 12 }
+ */
+Vector3D.prototype.mul = function mul ( value )
+{
+  this.x *= value;
+  this.y *= value;
+  this.z *= value;
+  return this;
+};
+
+/**
+ * Делит X, Y, и Z координаты на `value`.
+ * @method v6.Vector3D#div
+ * @param {number} value Число, на которое надо разделить.
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).div( 2 ); // Vector3D { x: 2, y: 1, z: 3 }
+ */
+Vector3D.prototype.div = function div ( value )
+{
+  this.x /= value;
+  this.y /= value;
+  this.z /= value;
+  return this;
+};
+
+/**
+ * @method v6.Vector3D#dot
+ * @param  {number} [x=0]
+ * @param  {number} [y=0]
+ * @param  {number} [z=0]
+ * @return {number}
+ * @example
+ * new Vector3D( 4, 2, 6 ).dot( 2, 3, 4 ); // -> 38, потому что: "(4 * 2) + (2 * 3) + (6 * 4) = 8 + 6 + 24 = 38"
+ */
+Vector3D.prototype.dot = function dot ( x, y, z )
+{
+  return ( this.x * ( x || 0 ) ) +
+         ( this.y * ( y || 0 ) ) +
+         ( this.z * ( z || 0 ) );
+};
+
+/**
+ * Интерполирует X, Y, и Z координаты между соответствующими параметрами.
+ * @method v6.Vector3D#lerp
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @param {number} value
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).lerp( 8, 4, 12, 0.5 ); // Vector3D { x: 6, y: 3, z: 9 }
+ */
+Vector3D.prototype.lerp = function ( x, y, z, value )
+{
+  this.x += ( x - this.x ) * value || 0;
+  this.y += ( y - this.y ) * value || 0;
+  this.z += ( z - this.z ) * value || 0;
+  return this;
+};
+
+/**
+ * Копирует другой вектор.
+ * @method v6.Vector3D#setVector
+ * @param {v6.AbstractVector} vector Вектор, который надо скопировать.
+ * @chainable
+ * @example
+ * new Vector3D().setVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: 4, y: 2, z: 6 }
+ */
+Vector3D.prototype.setVector = function setVector ( vector )
+{
+  return this.set( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Добавляет другой вектор.
+ * @method v6.Vector3D#addVector
+ * @param {v6.AbstractVector} vector Вектор, который надо добавить.
+ * @chainable
+ * @example
+ * new Vector3D().addVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: 4, y: 2, z: 6 }
+ */
+Vector3D.prototype.addVector = function addVector ( vector )
+{
+  return this.add( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Вычитает другой вектор.
+ * @method v6.Vector3D#subVector
+ * @param {v6.AbstractVector} vector Вектор, который надо вычесть.
+ * @chainable
+ * @example
+ * new Vector3D().subVector( new Vector3D( 4, 2, 6 ) ); // Vector3D { x: -4, y: -2, z: -6 }
+ */
+Vector3D.prototype.subVector = function subVector ( vector )
+{
+  return this.sub( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Умножает X, Y, и Z координаты на X, Y, и Z другого вектора.
+ * @method v6.Vector3D#mulVector
+ * @param {v6.AbstractVector} vector Вектор для умножения.
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).mulVector( new Vector3D( 2, 3, 4 ) ); // Vector3D { x: 8, y: 6, z: 24 }
+ */
+Vector3D.prototype.mulVector = function mulVector ( vector )
+{
+  this.x *= vector.x;
+  this.y *= vector.y;
+  this.z *= vector.z;
+  return this;
+};
+
+/**
+ * Делит X, Y, и Z координаты на X, Y, и Z другого вектора.
+ * @method v6.Vector3D#divVector
+ * @param {v6.AbstractVector} vector Вектор, на который надо делить.
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).divVector( new Vector3D( 2, 0.5, 4 ) ); // Vector3D { x: 2, y: 4, z: 1.5 }
+ */
+Vector3D.prototype.divVector = function divVector ( vector )
+{
+  this.x /= vector.x;
+  this.y /= vector.y;
+  this.z /= vector.z;
+  return this;
+};
+
+/**
+ * @method v6.Vector3D#dotVector
+ * @param  {v6.AbstractVector} vector
+ * @return {number}
+ * @example
+ * new Vector3D( 4, 2, 6 ).dotVector( new Vector3D( 2, 3, -2 ) ); // -> 2
+ */
+Vector3D.prototype.dotVector = function dotVector ( vector )
+{
+  return this.dot( vector.x, vector.y, vector.z );
+};
+
+/**
+ * Интерполирует X, Y, и Z координаты между другим вектором.
+ * @method v6.Vector3D#lerpVector
+ * @param {v6.AbstractVector} vector
+ * @param {number}            value
+ * @chainable
+ * @example
+ * new Vector3D( 4, 2, 6 ).lerpVector( new Vector3D( 8, 4, 12 ), 0.5 ); // Vector3D { x: 6, y: 3, z: 9 }
+ */
+Vector3D.prototype.lerpVector = function lerpVector ( vector, value )
+{
+  return this.lerp( vector.x, vector.y, vector.z, value );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#magSq
+ */
+Vector3D.prototype.magSq = function magSq ()
+{
+  return ( this.x * this.x ) + ( this.y * this.y ) + ( this.z * this.z );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#clone
+ */
+Vector3D.prototype.clone = function clone ()
+{
+  return new Vector3D( this.x, this.y, this.z );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#dist
+ */
+Vector3D.prototype.dist = function dist ( vector )
+{
+  var x = vector.x - this.x;
+  var y = vector.y - this.y;
+  var z = vector.z - this.z;
+  return Math.sqrt( ( x * x ) + ( y * y ) + ( z * z ) );
+};
+
+/**
+ * @override
+ * @method v6.Vector3D#toString
+ */
+Vector3D.prototype.toString = function toString ()
+{
+  return 'v6.Vector3D { x: ' + this.x.toFixed( 2 ) + ', y: ' + this.y.toFixed( 2 ) + ', z: ' + this.z.toFixed( 2 ) + ' }';
+};
+
+/**
+ * @method v6.Vector3D.random
+ * @see v6.AbstractVector.random
+ */
+Vector3D.random = function random ()
+{
+  // Use the equal-area projection algorithm.
+  var theta = Math.random() * Math.PI * 2;
+  var z     = ( Math.random() * 2 ) - 1;
+  var n     = Math.sqrt( 1 - ( z * z ) );
+  return new Vector3D( n * Math.cos( theta ), n * Math.sin( theta ), z );
+};
+
+/**
+ * @method v6.Vector3D.fromAngle
+ * @see v6.AbstractVector.fromAngle
+ */
+Vector3D.fromAngle = function fromAngle ( angle )
+{
+  return AbstractVector._fromAngle( Vector3D, angle );
+};
+
+module.exports = Vector3D;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 26 2020 12:28:43 GMT+0700 (GMT+07:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+function preprocess
+{
+  cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers -CC $1 -o $2
+}
+
+build/backup $2 && preprocess $1 $2

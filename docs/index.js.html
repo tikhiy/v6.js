@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*!
+ * Copyright (c) 2017-2018 Vladislav Tikhiy (SILENT)
+ * Released under the GPL-3.0 license.
+ * https://github.com/tikhiy/v6.js/tree/dev/
+ */
+
+'use strict';
+
+/**
+ * @namespace v6
+ */
+
+exports.AbstractImage    = require( './core/image/AbstractImage' );
+exports.AbstractRenderer = require( './core/renderer/AbstractRenderer' );
+exports.AbstractVector   = require( './core/math/AbstractVector' );
+exports.Camera           = require( './core/camera/Camera' );
+exports.CompoundedImage  = require( './core/image/CompoundedImage' );
+exports.HSLA             = require( './core/color/HSLA' );
+exports.Image            = require( './core/image/Image' );
+exports.RGBA             = require( './core/color/RGBA' );
+exports.Renderer2D       = require( './core/renderer/Renderer2D' );
+exports.RendererGL       = require( './core/renderer/RendererGL' );
+exports.ShaderProgram    = require( './core/ShaderProgram' );
+exports.Ticker           = require( './core/Ticker' );
+exports.Transform        = require( './core/Transform' );
+exports.Vector2D         = require( './core/math/Vector2D' );
+exports.Vector3D         = require( './core/math/Vector3D' );
+exports.constants        = require( './core/constants' );
+exports.createRenderer   = require( './core/renderer/create_renderer' );
+exports.shaders          = require( './core/shaders' );
+exports.mat3             = require( './core/math/mat3' );
+
+/**
+ * "v6.js" built-in drawing functions.
+ * @namespace v6.shapes
+ * @see v6.AbstractRenderer#beginShape
+ * @see v6.AbstractRenderer#vertex
+ * @see v6.AbstractRenderer#endShape
+ * @example
+ * var shapes = require( 'v6.js/core/renderer/shapes' );
+ * @example
+ * renderer.beginShape( {
+ *   drawFunction: shapes.drawPoints
+ * } );
+ */
+exports.shapes = {
+  drawPoints: require( './core/renderer/shapes/draw_points' ),
+  drawLines:  require( './core/renderer/shapes/draw_lines' )
+};
+
+/**
+ * Настройки "v6.js".
+ * @namespace v6.settings
+ * @example &lt;caption>Core Settings&lt;/caption>
+ * var settings = require( 'v6.js/core/settings' );
+ * settings.degrees = true;
+ * @example &lt;caption>Renderer Settings&lt;/caption>
+ * // Default renderer settings.
+ * var settings = require( 'v6.js/core/renderer/settings' );
+ * settings.degrees = true;
+ */
+exports.settings = {
+  renderer: require( './core/renderer/settings' ),
+  camera:   require( './core/camera/settings' ),
+  core:     require( './core/settings' )
+};
+
+if ( typeof self !== 'undefined' ) {
+  self.v6 = exports;
+}
+
+/**
+ * @typedef {string|v6.HSLA|v6.RGBA} TColor
+ * @example &lt;caption>A string (CSS color).&lt;/caption>
+ * var color = 'rgba( 255, 0, 255, 1 )';
+ * var color = 'hsl( 360, 100%, 50% )';
+ * var color = '#ff00ff';
+ * var color = 'lightpink';
+ * // "rgba(0, 0, 0, 0)"
+ * var color = getComputedStyle( document.body ).getPropertyValue( 'background-color' );
+ * // The same as "transparent".
+ * // NOTE: CSS does not support this syntax but "v6.js" does.
+ * var color = '#00000000';
+ * @example &lt;caption>An object (v6.RGBA, v6.HSLA)&lt;/caption>
+ * var color = new RGBA( 255, 0, 255, 1 );
+ * var color = new HSLA( 360, 100, 50 );
+ */
+
+/**
+ * @typedef {number} constant
+ * @see v6.constants
+ * @example
+ * // This is a constant.
+ * var RENDERER_TYPE = constants.get( 'GL' );
+ */
+
+/**
+ * @interface IVector2D
+ * @property {number} x
+ * @property {number} y
+ */
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 26 2020 12:28:43 GMT+0700 (GMT+07:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Global</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Global</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="constant">constant</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="v6.constants.html">v6.constants</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// This is a constant.
+var RENDERER_TYPE = constants.get( 'GL' );</code></pre>
+
+
+
+            
+                
+<h4 class="name" id="TColor">TColor</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="v6.HSLA.html">v6.HSLA</a></span>
+|
+
+<span class="param-type"><a href="v6.RGBA.html">v6.RGBA</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Examples</h5>
+    
+        <p class="code-caption">A string (CSS color).</p>
+    
+    <pre class="prettyprint"><code>var color = 'rgba( 255, 0, 255, 1 )';
+var color = 'hsl( 360, 100%, 50% )';
+var color = '#ff00ff';
+var color = 'lightpink';
+// "rgba(0, 0, 0, 0)"
+var color = getComputedStyle( document.body ).getPropertyValue( 'background-color' );
+// The same as "transparent".
+// NOTE: CSS does not support this syntax but "v6.js" does.
+var color = '#00000000';</code></pre>
+
+        <p class="code-caption">An object (v6.RGBA, v6.HSLA)</p>
+    
+    <pre class="prettyprint"><code>var color = new RGBA( 255, 0, 255, 1 );
+var color = new HSLA( 360, 100, 50 );</code></pre>
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="v6.html">v6</a></li><li><a href="v6.constants.html">constants</a></li><li><a href="v6.mat3.html">mat3</a></li><li><a href="v6.settings.html">settings</a></li><li><a href="v6.settings.camera.html">camera</a></li><li><a href="v6.settings.core.html">core</a></li><li><a href="v6.settings.renderer.html">renderer</a></li><li><a href="v6.shapes.html">shapes</a></li></ul><h3>Classes</h3><ul><li><a href="v6.AbstractImage.html">AbstractImage</a></li><li><a href="v6.AbstractRenderer.html">AbstractRenderer</a></li><li><a href="v6.AbstractVector.html">AbstractVector</a></li><li><a href="v6.Camera.html">Camera</a></li><li><a href="v6.CompoundedImage.html">CompoundedImage</a></li><li><a href="v6.HSLA.html">HSLA</a></li><li><a href="v6.Image.html">Image</a></li><li><a href="v6.Renderer2D.html">Renderer2D</a></li><li><a href="v6.RendererGL.html">RendererGL</a></li><li><a href="v6.RGBA.html">RGBA</a></li><li><a href="v6.ShaderProgram.html">ShaderProgram</a></li><li><a href="v6.Ticker.html">Ticker</a></li><li><a href="v6.Vector2D.html">Vector2D</a></li><li><a href="v6.Vector3D.html">Vector3D</a></li></ul><h3>Interfaces</h3><ul><li><a href="IShaderAttribute.html">IShaderAttribute</a></li><li><a href="IShaderSources.html">IShaderSources</a></li><li><a href="IShaderUniform.html">IShaderUniform</a></li><li><a href="IVector2D.html">IVector2D</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Jan 26 2020 12:28:43 GMT+0700 (GMT+07:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

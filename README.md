@@ -1,214 +1,104 @@
-# v6
+# v6.js
 
-A simple graphics library, with which you can easily create cool games and applications.
+[![Coverage Status](https://coveralls.io/repos/github/tikhiy/v6.js/badge.svg?branch=dev)](https://coveralls.io/github/tikhiy/v6.js?branch=dev)
+[![Size](http://img.badgesize.io/tikhiy/v6.js/dev/dist/v6.min.js.gz.svg?&label=lightweight)](https://github.com/ngryman/badge-size)
+[![License: MIT](https://img.shields.io/github/license/tikhiy/v6.js)](LICENSE)
 
-## Install
+A JavaScript (ES5) library for rendering. Simple API for both WebGL and 2D contexts.
 
-This library has a hard dependency on [Peako](https://github.com/silent-tempest/Peako), and an optional on [Platform.js](https://github.com/bestiejs/platform.js).
+### Installing
 
-```html
-<!-- Import from GitHub CDN. -->
-<script src="https://rawgit.com/silent-tempest/Peako/master/peako.js"></script>
-<script src="https://rawgit.com/silent-tempest/v6/master/v6.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
-<!-- Import local files. -->
-<script src="peako.js"></script>
-<script src="v6.js"></script>
-<script src="platform.js"></script>
-<!-- Of course, you can combine it. -->
-```
+* `npm install --save v6.js`
 
-## Hello World
+### Example
 
-A simple example of use this library:
+* Importing the library.
 
 ```javascript
-/** Create and setup the renderer. */
-var renderer = v6()
-  .stroke(0)
-  .fill(255);
-
-/** Number of sides of the polygon. */
-var sides = 3;
-
-/** Create the game loop and run it. */
-var ticker = v6.ticker(update, render)
-  .tick();
-
-/**
- * Update function.
- * You can use `elapsedTime`, it's passed as the first argument.
- */
-function update() {
-  // sides is a number between 3 and 12
-  sides = v6.map(Math.sin(ticker.totalTime), -1, 1, 3, 12);
-}
-
-/** Render function. */
-function render() {
-  var
-    x = renderer.width / 2,
-    y = renderer.height / 2,
-    radius = 100;
-
-  renderer
-    .background('lightskyblue')
-    .polygon(x, y, radius, sides);
-}
+var createRenderer = require( 'v6.js/core/renderer/create_renderer' );
+var constants      = require( 'v6.js/core/constants' );
+var HSLA           = require( 'v6.js/core/color/HSLA' );
+var Ticker         = require( 'v6.js/core/Ticker' );
 ```
 
-## v6.ticker(update, render, context)
-
-This class is used to loop an animation.
-
-#### Simple example
-
-Do you wrote code like this before?
+* Creating a renderer.
 
 ```javascript
-var reqAnimFrame = requestAnimationFrame || lalala...;
-
-function loop () {
-  reqAnimFrame(loop);
-  someDrawStuff();
-}
-
-loop();
-```
-
-Now you can write this:
-
-```javascript
-v6
-  .ticker(someDrawStuff)
-  .tick();
-```
-
-It will work well in old browsers too.
-
-#### Adavnced example
-
-```javascript
-var game = {
-  update: function (elapsedTime, now) {
-    console.log(elapsedTime, now, this === game);
-    // -> 0.0166 168 true
-  },
-
-  render: function (elapsedTime, now) {
-    console.log(elapsedTime, now, this === game);
-    // -> 0.0166 168 true
-  },
-
-  init: function () {
-    this.ticker = v6
-      // set this as a 'this' in update and render
-      .ticker(this.update, this.render, this)
-      .setFrameRate(60) // 60 by default
-      .tick();
-  }
-};
-
-game.init();
-```
-
-#### Why update and render
-
-The difference between `update` and` render` is that `render` will be called regardless of the specified FPS, but `update` only when more than 1 / FPS seconds has passed.
-
-#### Context
-
-* null: the functions will called without context (`undefined`).
-* undefined (by default): `this` will point to the `ticker` object.
-* otherwise the passed context will be used.
-
-## v6(options)
-
-#### Options
-
-Some basic options (to find more see v6.options):
-
-```javascript
-options = {
+var renderer = createRenderer( {
   settings: {
-    // The renderer pixel density (1 default)
-    scale: window.devicePixelRatio || 1,
-    // The renderer default color mode ('rgba' default)
-    colorMode: 'hsla'
+    color: HSLA
   },
 
-  // The mode will be selected automatically, it's dependence on the client platform
-  // For mobiles the "webgl" mode will be used, instead of '2d'
-  // NOTE To fully use the auto mode you need to include the platform.js library
-  mode: 'auto',
-
-  // The default mode
-  mode: '2d',
-
-  // Use WebGL to draw graphics (2D)
-  mode: 'webgl'
-};
+  type: constants.get( 'AUTO' )
+} );
 ```
 
-#### Example
+* Creating a ticker.
 
 ```javascript
-var renderer = v6();
-
-renderer
-  // Set fill color
-  .fill(51)
-  // Set stroke color
-  .stroke('white')
-  // Draw circle in the middle
-  .arc(renderer.width / 2, renderer.height / 2, 100);
+var ticker = new Ticker();
 ```
 
-## v6.color(), v6.rgba(), v6.hsla()
-
-#### Use
-
-The results is the same.
+* Adding a render function to the ticker.
 
 ```javascript
-renderer
-  .fill('rgb(0, 0, 0)')
-  .fill('rgba(0, 0, 0, 1)')
-  .fill('hsl(0, 0%, 0%)')
-  .fill('hsla(0, 0%, 0%, 1)')
-  .fill('#000')
-  .fill('#000f')
-  .fill('#000000')
-  .fill('#000000ff')
-  .fill('black')
-  .colorMode('rgba')
-  .fill(0)
-  .fill(0, 1)
-  .fill(0, 0, 0)
-  .fill(0, 0, 0, 1)
-  .colorMode('hsla')
-  .fill(0)
-  .fill(0, 1)
-  .fill(0, 0, 0)
-  .fill(0, 0, 0, 1)
-  .fill(v6.rgba('hsl(0, 0%, 0%)'))
-  // ... do you understand what i mean?
+ticker.on( 'render', function ()
+{
+  var hue = Math.floor( this.totalTime * 10 );
+  renderer.backgroundColor( hue, 80, 80 );
+  renderer.stroke( 'white' );
+  renderer.fill( 'black' );
+  renderer.polygon( renderer.w / 2, renderer.h / 2, 5, 100 );
+} );
 ```
 
-#### Color Mode
-
-You can change the behaviour of some functions like `renderer.color()`, `renderer.fill()`, `renderer.stroke()`...
+* Starting the application.
 
 ```javascript
-renderer
-  // Set color mode ('rgba', 'hsla')
-  .colorMode('hsla')
-  // Shortcut for (0, 0, 20, 1)
-  .fill(20)
-  // Some blue stroke color
-  .stroke(220, 100, 50);
+ticker.start();
 ```
 
-## License
+* Adding auto-resize for the renderer.
 
-[MIT License](https://github.com/silent-tempest/v6/blob/master/LICENSE).
+```javascript
+window.addEventListener( 'resize', function ()
+{
+  renderer.resizeTo( this );
+} );
+```
+
+### Development
+
+##### Preprocessing
+
+* `make preprocess -B`
+
+##### Linting
+
+* `make lint:core`, `ESLINT='--fix' make lint:core`
+* `make lint:test`, `ESLINT='--fix' make lint:test`
+
+##### Testing
+
+* First, create `config/browsers.txt` (ignored in `.gitignore`) for your system:
+```bash
+FIREFOX_DEVELOPER_BIN=firefox-developer
+CHROMIUM_BIN=chromium-browser
+FIREFOX_BIN=firefox
+CHROME_BIN=google-chrome
+```
+* `node test/internal/server`
+* `make mocha`, `MOCHA='--reporter spec' make mocha`
+* `make karma`, `KARMA='--browsers FirefoxDeveloper --reporters mocha' make karma`
+
+##### Coveralls
+
+* `make coverage`
+
+##### Before Committing
+
+* `npm run prepublish`
+
+### License
+
+Released under the [MIT](LICENSE) license.

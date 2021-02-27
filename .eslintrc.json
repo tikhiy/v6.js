@@ -1,0 +1,29 @@
+{
+  "env": {
+    "commonjs": true,
+    "browser": true,
+    "node": true
+  },
+
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+
+  "extends": "v6.js",
+
+  "overrides": [
+    {
+      "files": [
+        "core/renderer/internal/process_rect_align.js",
+        "core/renderer/AbstractRenderer.js",
+        "core/camera/Camera.js",
+        "core/Ticker.js"
+      ],
+
+      "rules": {
+        "lines-around-directive": "off",
+        "lines-around-comment": "off"
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "v6.js",
+  "version": "0.3.2",
+  "description": "A JavaScript (ES5) library for rendering. The main feature is one API for WebGL and 2D contexts.",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "KARMA='--no-colors' make -B clean preprocess lint:core lint:test mocha karma gzip docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tikhiy/v6.js.git"
+  },
+  "author": "Vladislav Tikhiy (SILENT)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tikhiy/v6.js/issues"
+  },
+  "homepage": "https://github.com/tikhiy/v6.js#readme",
+  "dependencies": {
+    "light_emitter": "github:tikhiy/light_emitter#v2.0.0",
+    "peako": "^2.0.6"
+  },
+  "optionalDependencies": {
+    "platform": "^1.3.5"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "browserify-istanbul": "^3.0.1",
+    "chai": "^4.2.0",
+    "chai-like": "^1.1.1",
+    "coveralls": "^3.0.9",
+    "eslint": "^6.8.0",
+    "eslint-config-v6.js": "github:tikhiy/eslint-config-v6.js#v1.0.9",
+    "express": "^4.17.1",
+    "jsdoc": "^3.6.3",
+    "karma": "^4.4.1",
+    "karma-browserify": "^6.1.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-coverage": "^2.0.1",
+    "karma-firefox-launcher": "^1.3.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-nyan-reporter": "^0.2.5",
+    "mocha": "^7.0.0",
+    "sinon": "^8.1.1",
+    "uglify-es": "^3.3.9"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  }
+}

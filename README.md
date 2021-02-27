@@ -6,6 +6,10 @@
 
 A JavaScript (ES5) library for rendering. Simple API for both WebGL and 2D contexts.
 
+### Documentation
+
+Documentation can be found [here](https://tikhiy.github.io/v6.js/docs/).
+
 ### Installing
 
 * `npm install --save v6.js`

@@ -33,7 +33,7 @@
     "eslint-config-v6.js": "github:tikhiy/eslint-config-v6.js#v1.0.9",
     "express": "^4.17.1",
     "jsdoc": "^3.6.3",
-    "karma": "^4.4.1",
+    "karma": "^6.3.14",
     "karma-browserify": "^6.1.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.3",
